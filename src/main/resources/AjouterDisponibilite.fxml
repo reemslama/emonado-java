@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox alignment="CENTER" spacing="15.0" xmlns="http://javafx.com/javafx/8"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.DisponibiliteController">
+
+    <padding>
+        <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+    </padding>
+
+    <children>
+        <Label text="Ajouter une Disponibilité" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+
+        <VBox spacing="5.0">
+            <Label text="Date :" />
+            <DatePicker fx:id="datePicker" prefWidth="250.0" />
+            <Label fx:id="errorDate" style="-fx-text-fill: red; -fx-font-size: 11px;" />
+        </VBox>
+
+        <HBox spacing="10.0" alignment="CENTER">
+            <VBox spacing="5.0">
+                <Label text="Heure Début :" />
+                <ComboBox fx:id="comboHeureDebut" prefWidth="120.0" promptText="HH:mm" />
+                <Label fx:id="errorHeureDebut" style="-fx-text-fill: red; -fx-font-size: 11px;" />
+            </VBox>
+            <VBox spacing="5.0">
+                <Label text="Heure Fin :" />
+                <ComboBox fx:id="comboHeureFin" prefWidth="120.0" promptText="HH:mm" />
+                <Label fx:id="errorHeureFin" style="-fx-text-fill: red; -fx-font-size: 11px;" />
+            </VBox>
+        </HBox>
+
+        <Button onAction="#enregistrer" prefWidth="150.0" text="Enregistrer"
+                style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold;" />
+    </children>
+</VBox>
