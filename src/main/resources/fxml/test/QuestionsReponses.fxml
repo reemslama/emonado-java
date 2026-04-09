@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="15" style="-fx-background-color: #f1f5f9;"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.controller.QuestionsReponsesController">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <!-- Barre top -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <TextField fx:id="searchField"
+                   promptText="Rechercher une question ou réponse..."
+                   prefWidth="400"
+                   onKeyReleased="#handleSearch"
+                   style="-fx-background-radius: 8; -fx-padding: 10; -fx-border-color: #e2e8f0; -fx-border-radius: 8;"/>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <Button text="+ Ajouter une Question"
+                onAction="#handleAjouter"
+                style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 20;"/>
+    </HBox>
+
+    <!-- TABLE -->
+    <TableView fx:id="tableView" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colId" text="#" prefWidth="60" maxWidth="70"/>
+            <TableColumn fx:id="colQuestion" text="Question / Réponse" prefWidth="600"/>
+            <TableColumn fx:id="colCategorie" text="Catégorie" prefWidth="160"/>
+            <TableColumn fx:id="colActions" text="Actions" prefWidth="220"/>
+        </columns>
+
+        <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+        </columnResizePolicy>
+    </TableView>
+
+    <!-- MODAL -->
+    <VBox fx:id="modalBox" spacing="15" managed="false" visible="false"
+          style="-fx-background-color: white; -fx-padding: 25; -fx-background-radius: 15; -fx-border-color: #cbd5e1;">
+
+        <Label fx:id="modalTitle"
+               text="Détails de la Question"
+               style="-fx-font-size: 20; -fx-font-weight: bold;"/>
+
+        <Separator/>
+
+        <GridPane hgap="15" vgap="15">
+            <columnConstraints>
+                <ColumnConstraints minWidth="120" prefWidth="140"/>
+                <ColumnConstraints hgrow="ALWAYS"/>
+            </columnConstraints>
+
+            <Label text="Question :" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <TextField fx:id="fieldQuestion"
+                       GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+            <Label text="Réponse :" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <TextArea fx:id="fieldReponse"
+                      wrapText="true"
+                      prefHeight="120"
+                      GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+            <Label text="Paramètres :" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <HBox spacing="10" GridPane.rowIndex="2" GridPane.columnIndex="1">
+                <TextField fx:id="fieldCategorie" promptText="Catégorie" prefWidth="180"/>
+                <TextField fx:id="fieldType" promptText="Type" prefWidth="150"/>
+                <TextField fx:id="fieldOrdre" promptText="Ordre" prefWidth="80"/>
+            </HBox>
+        </GridPane>
+
+        <HBox spacing="15" alignment="CENTER_RIGHT">
+            <Button text="Annuler" onAction="#handleAnnuler"/>
+            <Button text="Enregistrer" onAction="#handleSauvegarder"
+                    style="-fx-background-color: #3b82f6; -fx-text-fill: white;"/>
+        </HBox>
+    </VBox>
+
+</VBox>

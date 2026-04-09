@@ -5,20 +5,22 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class MyDatabase {
-
-    private final String URL = "jdbc:mysql://localhost:3306/pi_db";
-    private final String USERNAME = "root";
-    private final String PASSWORD = "";
+    private final String url = "jdbc:mysql://localhost:3306/pi_db";
+    private final String user = "root";
+    private final String password = "";
 
     private Connection connection;
     private static MyDatabase instance;
 
     private MyDatabase() {
         try {
-            connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-            System.out.println("Connexion réussie !");
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection(url, user, password);
+            System.out.println("✅ Connexion réussie !");
+        } catch (ClassNotFoundException e) {
+            System.err.println("❌ Driver non trouvé : " + e.getMessage());
         } catch (SQLException e) {
-            System.out.println("Erreur de connexion : " + e.getMessage());
+            System.err.println("❌ Erreur de connexion : " + e.getMessage());
         }
     }
 
@@ -30,6 +32,13 @@ public class MyDatabase {
     }
 
     public Connection getConnection() {
+        try {
+            if (connection == null || connection.isClosed()) {
+                connection = DriverManager.getConnection(url, user, password);
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur connexion : " + e.getMessage());
+        }
         return connection;
     }
 }

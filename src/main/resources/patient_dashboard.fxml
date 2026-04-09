@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="30" alignment="CENTER" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.example.controller.PatientDashboardController"
+      style="-fx-background-color: rgba(221, 245, 131, 0.27); -fx-padding: 60;">
+
+    <Label fx:id="welcomeLabel" text="Bienvenue" style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+    <HBox spacing="20" alignment="CENTER">
+
+        <VBox styleClass="icon-box-patient" onMouseClicked="#goToProfil" prefWidth="150" prefHeight="150" alignment="CENTER"
+              style="-fx-background-color: white; -fx-background-radius: 25; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
+            <Label text="👤" style="-fx-font-size: 60px; -fx-text-fill: #7cb342;"/>
+            <Label text="Mon Profil" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+        </VBox>
+
+        <VBox styleClass="icon-box-patient" onMouseClicked="#goToTest" prefWidth="150" prefHeight="150" alignment="CENTER"
+              style="-fx-background-color: white; -fx-background-radius: 25; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
+            <Label text="📝" style="-fx-font-size: 60px; -fx-text-fill: #7cb342;"/>
+            <Label text="Test" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+        </VBox>
+
+    </HBox>
+
+</VBox>

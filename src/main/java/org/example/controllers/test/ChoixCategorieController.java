@@ -4,15 +4,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.scene.control.Button;
 
 public class ChoixCategorieController {
 
-    @FXML private Button btnStress;
-    @FXML private Button btnDepression;
-    @FXML private Button btnAnxiete;
-    @FXML private Button btnIQ;
+    @FXML private VBox rootBox;
 
     @FXML
     private void choisirStress() {
@@ -44,7 +41,7 @@ public class ChoixCategorieController {
             PasserTestController controller = loader.getController();
             controller.setCategorie(categorie);
 
-            Stage stage = (Stage) btnStress.getScene().getWindow();
+            Stage stage = (Stage) rootBox.getScene().getWindow();
             stage.setScene(new Scene(root, 800, 600));
             stage.setTitle("Test - " + categorie);
         } catch (Exception e) {

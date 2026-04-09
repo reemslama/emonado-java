@@ -8,10 +8,10 @@
 <ScrollPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.example.controllers.test.PasserTestController"
             fitToWidth="true"
-            style="-fx-background-color: #f0f4f8;">
+            style="-fx-background-color: rgba(221, 245, 131, 0.27);">
 
     <VBox spacing="8"
-          style="-fx-background-color: #f0f4f8; -fx-padding: 30;">
+          style="-fx-background-color: rgba(221, 245, 131, 0.27); -fx-padding: 30;">
 
         <!-- TITRE -->
         <Label fx:id="lblTitre"
@@ -30,7 +30,7 @@
                      prefWidth="700"
                      prefHeight="12"
                      progress="0"
-                     style="-fx-accent: #2980b9;"/>
+                     style="-fx-accent: #7cb342;"/>
 
         <!-- SEPARATEUR -->
         <Separator style="-fx-padding: 3 0 3 0;"/>
@@ -73,12 +73,12 @@
                     text="← Retour"
                     onAction="#retour"
                     visible="false"
-                    style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-font-size: 14px; -fx-pref-width: 130; -fx-pref-height: 45; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                    style="-fx-background-color: white; -fx-text-fill: #2c3e50; -fx-font-size: 14px; -fx-pref-width: 130; -fx-pref-height: 45; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 3);"/>
 
             <Button fx:id="btnSuivant"
                     text="Suivant →"
                     onAction="#suivant"
-                    style="-fx-background-color: #2980b9; -fx-text-fill: white; -fx-font-size: 14px; -fx-pref-width: 130; -fx-pref-height: 45; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                    style="-fx-background-color: #7cb342; -fx-text-fill: white; -fx-font-size: 14px; -fx-pref-width: 130; -fx-pref-height: 45; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 3);"/>
 
         </HBox>
 
