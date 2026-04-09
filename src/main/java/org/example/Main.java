@@ -2,26 +2,26 @@ package org.example;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import java.util.Objects;
 
 public class Main extends Application {
 
     @Override
-    public void start(Stage stage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/main.fxml"));
-        Scene scene = new Scene(loader.load(), 900, 600);
+    public void start(Stage primaryStage) throws Exception {
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/fxml/test/ChoixCategorie.fxml")
+        );
+        Parent root = loader.load();
 
-        // Ajouter CSS
-        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/styles/template.css")).toExternalForm());
-
-        stage.setTitle("EmoNado");
-        stage.setScene(scene);
-        stage.show();
+        primaryStage.setTitle("Test Médical");
+        primaryStage.setScene(new Scene(root, 800, 600));
+        primaryStage.setResizable(false);
+        primaryStage.show();
     }
 
     public static void main(String[] args) {
-        launch(); // lance JavaFX
+        launch(args);
     }
 }
