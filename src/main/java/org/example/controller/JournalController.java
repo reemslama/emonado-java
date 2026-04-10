@@ -177,20 +177,6 @@ public class JournalController {
     }
 
     @FXML
-    private void goToAnalyses() {
-        loadView("/analyse_emotionnelle.fxml", true);
-    }
-
-    @FXML
-    private void handleAnalyse() {
-        if (currentUser == null) {
-            showError("Session utilisateur introuvable.");
-            return;
-        }
-        loadView("/analyse_emotionnelle.fxml", true);
-    }
-
-    @FXML
     private void handleLogout() {
         UserSession.setInstance(null);
         loadView("/login.fxml", false);
@@ -251,8 +237,6 @@ public class JournalController {
                     profilPatientController.setUserData(currentUser);
                 } else if (controller instanceof JournalController journalController) {
                     journalController.setUserData(currentUser);
-                } else if (controller instanceof AnalyseEmotionnelleController analyseController) {
-                    analyseController.setUserData(currentUser);
                 }
             }
 

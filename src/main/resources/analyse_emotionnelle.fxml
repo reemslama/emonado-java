@@ -21,7 +21,7 @@
             <Region HBox.hgrow="ALWAYS" />
             <Button text="Accueil" styleClass="nav-btn" onAction="#goToDashboard" />
             <Button text="Mon profil" styleClass="nav-btn" onAction="#goToProfil" />
-            <Button text="Mes journaux" styleClass="nav-btn" onAction="#goToJournaux" />
+            <Button fx:id="navJournauxBtn" text="Mes journaux" styleClass="nav-btn" onAction="#goToJournaux" />
             <Button text="Analyse emotionnelle" style="-fx-background-color: rgba(255,255,255,0.18); -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 18; -fx-padding: 8 16;" />
             <Button text="Deconnexion" styleClass="nav-btn" onAction="#handleLogout" />
         </HBox>
@@ -30,6 +30,11 @@
     <center>
         <VBox spacing="18" style="-fx-padding: 24;">
             <Label fx:id="welcomeLabel" text="Analyse emotionnelle" style="-fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #125846;" />
+
+            <HBox spacing="12" alignment="CENTER_LEFT" fx:id="patientSelectorBox" visible="false" managed="false">
+                <Label text="Patient concerne" style="-fx-font-weight: bold; -fx-text-fill: #1f3a4d;" />
+                <ComboBox fx:id="patientCombo" prefWidth="320.0" />
+            </HBox>
 
             <HBox spacing="16">
                 <VBox spacing="6" HBox.hgrow="ALWAYS" style="-fx-background-color: #d7f1e5; -fx-background-radius: 16; -fx-padding: 18;">

@@ -27,7 +27,10 @@ public class AnalyseEmotionnelleEditController {
     @FXML private TextArea conseilArea;
 
     private final AnalyseEmotionnelleService analyseService = new AnalyseEmotionnelleService();
-    private User currentUser;
+    /** Patient dont le journal est analyse. */
+    private User patientUser;
+    /** Compte connecte (psychologue), pour reconstruire l'ecran analyse au retour. */
+    private User viewerUser;
     private JournalAnalyseRow currentRow;
 
     @FXML
@@ -36,8 +39,9 @@ public class AnalyseEmotionnelleEditController {
         niveauCombo.getItems().addAll("Faible", "Modere", "Eleve");
     }
 
-    public void setData(User user, JournalAnalyseRow row) {
-        currentUser = user;
+    public void setData(User viewer, User patient, JournalAnalyseRow row) {
+        viewerUser = viewer;
+        patientUser = patient;
         currentRow = row;
         journalLabel.setText("Journal du " + row.getDateJournal() + " - " + row.getHumeur());
 
@@ -55,7 +59,7 @@ public class AnalyseEmotionnelleEditController {
 
     @FXML
     private void handleSave() {
-        if (currentUser == null || currentRow == null) {
+        if (patientUser == null || currentRow == null) {
             errorLabel.setText("Analyse introuvable.");
             return;
         }
@@ -118,7 +122,12 @@ public class AnalyseEmotionnelleEditController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/analyse_emotionnelle.fxml"));
             Parent root = loader.load();
             AnalyseEmotionnelleController controller = loader.getController();
-            controller.setUserData(currentUser);
+            if (viewerUser != null && "ROLE_PSYCHOLOGUE".equalsIgnoreCase(viewerUser.getRole())) {
+                controller.initForPsychologueView();
+                controller.focusPatient(patientUser);
+            } else {
+                controller.setUserData(patientUser);
+            }
             conseilArea.getScene().setRoot(root);
         } catch (IOException e) {
             errorLabel.setText("Retour impossible.");

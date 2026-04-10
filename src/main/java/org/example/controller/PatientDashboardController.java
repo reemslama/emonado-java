@@ -83,31 +83,6 @@ public class PatientDashboardController {
     }
 
     @FXML
-    private void goToAnalyses() {
-        if (this.currentUser == null) {
-            System.err.println("Erreur: currentUser est NULL. L'injection a echoue.");
-            return;
-        }
-
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/analyse_emotionnelle.fxml"));
-            Parent analyseView = loader.load();
-
-            AnalyseEmotionnelleController controller = loader.getController();
-            controller.setUserData(this.currentUser);
-
-            BorderPane mainContainer = (BorderPane) welcomeLabel.getScene().lookup("#mainContainer");
-            if (mainContainer != null) {
-                mainContainer.setCenter(analyseView);
-            } else {
-                welcomeLabel.getScene().setRoot(analyseView);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
     private void goToTest() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/test/ChoixCategorie.fxml"));

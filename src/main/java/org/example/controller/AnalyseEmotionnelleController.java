@@ -6,13 +6,18 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.HBox;
+import javafx.util.StringConverter;
 import org.example.entities.JournalAnalyseRow;
 import org.example.entities.User;
 import org.example.service.AnalyseEmotionnelleService;
+import org.example.service.UserService;
 import org.example.utils.UserSession;
 
 import java.io.IOException;
@@ -30,9 +35,15 @@ public class AnalyseEmotionnelleController {
     @FXML private TableColumn<JournalAnalyseRow, String> contenuColumn;
     @FXML private TableColumn<JournalAnalyseRow, String> etatColumn;
     @FXML private TableColumn<JournalAnalyseRow, String> statutColumn;
+    @FXML private ComboBox<User> patientCombo;
+    @FXML private HBox patientSelectorBox;
+    @FXML private Button navJournauxBtn;
 
     private final AnalyseEmotionnelleService analyseService = new AnalyseEmotionnelleService();
+    /** Patient dont les journaux sont analyses (requetes SQL inchangées). */
     private User currentUser;
+    /** Compte connecte (psychologue) pour la navigation Accueil / profil. */
+    private User viewerUser;
     private JournalAnalyseRow selectedRow;
 
     @FXML
@@ -47,10 +58,70 @@ public class AnalyseEmotionnelleController {
             selectedRow = newValue;
             errorLabel.setText("");
         });
+    }
 
-        if (currentUser == null) {
-            setUserData(UserSession.getInstance());
+    /**
+     * A appeler depuis le tableau de bord psychologue : charge la liste des patients
+     * et affiche les journaux du patient selectionne (meme logique metier qu'avant).
+     */
+    public void initForPsychologueView() {
+        viewerUser = UserSession.getInstance();
+        if (patientSelectorBox != null) {
+            patientSelectorBox.setVisible(true);
+            patientSelectorBox.setManaged(true);
         }
+        if (navJournauxBtn != null) {
+            navJournauxBtn.setVisible(false);
+            navJournauxBtn.setManaged(false);
+        }
+        if (patientCombo == null) {
+            return;
+        }
+        patientCombo.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(User u) {
+                if (u == null) {
+                    return "";
+                }
+                String p = u.getPrenom() != null ? u.getPrenom() : "";
+                String n = u.getNom() != null ? u.getNom() : "";
+                return (p + " " + n).trim();
+            }
+
+            @Override
+            public User fromString(String s) {
+                return null;
+            }
+        });
+        var patients = UserService.getByRole("ROLE_PATIENT");
+        patientCombo.setItems(patients);
+        patientCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                setUserData(newVal);
+            }
+        });
+        if (patients.isEmpty()) {
+            showError("Aucun patient enregistre. Les analyses portent sur les journaux d'un patient.");
+            return;
+        }
+        patientCombo.getSelectionModel().select(0);
+    }
+
+    /** Apres retour depuis l'edition : reselectionner le meme patient dans la liste. */
+    public void focusPatient(User patient) {
+        if (patient == null) {
+            return;
+        }
+        if (patientCombo != null && patientCombo.getItems() != null) {
+            for (User u : patientCombo.getItems()) {
+                if (u.getId() == patient.getId()) {
+                    patientCombo.getSelectionModel().select(u);
+                    setUserData(u);
+                    return;
+                }
+            }
+        }
+        setUserData(patient);
     }
 
     public void setUserData(User user) {
@@ -111,12 +182,20 @@ public class AnalyseEmotionnelleController {
 
     @FXML
     private void goToDashboard() {
-        loadView("/patient_dashboard.fxml");
+        if (viewerUser != null && "ROLE_PSYCHOLOGUE".equalsIgnoreCase(viewerUser.getRole())) {
+            loadView("/psy_dashboard.fxml");
+        } else {
+            loadView("/patient_dashboard.fxml");
+        }
     }
 
     @FXML
     private void goToProfil() {
-        loadView("/profil_patient.fxml");
+        if (viewerUser != null && "ROLE_PSYCHOLOGUE".equalsIgnoreCase(viewerUser.getRole())) {
+            loadView("/profil_psy.fxml");
+        } else {
+            loadView("/profil_patient.fxml");
+        }
     }
 
     @FXML
@@ -167,8 +246,10 @@ public class AnalyseEmotionnelleController {
                 profilController.setUserData(currentUser);
             } else if (controller instanceof JournalController journalController) {
                 journalController.setUserData(currentUser);
-            } else if (controller instanceof AnalyseEmotionnelleController analyseController) {
-                analyseController.setUserData(currentUser);
+            } else if (controller instanceof PsyDashboardController psyController) {
+                psyController.setUserData(viewerUser);
+            } else if (controller instanceof ProfilPsyController profilPsyController) {
+                profilPsyController.setUserData(viewerUser);
             }
 
             analyseTable.getScene().setRoot(root);
@@ -182,7 +263,7 @@ public class AnalyseEmotionnelleController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/analyse_emotionnelle_edit.fxml"));
             Parent root = loader.load();
             AnalyseEmotionnelleEditController controller = loader.getController();
-            controller.setData(currentUser, row);
+            controller.setData(viewerUser, currentUser, row);
             analyseTable.getScene().setRoot(root);
         } catch (IOException e) {
             showError("Ouverture de la page de modification impossible.");
