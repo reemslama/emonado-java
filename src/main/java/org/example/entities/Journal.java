@@ -11,6 +11,7 @@ public class Journal {
     private String humeur;
     private LocalDateTime dateCreation;
     private int userId;
+    private String etatAnalyse;
 
     public int getId() {
         return id;
@@ -54,5 +55,13 @@ public class Journal {
 
     public String getDateCreationFormatted() {
         return dateCreation == null ? "" : dateCreation.format(FORMATTER);
+    }
+
+    public String getEtatAnalyse() {
+        return etatAnalyse;
+    }
+
+    public void setEtatAnalyse(String etatAnalyse) {
+        this.etatAnalyse = etatAnalyse;
     }
 }

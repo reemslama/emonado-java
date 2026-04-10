@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
@@ -10,6 +10,12 @@
       alignment="CENTER"
       spacing="20"
       style="-fx-background-color: rgba(221, 245, 131, 0.27); -fx-padding: 60;">
+
+    <HBox alignment="CENTER_LEFT" maxWidth="700">
+        <Button text="← Retour"
+                onAction="#retourDashboard"
+                style="-fx-background-color: white; -fx-text-fill: #2c3e50; -fx-font-size: 14px; -fx-background-radius: 8; -fx-cursor: hand;"/>
+    </HBox>
 
     <Label text="Test de Sante Mentale"
            style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
@@ -23,7 +29,6 @@
            style="-fx-font-size: 16px; -fx-text-fill: #2c3e50; -fx-padding: 10 0 0 0;"/>
 
     <HBox spacing="20" alignment="CENTER">
-
         <VBox onMouseClicked="#choisirStress" prefWidth="150" prefHeight="150" alignment="CENTER"
               style="-fx-background-color: white; -fx-background-radius: 25; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
             <Label text="&#128552;" style="-fx-font-size: 50px;"/>
@@ -47,7 +52,6 @@
             <Label text="&#129513;" style="-fx-font-size: 50px;"/>
             <Label text="IQ" style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #2c3e50;"/>
         </VBox>
-
     </HBox>
 
     <Label text="Ces tests ne remplacent pas un avis medical professionnel."

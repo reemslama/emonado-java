@@ -34,6 +34,7 @@ public class JournalController {
     @FXML private TableColumn<Journal, String> humeurColumn;
     @FXML private TableColumn<Journal, String> contenuColumn;
     @FXML private TableColumn<Journal, String> dateColumn;
+    @FXML private TableColumn<Journal, String> analyseColumn;
     @FXML private Label heureuxCountLabel;
     @FXML private Label calmeCountLabel;
     @FXML private Label sosCountLabel;
@@ -53,6 +54,7 @@ public class JournalController {
         humeurColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(capitalizeMood(cellData.getValue().getHumeur())));
         contenuColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getContenu()));
         dateColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getDateCreationFormatted()));
+        analyseColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(formatAnalyse(cellData.getValue().getEtatAnalyse())));
 
         journalTable.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             selectedJournal = newValue;
@@ -175,6 +177,20 @@ public class JournalController {
     }
 
     @FXML
+    private void goToAnalyses() {
+        loadView("/analyse_emotionnelle.fxml", true);
+    }
+
+    @FXML
+    private void handleAnalyse() {
+        if (currentUser == null) {
+            showError("Session utilisateur introuvable.");
+            return;
+        }
+        loadView("/analyse_emotionnelle.fxml", true);
+    }
+
+    @FXML
     private void handleLogout() {
         UserSession.setInstance(null);
         loadView("/login.fxml", false);
@@ -235,6 +251,8 @@ public class JournalController {
                     profilPatientController.setUserData(currentUser);
                 } else if (controller instanceof JournalController journalController) {
                     journalController.setUserData(currentUser);
+                } else if (controller instanceof AnalyseEmotionnelleController analyseController) {
+                    analyseController.setUserData(currentUser);
                 }
             }
 
@@ -262,5 +280,9 @@ public class JournalController {
             case "en colere" -> "En colere";
             default -> mood.substring(0, 1).toUpperCase() + mood.substring(1);
         };
+    }
+
+    private String formatAnalyse(String analyse) {
+        return analyse == null || analyse.isBlank() ? "Aucune" : analyse;
     }
 }

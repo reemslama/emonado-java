@@ -21,22 +21,23 @@ public class JournalService {
 
     public List<Journal> findByUser(User user, String keyword, String sortOrder) throws SQLException {
         StringBuilder sql = new StringBuilder(
-                "SELECT id, contenu, humeur, date_creation, user_id FROM journal WHERE user_id = ?"
+                "SELECT j.id, j.contenu, j.humeur, j.date_creation, j.user_id, a.etat_emotionnel " +
+                        "FROM journal j LEFT JOIN analyse_emotionnelle a ON a.journal_id = j.id WHERE j.user_id = ?"
         );
         List<Object> parameters = new ArrayList<>();
         parameters.add(user.getId());
 
         String trimmedKeyword = keyword == null ? "" : keyword.trim();
         if (!trimmedKeyword.isEmpty()) {
-            sql.append(" AND (LOWER(humeur) LIKE ? OR LOWER(contenu) LIKE ?)");
+            sql.append(" AND (LOWER(j.humeur) LIKE ? OR LOWER(j.contenu) LIKE ?)");
             String likeValue = "%" + trimmedKeyword.toLowerCase() + "%";
             parameters.add(likeValue);
             parameters.add(likeValue);
         }
 
         sql.append("old".equalsIgnoreCase(sortOrder)
-                ? " ORDER BY date_creation ASC"
-                : " ORDER BY date_creation DESC");
+                ? " ORDER BY j.date_creation ASC"
+                : " ORDER BY j.date_creation DESC");
 
         List<Journal> journals = new ArrayList<>();
         try (Connection connection = DataSource.getInstance().getConnection();
@@ -142,6 +143,7 @@ public class JournalService {
             journal.setDateCreation(timestamp.toLocalDateTime());
         }
         journal.setUserId(resultSet.getInt("user_id"));
+        journal.setEtatAnalyse(resultSet.getString("etat_emotionnel"));
         return journal;
     }
 }

@@ -33,9 +33,7 @@ public class ChoixCategorieController {
 
     private void ouvrirTest(String categorie) {
         try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/fxml/test/PasserTest.fxml")
-            );
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/test/PasserTest.fxml"));
             Parent root = loader.load();
 
             PasserTestController controller = loader.getController();
@@ -46,6 +44,19 @@ public class ChoixCategorieController {
             stage.setTitle("Test - " + categorie);
         } catch (Exception e) {
             System.out.println("Erreur navigation : " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void retourDashboard() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/patient_dashboard.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) rootBox.getScene().getWindow();
+            stage.setScene(new Scene(root, 800, 600));
+            stage.setTitle("Espace Patient");
+        } catch (Exception e) {
+            System.out.println("Erreur retour : " + e.getMessage());
         }
     }
 }

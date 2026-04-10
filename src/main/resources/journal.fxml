@@ -32,6 +32,7 @@
             <Button text="Accueil" styleClass="nav-btn" onAction="#goToDashboard" />
             <Button text="Mon profil" styleClass="nav-btn" onAction="#goToProfil" />
             <Button text="Mes journaux" style="-fx-background-color: rgba(255, 255, 255, 0.18); -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 18; -fx-padding: 8 16;" />
+            <Button text="Analyse emotionnelle" styleClass="nav-btn" onAction="#goToAnalyses" />
             <Button text="Deconnexion" styleClass="nav-btn" onAction="#handleLogout" />
         </HBox>
     </top>
@@ -88,12 +89,14 @@
                     <HBox spacing="10">
                         <Button text="Modifier" onAction="#handleEdit" style="-fx-background-color: #1976f3; -fx-text-fill: white; -fx-background-radius: 12; -fx-padding: 10 18; -fx-font-weight: bold;" />
                         <Button text="Supprimer" onAction="#handleDelete" style="-fx-background-color: #1976f3; -fx-text-fill: white; -fx-background-radius: 12; -fx-padding: 10 18; -fx-font-weight: bold;" />
+                        <Button text="Analyser" onAction="#handleAnalyse" style="-fx-background-color: #1f8b57; -fx-text-fill: white; -fx-background-radius: 12; -fx-padding: 10 18; -fx-font-weight: bold;" />
                     </HBox>
                     <TableView fx:id="journalTable" VBox.vgrow="ALWAYS">
                         <columns>
                             <TableColumn fx:id="humeurColumn" text="Humeur" prefWidth="130.0" />
-                            <TableColumn fx:id="contenuColumn" text="Contenu" prefWidth="430.0" />
+                            <TableColumn fx:id="contenuColumn" text="Contenu" prefWidth="340.0" />
                             <TableColumn fx:id="dateColumn" text="Date" prefWidth="170.0" />
+                            <TableColumn fx:id="analyseColumn" text="Analyse" prefWidth="160.0" />
                         </columns>
                     </TableView>
                 </VBox>
