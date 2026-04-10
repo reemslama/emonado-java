@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import java.net.URL?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.controller.JournalController"
+            style="-fx-background-color: linear-gradient(to bottom, #8fd9ee 0%, #dff7ff 100%);">
+
+    <stylesheets>
+        <URL value="@/styles/template.css" />
+    </stylesheets>
+
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="18" style="-fx-background-color: #1f8b57;">
+            <padding>
+                <Insets top="16" right="24" bottom="16" left="24" />
+            </padding>
+            <Label text="EmoNado" styleClass="brand" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Button text="Accueil" styleClass="nav-btn" onAction="#goToDashboard" />
+            <Button text="Mon profil" styleClass="nav-btn" onAction="#goToProfil" />
+            <Button text="Mes journaux" style="-fx-background-color: rgba(255, 255, 255, 0.18); -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 18; -fx-padding: 8 16;" />
+            <Button text="Deconnexion" styleClass="nav-btn" onAction="#handleLogout" />
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="18" style="-fx-padding: 24;">
+            <padding>
+                <Insets top="24" right="26" bottom="24" left="26" />
+            </padding>
+
+            <Label fx:id="welcomeLabel" text="Mes journaux" style="-fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #116b46;" />
+
+            <HBox spacing="16">
+                <VBox spacing="8" HBox.hgrow="ALWAYS" style="-fx-background-color: #d7e4ff; -fx-background-radius: 14; -fx-padding: 16;">
+                    <Label text="Heureux" style="-fx-font-size: 16px; -fx-text-fill: #284354; -fx-font-weight: bold;" />
+                    <Label fx:id="heureuxCountLabel" text="0" style="-fx-font-size: 22px; -fx-text-fill: #143d2d; -fx-font-weight: bold;" />
+                </VBox>
+                <VBox spacing="8" HBox.hgrow="ALWAYS" style="-fx-background-color: #d5f3f8; -fx-background-radius: 14; -fx-padding: 16;">
+                    <Label text="Calme" style="-fx-font-size: 16px; -fx-text-fill: #284354; -fx-font-weight: bold;" />
+                    <Label fx:id="calmeCountLabel" text="0" style="-fx-font-size: 22px; -fx-text-fill: #143d2d; -fx-font-weight: bold;" />
+                </VBox>
+                <VBox spacing="8" HBox.hgrow="ALWAYS" style="-fx-background-color: #fff0bf; -fx-background-radius: 14; -fx-padding: 16;">
+                    <Label text="SOS" style="-fx-font-size: 16px; -fx-text-fill: #284354; -fx-font-weight: bold;" />
+                    <Label fx:id="sosCountLabel" text="0" style="-fx-font-size: 22px; -fx-text-fill: #143d2d; -fx-font-weight: bold;" />
+                </VBox>
+                <VBox spacing="8" HBox.hgrow="ALWAYS" style="-fx-background-color: #ffd8de; -fx-background-radius: 14; -fx-padding: 16;">
+                    <Label text="En colere" style="-fx-font-size: 16px; -fx-text-fill: #284354; -fx-font-weight: bold;" />
+                    <Label fx:id="colereCountLabel" text="0" style="-fx-font-size: 22px; -fx-text-fill: #143d2d; -fx-font-weight: bold;" />
+                </VBox>
+            </HBox>
+
+            <HBox spacing="12">
+                <TextField fx:id="searchField" promptText="Rechercher par humeur ou contenu" HBox.hgrow="ALWAYS" />
+                <ComboBox fx:id="sortCombo" prefWidth="180.0" />
+                <Button text="Rechercher" onAction="#handleSearch" style="-fx-background-color: #1976f3; -fx-text-fill: white; -fx-background-radius: 12; -fx-padding: 10 18; -fx-font-weight: bold;" />
+                <Button text="Reinitialiser" onAction="#handleReset" style="-fx-background-color: white; -fx-border-color: #1976f3; -fx-border-radius: 12; -fx-background-radius: 12; -fx-text-fill: #1976f3; -fx-padding: 10 18; -fx-font-weight: bold;" />
+            </HBox>
+
+            <HBox spacing="18" VBox.vgrow="ALWAYS">
+                <VBox spacing="12" prefWidth="330.0" style="-fx-background-color: rgba(255, 255, 255, 0.92); -fx-background-radius: 18; -fx-padding: 18; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.12), 14, 0, 0, 4);">
+                    <Label text="Nouveau journal" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1f3a4d;" />
+                    <Label text="Humeur" />
+                    <ComboBox fx:id="humeurCombo" promptText="Selectionnez une humeur" />
+                    <Label text="Contenu" />
+                    <TextArea fx:id="contenuArea" wrapText="true" prefRowCount="12" promptText="Ecrivez votre journal ici..." VBox.vgrow="ALWAYS" />
+                    <Label fx:id="errorLabel" textFill="#c62828" wrapText="true" />
+                    <HBox spacing="10">
+                        <Button text="Ajouter" onAction="#handleCreate" style="-fx-background-color: #1976f3; -fx-text-fill: white; -fx-background-radius: 12; -fx-padding: 10 18; -fx-font-weight: bold;" />
+                    </HBox>
+                </VBox>
+
+                <VBox spacing="12" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS" style="-fx-background-color: rgba(255, 255, 255, 0.92); -fx-background-radius: 18; -fx-padding: 18; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.12), 14, 0, 0, 4);">
+                    <Label text="Liste des journaux" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1f3a4d;" />
+                    <HBox spacing="10">
+                        <Button text="Modifier" onAction="#handleEdit" style="-fx-background-color: #1976f3; -fx-text-fill: white; -fx-background-radius: 12; -fx-padding: 10 18; -fx-font-weight: bold;" />
+                        <Button text="Supprimer" onAction="#handleDelete" style="-fx-background-color: #1976f3; -fx-text-fill: white; -fx-background-radius: 12; -fx-padding: 10 18; -fx-font-weight: bold;" />
+                    </HBox>
+                    <TableView fx:id="journalTable" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="humeurColumn" text="Humeur" prefWidth="130.0" />
+                            <TableColumn fx:id="contenuColumn" text="Contenu" prefWidth="430.0" />
+                            <TableColumn fx:id="dateColumn" text="Date" prefWidth="170.0" />
+                        </columns>
+                    </TableView>
+                </VBox>
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>

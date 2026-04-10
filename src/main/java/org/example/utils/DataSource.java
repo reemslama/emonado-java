@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public class DataSource {
     // L'URL pointe maintenant vers ta base "emonado"
-    private final String url = "jdbc:mysql://127.0.0.1:3306/emonado";
+    private final String url = "jdbc:mysql://127.0.0.1:3306/emonado_java";
     private final String user = "root";
     private final String password = ""; // Vide par défaut sur XAMPP
     private Connection connection;
