@@ -1,17 +1,100 @@
+/* --- Barre Latérale (Sidebar) --- */
 .side-button {
     -fx-background-color: transparent;
     -fx-text-fill: #cbd5e1;
     -fx-padding: 12 20;
     -fx-cursor: hand;
     -fx-font-size: 14px;
+    -fx-alignment: BASELINE_LEFT;
 }
+
 .side-button:hover {
     -fx-background-color: #1f2937;
     -fx-text-fill: white;
 }
+
+.side-button-active {
+    -fx-background-color: #3b82f6;
+    -fx-text-fill: white;
+}
+
 .logout-button {
     -fx-background-color: transparent;
     -fx-text-fill: #ef4444;
     -fx-padding: 12 20;
     -fx-cursor: hand;
+    -fx-font-weight: bold;
+}
+
+.logout-button:hover {
+    -fx-background-color: #7f1d1d;
+    -fx-text-fill: white;
+}
+
+/* --- TableView --- */
+.table-view {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 10;
+    -fx-padding: 10;
+}
+
+/* Header */
+.table-view .column-header {
+    -fx-background-color: #f8fafc;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+
+.table-view .column-header-background {
+    -fx-background-radius: 10 10 0 0;
+}
+
+/* Lignes */
+.table-row-cell {
+    -fx-cell-size: 70px;
+    -fx-border-color: #f1f5f9;
+    -fx-border-width: 0 0 1 0;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #f9fafb;
+}
+
+/* Badges */
+.badge {
+    -fx-padding: 6 14;
+    -fx-background-radius: 15;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.badge-anxiete {
+    -fx-background-color: #e0f2fe;
+    -fx-text-fill: #0ea5e9;
+}
+
+.badge-depression {
+    -fx-background-color: #f0fdf4;
+    -fx-text-fill: #22c55e;
+}
+
+.badge-general {
+    -fx-background-color: #f1f5f9;
+    -fx-text-fill: #64748b;
+}
+
+/* Boutons */
+.btn-action {
+    -fx-background-color: white;
+    -fx-border-color: #d1d5db;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-padding: 6 15;
+}
+
+.btn-action:hover {
+    -fx-background-color: #f1f5f9;
 }

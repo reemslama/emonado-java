@@ -4,28 +4,29 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class DataSource {
-    private final String url = "jdbc:mysql://127.0.0.1:3306/emonado_java";
+public class MyDatabase {
+    private final String url = "jdbc:mysql://localhost:3306/pi_db";
     private final String user = "root";
     private final String password = "";
-    private Connection connection;
-    public static DataSource instance;
 
-    private DataSource() {
+    private Connection connection;
+    private static MyDatabase instance;
+
+    private MyDatabase() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection(url, user, password);
-            System.out.println("Connexion a la base emonado_java reussie.");
+            System.out.println("✅ Connexion réussie !");
         } catch (ClassNotFoundException e) {
-            System.err.println("Driver MySQL non trouve : " + e.getMessage());
+            System.err.println("❌ Driver non trouvé : " + e.getMessage());
         } catch (SQLException e) {
-            System.err.println("Erreur de connexion a MySQL : " + e.getMessage());
+            System.err.println("❌ Erreur de connexion : " + e.getMessage());
         }
     }
 
-    public static DataSource getInstance() {
+    public static MyDatabase getInstance() {
         if (instance == null) {
-            instance = new DataSource();
+            instance = new MyDatabase();
         }
         return instance;
     }
@@ -36,7 +37,7 @@ public class DataSource {
                 connection = DriverManager.getConnection(url, user, password);
             }
         } catch (SQLException e) {
-            System.err.println("Erreur lors de la recuperation de la connexion : " + e.getMessage());
+            System.err.println("Erreur connexion : " + e.getMessage());
         }
         return connection;
     }
