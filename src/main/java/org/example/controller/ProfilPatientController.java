@@ -3,16 +3,29 @@ package org.example.controller;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import org.example.entities.User;
 import org.example.utils.DataSource;
 import org.example.utils.UserSession;
+
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class ProfilPatientController {
     @FXML private Label titleLabel;
-    @FXML private TextField nomField, prenomField, emailField, phoneField;
+    @FXML private TextField nomField;
+    @FXML private TextField prenomField;
+    @FXML private TextField emailField;
+    @FXML private TextField phoneField;
     @FXML private PasswordField passwordField;
     @FXML private ComboBox<String> sexeCombo;
     @FXML private DatePicker datePicker;
@@ -21,17 +34,20 @@ public class ProfilPatientController {
 
     @FXML
     public void initialize() {
-        // Au cas où setUserData n'est pas appelé, on récupère via la session
-        if (this.currentUser == null) {
+        if (currentUser == null) {
             setUserData(UserSession.getInstance());
         }
     }
 
     public void setUserData(User user) {
-        if (user == null) return;
+        if (user == null) {
+            return;
+        }
         this.currentUser = user;
 
-        if (titleLabel != null) titleLabel.setText("Profil de " + currentUser.getPrenom());
+        if (titleLabel != null) {
+            titleLabel.setText("Profil de " + currentUser.getPrenom());
+        }
         nomField.setText(currentUser.getNom());
         prenomField.setText(currentUser.getPrenom());
         emailField.setText(currentUser.getEmail());
@@ -44,9 +60,10 @@ public class ProfilPatientController {
 
     @FXML
     private void handleUpdate() {
-        if (currentUser == null) return;
+        if (currentUser == null) {
+            return;
+        }
 
-        // On vérifie si on doit mettre à jour le mot de passe ou non
         String newPassword = passwordField.getText();
         boolean updatePassword = newPassword != null && !newPassword.trim().isEmpty();
 
@@ -72,14 +89,18 @@ public class ProfilPatientController {
 
             pstmt.executeUpdate();
 
-            // Mettre à jour l'objet en session pour que le reste de l'app soit synchro
+            currentUser.setEmail(emailField.getText());
             currentUser.setNom(nomField.getText());
             currentUser.setPrenom(prenomField.getText());
+            currentUser.setTelephone(phoneField.getText());
+            currentUser.setSexe(sexeCombo.getValue());
+            currentUser.setDateNaissance(datePicker.getValue());
+            UserSession.setInstance(currentUser);
 
-            new Alert(Alert.AlertType.INFORMATION, "Profil mis à jour avec succès !").show();
+            new Alert(Alert.AlertType.INFORMATION, "Profil mis a jour avec succes !").show();
         } catch (SQLException e) {
             e.printStackTrace();
-            new Alert(Alert.AlertType.ERROR, "Erreur lors de la mise à jour.").show();
+            new Alert(Alert.AlertType.ERROR, "Erreur lors de la mise a jour.").show();
         }
     }
 
@@ -96,7 +117,12 @@ public class ProfilPatientController {
 
     @FXML
     private void handleDelete() {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "Voulez-vous vraiment supprimer votre compte ? Cette action est irréversible.", ButtonType.YES, ButtonType.NO);
+        Alert confirm = new Alert(
+                Alert.AlertType.CONFIRMATION,
+                "Voulez-vous vraiment supprimer votre compte ? Cette action est irreversible.",
+                ButtonType.YES,
+                ButtonType.NO
+        );
         confirm.setTitle("Confirmation de suppression");
 
         if (confirm.showAndWait().orElse(ButtonType.NO) == ButtonType.YES) {
@@ -107,8 +133,7 @@ public class ProfilPatientController {
                 pstmt.executeUpdate();
 
                 UserSession.setInstance(null);
-                handleLogout(); // Redirection vers login après suppression
-
+                handleLogout();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -118,12 +143,13 @@ public class ProfilPatientController {
     @FXML
     private void returnToDashboard() {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/patient_dashboard.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/patient_dashboard.fxml"));
+            Parent root = loader.load();
+            PatientDashboardController controller = loader.getController();
+            controller.setUserData(UserSession.getInstance());
             nomField.getScene().setRoot(root);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    
-
 }

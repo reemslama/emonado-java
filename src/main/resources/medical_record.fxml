@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.controller.MedicalRecordController"
+            styleClass="background">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-background-color: #198754; -fx-padding: 16 28;">
+            <Label text="EmoNado" style="-fx-text-fill: white; -fx-font-size: 22px; -fx-font-weight: bold;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Mon profil" onAction="#goToProfil"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand;"/>
+            <Button text="Retour au tableau de bord" onAction="#returnToDashboard"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand;"/>
+            <Button text="Deconnexion" onAction="#handleLogout"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand;"/>
+        </HBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true" style="-fx-background: #e9f7ff; -fx-padding: 15;">
+            <VBox spacing="14" style="-fx-padding: 20;">
+                <Label fx:id="titleLabel" text="Mon Dossier Medical"
+                       style="-fx-font-size: 34px; -fx-font-weight: bold; -fx-text-fill: #16324f;"/>
+
+                <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15;">
+                    <Label text="Rappel et preparation de ma prochaine consultation"
+                           style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #0d6efd;"/>
+                    <TextArea fx:id="reminderArea" wrapText="true" prefRowCount="4"
+                              promptText="Notez les sujets ou questions a aborder lors de votre prochaine consultation..."/>
+                    <Button text="Enregistrer le rappel" onAction="#handleSaveReminder"
+                            style="-fx-background-color: #0d6efd; -fx-text-fill: white; -fx-background-radius: 6;"/>
+                </VBox>
+
+                <HBox spacing="12">
+                    <VBox spacing="8" HBox.hgrow="ALWAYS"
+                          style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15;">
+                        <Label text="Mes Informations" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0d6efd;"/>
+                        <GridPane hgap="10" vgap="8">
+                            <columnConstraints>
+                                <ColumnConstraints percentWidth="20"/>
+                                <ColumnConstraints percentWidth="30"/>
+                                <ColumnConstraints percentWidth="20"/>
+                                <ColumnConstraints percentWidth="30"/>
+                            </columnConstraints>
+                            <Label text="Nom" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                            <TextField fx:id="nomField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                            <Label text="Prenom" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+                            <TextField fx:id="prenomField" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+                            <Label text="Email" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                            <TextField fx:id="emailField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                            <Label text="Telephone" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+                            <TextField fx:id="phoneField" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+                            <Label text="Sexe" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                            <TextField fx:id="sexeField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                            <Label text="Date de naissance" GridPane.rowIndex="2" GridPane.columnIndex="2"/>
+                            <DatePicker fx:id="birthDatePicker" GridPane.rowIndex="2" GridPane.columnIndex="3"/>
+                        </GridPane>
+                        <Button text="Modifier mes informations" onAction="#handleSavePersonalInfo"
+                                style="-fx-background-color: #198754; -fx-text-fill: white; -fx-background-radius: 6;"/>
+                    </VBox>
+
+                    <VBox spacing="8" prefWidth="290"
+                          style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15;">
+                        <Label text="Statistiques" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0d6efd;"/>
+                        <Label text="Consultations"/>
+                        <Label fx:id="consultationCountLabel" text="0" style="-fx-font-size: 26px; -fx-font-weight: bold;"/>
+                        <Separator/>
+                        <Label text="Derniere consultation"/>
+                        <Label fx:id="lastConsultationLabel" text="-"/>
+                        <Separator/>
+                        <Label text="Dossier cree le"/>
+                        <Label fx:id="dossierCreationLabel" text="-"/>
+                    </VBox>
+                </HBox>
+
+                <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15;">
+                    <Label text="Historique Medical" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #f0ad00;"/>
+                    <TextArea fx:id="medicalHistoryArea" wrapText="true" prefRowCount="4"
+                              promptText="Ajoutez vos antecedents, allergies, traitements ou autres informations medicales..."/>
+                    <Button text="Modifier l'historique medical" onAction="#handleSaveMedicalHistory"
+                            style="-fx-background-color: #f0ad00; -fx-text-fill: #1b1b1b; -fx-background-radius: 6;"/>
+                </VBox>
+
+                <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15;">
+                    <Label text="Mes Consultations" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #198754;"/>
+                    <Label text="Accedez a l'interface dediee pour ajouter une consultation avec l'historique detaille et les filtres."
+                           wrapText="true"
+                           style="-fx-font-size: 14px; -fx-text-fill: #5f6c7b;"/>
+                    <Button text="Ouvrir l'espace consultations" onAction="#goToConsultations"
+                            style="-fx-background-color: #198754; -fx-text-fill: white; -fx-background-radius: 6;"/>
+                </VBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>

@@ -6,7 +6,8 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import org.example.entities.User;
 import org.example.service.AuthService;
-import org.example.utils.UserSession; // Import ajouté
+import org.example.utils.DataSource;
+import org.example.utils.UserSession;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
@@ -45,6 +46,14 @@ public class LoginController {
         }
         // -------------------------------------
 
+        if (!AuthService.isDatabaseReachable()) {
+            String detail = DataSource.getLastConnectionError();
+            errorLabel.setText(
+                    "Impossible de contacter la base de données. Démarrez MySQL (XAMPP), port 3306, base 'emonado'."
+                            + (detail != null && !detail.isBlank() ? " Détail : " + detail : ""));
+            return;
+        }
+
         User user = AuthService.authenticate(email, password);
 
         if (user != null) {
@@ -64,7 +73,8 @@ public class LoginController {
                 errorLabel.setText("Accès refusé : Ce compte n'a pas le rôle " + selectedRole.getText());
             }
         } else {
-            errorLabel.setText("Email ou mot de passe incorrect.");
+            String detail = AuthService.getLastAuthenticationError();
+            errorLabel.setText(detail != null ? detail : "Email ou mot de passe incorrect.");
         }
     }
 

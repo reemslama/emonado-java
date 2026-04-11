@@ -4,12 +4,16 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.example.service.AuthService;
+
 import java.util.Objects;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        AuthService.ensureTestPatientAccountExists();
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/main.fxml"));
         Scene scene = new Scene(loader.load(), 900, 600);
 
