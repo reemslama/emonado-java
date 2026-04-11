@@ -4,37 +4,45 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<VBox alignment="CENTER" spacing="15.0" xmlns="http://javafx.com/javafx/8"
+<VBox alignment="CENTER" spacing="20.0"
+      xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="controllers.DisponibiliteController">
+      fx:controller="org.example.controllers.DisponibiliteController"
+      stylesheets="@/styles/style.css">
 
     <padding>
-        <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+        <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
     </padding>
 
-    <children>
-        <Label text="Ajouter une Disponibilité" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+    <Label text="Ajouter une Disponibilité"
+           style="-fx-font-size: 22px; -fx-font-weight: bold;" />
+
+    <VBox spacing="5.0">
+        <Label text="Sélectionner la date :" />
+        <DatePicker fx:id="datePicker" prefWidth="300.0" promptText="JJ/MM/AAAA" />
+        <Label fx:id="errorDate"/>
+    </VBox>
+
+    <HBox spacing="20.0" alignment="CENTER">
 
         <VBox spacing="5.0">
-            <Label text="Date :" />
-            <DatePicker fx:id="datePicker" prefWidth="250.0" />
-            <Label fx:id="errorDate" style="-fx-text-fill: red; -fx-font-size: 11px;" />
+            <Label text="Heure Début :" />
+            <ComboBox fx:id="comboHeureDebut" prefWidth="140.0" promptText="HH:mm" />
+            <Label fx:id="errorHeureDebut"/>
         </VBox>
 
-        <HBox spacing="10.0" alignment="CENTER">
-            <VBox spacing="5.0">
-                <Label text="Heure Début :" />
-                <ComboBox fx:id="comboHeureDebut" prefWidth="120.0" promptText="HH:mm" />
-                <Label fx:id="errorHeureDebut" style="-fx-text-fill: red; -fx-font-size: 11px;" />
-            </VBox>
-            <VBox spacing="5.0">
-                <Label text="Heure Fin :" />
-                <ComboBox fx:id="comboHeureFin" prefWidth="120.0" promptText="HH:mm" />
-                <Label fx:id="errorHeureFin" style="-fx-text-fill: red; -fx-font-size: 11px;" />
-            </VBox>
-        </HBox>
+        <VBox spacing="5.0">
+            <Label text="Heure Fin :" />
+            <ComboBox fx:id="comboHeureFin" prefWidth="140.0" promptText="HH:mm" />
+            <Label fx:id="errorHeureFin"/>
+        </VBox>
 
-        <Button onAction="#enregistrer" prefWidth="150.0" text="Enregistrer"
-                style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold;" />
-    </children>
+    </HBox>
+
+    <Label fx:id="msgSuccess"/>
+    <Label fx:id="errorGlobal"/>
+
+    <Button text="ENREGISTRER"
+            onAction="#enregistrer"
+            prefWidth="200.0"/>
 </VBox>

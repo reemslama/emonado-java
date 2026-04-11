@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox alignment="CENTER" spacing="15.0"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.controllers.RendezVousController"
+      stylesheets="@/styles/style.css">
+
+    <padding>
+        <Insets top="30" bottom="30" left="30" right="30"/>
+    </padding>
+
+    <Label text="Prendre un Rendez-vous"
+           style="-fx-font-size: 20px; -fx-font-weight: bold;" />
+
+    <TextField fx:id="txtNom" promptText="Nom"/>
+    <TextField fx:id="txtPrenom" promptText="Prénom"/>
+    <TextField fx:id="txtAge" promptText="Âge"/>
+    <TextField fx:id="txtAdresse" promptText="Adresse"/>
+
+    <ComboBox fx:id="comboTypes" promptText="Type de rendez-vous"/>
+    <ComboBox fx:id="comboDispos" promptText="Créneau disponible"/>
+
+    <Label fx:id="errorGlobal"/>
+
+    <Button text="Valider"
+            onAction="#validerRendezVous"/>
+</VBox>

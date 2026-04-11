@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:id="rootBox"
+      fx:controller="org.example.controllers.test.ChoixCategorieController"
+      alignment="CENTER"
+      spacing="20"
+      style="-fx-background-color: rgba(221, 245, 131, 0.27); -fx-padding: 60;">
+
+    <Label text="Test de Sante Mentale"
+           style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+    <Label text="Ces tests sont bases sur des echelles cliniques reconnues (PSS, PHQ-9, GAD-7)"
+           wrapText="true"
+           alignment="CENTER"
+           style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d; -fx-max-width: 500;"/>
+
+    <Label text="Choisissez un test a passer :"
+           style="-fx-font-size: 16px; -fx-text-fill: #2c3e50; -fx-padding: 10 0 0 0;"/>
+
+    <HBox spacing="20" alignment="CENTER">
+
+        <VBox onMouseClicked="#choisirStress" prefWidth="150" prefHeight="150" alignment="CENTER"
+              style="-fx-background-color: white; -fx-background-radius: 25; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
+            <Label text="&#128552;" style="-fx-font-size: 50px;"/>
+            <Label text="Stress" style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #2c3e50;"/>
+        </VBox>
+
+        <VBox onMouseClicked="#choisirDepression" prefWidth="150" prefHeight="150" alignment="CENTER"
+              style="-fx-background-color: white; -fx-background-radius: 25; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
+            <Label text="&#128532;" style="-fx-font-size: 50px;"/>
+            <Label text="Depression" style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #2c3e50;"/>
+        </VBox>
+
+        <VBox onMouseClicked="#choisirAnxiete" prefWidth="150" prefHeight="150" alignment="CENTER"
+              style="-fx-background-color: white; -fx-background-radius: 25; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
+            <Label text="&#128543;" style="-fx-font-size: 50px;"/>
+            <Label text="Anxiete" style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #2c3e50;"/>
+        </VBox>
+
+        <VBox onMouseClicked="#choisirIQ" prefWidth="150" prefHeight="150" alignment="CENTER"
+              style="-fx-background-color: white; -fx-background-radius: 25; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
+            <Label text="&#129513;" style="-fx-font-size: 50px;"/>
+            <Label text="IQ" style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #2c3e50;"/>
+        </VBox>
+
+    </HBox>
+
+    <Label text="Ces tests ne remplacent pas un avis medical professionnel."
+           wrapText="true"
+           alignment="CENTER"
+           style="-fx-font-size: 12px; -fx-text-fill: #e74c3c; -fx-padding: 15 0 0 0; -fx-max-width: 450;"/>
+
+</VBox>

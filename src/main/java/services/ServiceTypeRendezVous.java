@@ -1,30 +1,51 @@
 package services;
 
 import entities.TypeRendezVous;
-import utils.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import org.example.utils.MyDatabase;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ServiceTypeRendezVous {
 
-    // On récupère la connexion qu'on a établie dans DataSource
-    private Connection connection = DataSource.getInstance().getConnection();
+    Connection cnx = MyDatabase.getInstance().getConnection();
 
-    // Méthode pour AJOUTER un type (CREATE)
-    public void ajouter(TypeRendezVous t) {
-        // Requête SQL (on utilise ? pour la sécurité contre les injections)
-        String req = "INSERT INTO type_rendez_vous (libelle) VALUES (?)";
+    public boolean ajouter(TypeRendezVous t) {
+
+        String sql = "INSERT INTO type_rendez_vous(libelle) VALUES (?)";
 
         try {
-            PreparedStatement pst = connection.prepareStatement(req);
-            pst.setString(1, t.getLibelle()); // On remplace le ? par le libellé
+            PreparedStatement ps = cnx.prepareStatement(sql);
+            ps.setString(1, t.getLibelle());
+            ps.executeUpdate();
+            return true;
 
-            pst.executeUpdate();
-            System.out.println("Type ajouté avec succès !");
-
-        } catch (SQLException e) {
-            System.err.println("Erreur lors de l'ajout : " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Erreur ajout type: " + e.getMessage());
+            return false;
         }
+    }
+
+    public List<TypeRendezVous> afficherTout() {
+
+        List<TypeRendezVous> list = new ArrayList<>();
+
+        try {
+            Statement st = cnx.createStatement();
+            ResultSet rs = st.executeQuery("SELECT * FROM type_rendez_vous");
+
+            while (rs.next()) {
+                list.add(new TypeRendezVous(
+                        rs.getInt("id"),
+                        rs.getString("libelle")
+                ));
+            }
+
+        } catch (Exception e) {
+            System.out.println("Erreur type: " + e.getMessage());
+        }
+
+        return list;
     }
 }

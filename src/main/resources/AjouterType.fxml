@@ -4,24 +4,29 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<VBox alignment="CENTER" spacing="10.0" xmlns="http://javafx.com/javafx/8"
+<VBox alignment="CENTER" spacing="10.0"
+      xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="controllers.AjouterTypeController">
+      fx:controller="org.example.controllers.AjouterTypeController"
+      stylesheets="@/styles/style.css">
 
     <padding>
-        <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+        <Insets bottom="30.0" left="30.0" right="30.0" top="30.0"/>
     </padding>
 
-    <children>
-        <Label text="Gestion des Types de RDV" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+    <Label text="Gestion des Types de RDV"
+           style="-fx-font-size: 18px; -fx-font-weight: bold;" />
 
-        <VBox spacing="5.0">
-            <children>
-                <TextField fx:id="txtLibelle" promptText="Entrez le nom du type (ex: Urgent)" />
-                <Label fx:id="errorLibelle" text="" style="-fx-text-fill: red; -fx-font-size: 11px;" />
-            </children>
-        </VBox>
+    <VBox spacing="5.0">
 
-        <Button text="Enregistrer" onAction="#ajouterType" prefWidth="100.0" />
-    </children>
+        <TextField fx:id="txtLibelle"
+                   promptText="Entrez le nom du type (ex: Urgent)" />
+
+        <Label fx:id="errorLibelle"/>
+
+    </VBox>
+
+    <Button text="Enregistrer"
+            onAction="#ajouterType"
+            prefWidth="120.0"/>
 </VBox>

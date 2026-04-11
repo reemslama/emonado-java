@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+
+<VBox spacing="20" alignment="CENTER" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.example.controller.LoginController"
+      style="-fx-background-color: #f8f8f8; -fx-padding: 50;">
+
+    <stylesheets>
+        <URL value="@/styles/template.css" />
+    </stylesheets>
+
+    <VBox spacing="15" style="-fx-background-color: white; -fx-background-radius: 25; -fx-padding: 40; -fx-max-width: 450; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);">
+
+        <Label text="Connexion" style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #333;"/>
+        <Label text="Veuillez choisir votre rôle" style="-fx-text-fill: #777; -fx-font-size: 14px;"/>
+
+        <HBox spacing="15" alignment="CENTER" style="-fx-padding: 10 0;">
+            <ToggleButton fx:id="rolePatient" text="Patient" styleClass="option-btn"/>
+            <ToggleButton fx:id="rolePsy" text="Psychologue" styleClass="option-btn"/>
+            <ToggleButton fx:id="roleAdmin" text="Admin" styleClass="option-btn"/>
+        </HBox>
+
+        <VBox spacing="10">
+            <TextField fx:id="emailField" promptText="Email"
+                       style="-fx-background-radius: 15; -fx-padding: 10; -fx-border-color: #ddd; -fx-border-radius: 15;"/>
+
+            <PasswordField fx:id="passwordField" promptText="Mot de passe"
+                           style="-fx-background-radius: 15; -fx-padding: 10; -fx-border-color: #ddd; -fx-border-radius: 15;"/>
+        </VBox>
+
+        <Button text="Se connecter" onAction="#handleLogin"
+                style="-fx-background-color: #c5df43; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-weight: bold; -fx-font-size: 16px; -fx-padding: 12; -fx-cursor: hand;"
+                maxWidth="Infinity"/>
+
+        <HBox spacing="5" alignment="CENTER">
+            <Label text="Pas encore de compte ?" style="-fx-text-fill: #777;"/>
+            <Hyperlink text="S'inscrire" onAction="#goToRegister"
+                       style="-fx-text-fill: #c5df43; -fx-font-weight: bold; -fx-underline: false;"/>
+        </HBox>
+
+        <Label fx:id="errorLabel" textFill="red" wrapText="true" alignment="CENTER"/>
+    </VBox>
+</VBox>
