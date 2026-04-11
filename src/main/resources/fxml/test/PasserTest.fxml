@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.controllers.test.PasserTestController"
+            fitToWidth="true"
+            style="-fx-background-color: rgba(221, 245, 131, 0.27);">
+
+    <VBox spacing="8"
+          style="-fx-background-color: rgba(221, 245, 131, 0.27); -fx-padding: 30;">
+
+        <HBox alignment="CENTER_LEFT">
+            <Button text="← Dashboard"
+                    onAction="#retourDashboard"
+                    style="-fx-background-color: white; -fx-text-fill: #2c3e50; -fx-font-size: 14px; -fx-pref-width: 140; -fx-pref-height: 40; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 3);"/>
+        </HBox>
+
+        <Label fx:id="lblTitre"
+               text="Test"
+               style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label fx:id="lblProgression"
+                   text="Question 1 / 5"
+                   style="-fx-font-size: 14px; -fx-text-fill: #7f8c8d;"/>
+        </HBox>
+
+        <ProgressBar fx:id="progressBar"
+                     prefWidth="700"
+                     prefHeight="12"
+                     progress="0"
+                     style="-fx-accent: #7cb342;"/>
+
+        <Separator style="-fx-padding: 3 0 3 0;"/>
+
+        <Label fx:id="lblQuestion"
+               text=""
+               wrapText="true"
+               maxWidth="700"
+               style="-fx-font-size: 17px; -fx-text-fill: #2c3e50; -fx-padding: 5 0 5 0; -fx-font-weight: bold;"/>
+
+        <HBox fx:id="hboxImage"
+              alignment="CENTER"
+              visible="false"
+              managed="false">
+            <ImageView fx:id="imageView"
+                       fitWidth="450"
+                       fitHeight="280"
+                       preserveRatio="true"
+                       style="-fx-effect: dropshadow(gaussian, #aaaaaa, 10, 0, 0, 3);"/>
+        </HBox>
+
+        <VBox fx:id="vboxReponses"
+              spacing="8"
+              style="-fx-padding: 0;"/>
+
+        <Label fx:id="lblErreur"
+               text=""
+               style="-fx-text-fill: #e74c3c; -fx-font-size: 13px;"/>
+
+        <HBox spacing="20"
+              alignment="CENTER_RIGHT"
+              style="-fx-padding: 15 0 0 0;">
+
+            <Button fx:id="btnRetour"
+                    text="Retour"
+                    onAction="#retour"
+                    visible="false"
+                    style="-fx-background-color: white; -fx-text-fill: #2c3e50; -fx-font-size: 14px; -fx-pref-width: 130; -fx-pref-height: 45; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 3);"/>
+
+            <Button fx:id="btnSuivant"
+                    text="Suivant"
+                    onAction="#suivant"
+                    style="-fx-background-color: #7cb342; -fx-text-fill: white; -fx-font-size: 14px; -fx-pref-width: 130; -fx-pref-height: 45; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 3);"/>
+
+        </HBox>
+
+    </VBox>
+</ScrollPane>

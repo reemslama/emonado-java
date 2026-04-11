@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DataSource {
+<<<<<<< HEAD
 
     private static final String DB_NAME = "emonado";
 
@@ -34,6 +35,13 @@ public class DataSource {
     public static String getLastConnectionError() {
         return lastConnectionError;
     }
+=======
+    private final String url = "jdbc:mysql://127.0.0.1:3306/emonado_java";
+    private final String user = "root";
+    private final String password = "";
+    private Connection connection;
+    public static DataSource instance;
+>>>>>>> d0613d39f294842365d8edf17cb7726a89df6e44
 
     private DataSource() {
         this.urlWithDb = "jdbc:mysql://" + host + ":" + port + "/" + DB_NAME + "?" + JDBC_PARAMS;
@@ -41,6 +49,7 @@ public class DataSource {
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
+<<<<<<< HEAD
             connection = openConnectionWithAutoCreateDb();
             lastConnectionError = null;
             System.out.println("Connexion a la base '" + DB_NAME + "' reussie !");
@@ -105,6 +114,14 @@ public class DataSource {
             System.out.println("Base '" + DB_NAME + "' creee (ou deja presente).");
         } catch (SQLException e) {
             System.err.println("Impossible de creer la base '" + DB_NAME + "' : " + e.getMessage());
+=======
+            connection = DriverManager.getConnection(url, user, password);
+            System.out.println("Connexion a la base emonado_java reussie.");
+        } catch (ClassNotFoundException e) {
+            System.err.println("Driver MySQL non trouve : " + e.getMessage());
+        } catch (SQLException e) {
+            System.err.println("Erreur de connexion a MySQL : " + e.getMessage());
+>>>>>>> d0613d39f294842365d8edf17cb7726a89df6e44
         }
     }
 
@@ -122,9 +139,13 @@ public class DataSource {
                 lastConnectionError = null;
             }
         } catch (SQLException e) {
+<<<<<<< HEAD
             lastConnectionError = e.getMessage();
             System.err.println("Erreur lors de la recuperation de la connexion : " + lastConnectionError);
             connection = null;
+=======
+            System.err.println("Erreur lors de la recuperation de la connexion : " + e.getMessage());
+>>>>>>> d0613d39f294842365d8edf17cb7726a89df6e44
         }
         return connection;
     }

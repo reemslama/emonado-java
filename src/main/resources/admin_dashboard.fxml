@@ -13,10 +13,13 @@
                 <VBox.margin><Insets bottom="20"/></VBox.margin>
             </Label>
 
-            <Button text=" Dashboard" onAction="#showHome" styleClass="side-button" maxWidth="Infinity" alignment="BASELINE_LEFT" />
-            <Button text=" Patients" onAction="#showPatients" styleClass="side-button" maxWidth="Infinity" alignment="BASELINE_LEFT" />
-            <Button text=" Psychologues" onAction="#showPsychologues" styleClass="side-button" maxWidth="Infinity" alignment="BASELINE_LEFT" />
-            <Region VBox.vgrow="ALWAYS" /> <Separator opacity="0.3" />
+            <Button text=" Dashboard"          onAction="#showHome"               styleClass="side-button" maxWidth="Infinity" alignment="BASELINE_LEFT" />
+            <Button text=" Patients"            onAction="#showPatients"            styleClass="side-button" maxWidth="Infinity" alignment="BASELINE_LEFT" />
+            <Button text=" Psychologues"        onAction="#showPsychologues"        styleClass="side-button" maxWidth="Infinity" alignment="BASELINE_LEFT" />
+            <Button text=" Questions/Réponses"  onAction="#showQuestionsReponses"   styleClass="side-button" maxWidth="Infinity" alignment="BASELINE_LEFT" />
+
+            <Region VBox.vgrow="ALWAYS" />
+            <Separator opacity="0.3" />
             <Button text=" Déconnexion" onAction="#handleLogout" styleClass="logout-button" maxWidth="Infinity" alignment="BASELINE_LEFT" />
         </VBox>
     </left>
