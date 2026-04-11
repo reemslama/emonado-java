@@ -1,7 +1,8 @@
 package services;
 
 import entities.Disponibilite;
-import org.example.utils.MyDatabase;
+import org.example.utils.DataSource;
+import org.example.utils.DataSource;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -9,7 +10,7 @@ import java.util.List;
 
 public class ServiceDisponibilite {
 
-    Connection cnx = MyDatabase.getInstance().getConnection();
+    Connection cnx = DataSource.getInstance().getConnection();
 
     // =====================================================
     // AJOUT DISPONIBILITE

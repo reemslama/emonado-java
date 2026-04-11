@@ -9,7 +9,9 @@
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="org.example.controllers.DisponibiliteController"
       stylesheets="@/styles/style.css">
-
+    <HBox alignment="CENTER_LEFT">
+        <Button text="← Retour" onAction="#returnToDashboard" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-font-weight: bold; -fx-cursor: hand;"/>
+    </HBox>
     <padding>
         <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
     </padding>

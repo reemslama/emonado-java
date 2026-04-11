@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.controller.AnalyseEmotionnelleEditController"
+            style="-fx-background-color: linear-gradient(to bottom, #eef9f3 0%, #d8f1ef 55%, #eaf7ff 100%);">
+
+    <stylesheets>
+        <URL value="@/styles/template.css" />
+    </stylesheets>
+
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="18" style="-fx-background-color: #187d67;">
+            <padding>
+                <Insets top="16" right="24" bottom="16" left="24" />
+            </padding>
+            <Label text="EmoNado" styleClass="brand" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Button text="Retour" onAction="#handleCancel" style="-fx-background-color: white; -fx-text-fill: #187d67; -fx-font-weight: bold; -fx-background-radius: 12;" />
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="18" maxWidth="720" alignment="CENTER" style="-fx-padding: 30;">
+            <VBox spacing="12" style="-fx-background-color: rgba(255,255,255,0.95); -fx-background-radius: 20; -fx-padding: 22; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 14, 0, 0, 4);">
+                <Label fx:id="titleLabel" text="Modifier l'analyse emotionnelle" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1f3a4d;" />
+                <Label fx:id="journalLabel" text="Journal selectionne" wrapText="true" style="-fx-text-fill: #4d6472;" />
+                <Label text="Etat emotionnel" />
+                <ComboBox fx:id="etatCombo" promptText="Choisissez l'etat" />
+                <Label text="Niveau" />
+                <ComboBox fx:id="niveauCombo" promptText="Choisissez le niveau" />
+                <Label text="Declencheur observe" />
+                <TextArea fx:id="declencheurArea" prefRowCount="5" wrapText="true" />
+                <Label text="Conseil adapte" />
+                <TextArea fx:id="conseilArea" prefRowCount="5" wrapText="true" />
+                <Label fx:id="errorLabel" textFill="#c62828" wrapText="true" />
+                <HBox spacing="10">
+                    <Button text="Enregistrer" onAction="#handleSave" style="-fx-background-color: #1f8b57; -fx-text-fill: white; -fx-background-radius: 12; -fx-padding: 10 18; -fx-font-weight: bold;" />
+                    <Button text="Annuler" onAction="#handleCancel" style="-fx-background-color: white; -fx-border-color: #1976f3; -fx-border-radius: 12; -fx-background-radius: 12; -fx-text-fill: #1976f3; -fx-padding: 10 18; -fx-font-weight: bold;" />
+                </HBox>
+            </VBox>
+        </VBox>
+    </center>
+</BorderPane>

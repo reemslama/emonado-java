@@ -10,15 +10,30 @@
       fx:controller="org.example.controllers.RendezVousController"
       stylesheets="@/styles/style.css">
 
+    <!-- HEADER USER -->
+    <HBox alignment="CENTER_LEFT" spacing="5">
+
+        <Label fx:id="welcomeLabel"
+               text="Bienvenue"
+               style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#2c3e50;"/>
+
+    </HBox>
+
+    <!-- RETOUR -->
+    <HBox alignment="CENTER_LEFT">
+        <Button text="← Retour"
+                onAction="#returnToDashboard"
+                style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-font-weight: bold; -fx-cursor: hand;"/>
+    </HBox>
+
     <padding>
-        <Insets top="30" bottom="30" left="30" right="30"/>
+        <Insets top="20" bottom="20" left="20" right="20"/>
     </padding>
 
     <Label text="Prendre un Rendez-vous"
            style="-fx-font-size: 20px; -fx-font-weight: bold;" />
 
-    <TextField fx:id="txtNom" promptText="Nom"/>
-    <TextField fx:id="txtPrenom" promptText="Prénom"/>
+    <!-- FORM -->
     <TextField fx:id="txtAge" promptText="Âge"/>
     <TextField fx:id="txtAdresse" promptText="Adresse"/>
 

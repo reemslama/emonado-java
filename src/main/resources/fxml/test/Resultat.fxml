@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
@@ -10,7 +10,13 @@
       spacing="25"
       style="-fx-background-color: #f0f4f8; -fx-padding: 60;">
 
-    <Label text="📊 Résultat du Test"
+    <HBox alignment="CENTER_LEFT" maxWidth="700">
+        <Button text="← Dashboard"
+                onAction="#retourDashboard"
+                style="-fx-background-color: white; -fx-text-fill: #2c3e50; -fx-font-size: 14px; -fx-pref-width: 160; -fx-pref-height: 42; -fx-background-radius: 8;"/>
+    </HBox>
+
+    <Label text="Resultat du Test"
            style="-fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
 
     <Label fx:id="lblCategorie"
@@ -38,15 +44,13 @@
     </VBox>
 
     <HBox spacing="20" alignment="CENTER">
-
-        <Button text="🔄 Refaire le test"
+        <Button text="Refaire le test"
                 onAction="#refaire"
                 style="-fx-background-color: #2980b9; -fx-text-fill: white; -fx-font-size: 14px; -fx-pref-width: 180; -fx-pref-height: 45; -fx-background-radius: 8;"/>
 
-        <Button text="🏠 Accueil"
+        <Button text="Accueil Test"
                 onAction="#accueil"
                 style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-size: 14px; -fx-pref-width: 180; -fx-pref-height: 45; -fx-background-radius: 8;"/>
-
     </HBox>
 
 </VBox>
