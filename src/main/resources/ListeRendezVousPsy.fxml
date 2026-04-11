@@ -9,6 +9,9 @@
       fx:controller="org.example.controllers.ListeRendezVousPsyController"
       stylesheets="@styles/style.css"
       spacing="15">
+    <HBox alignment="CENTER_LEFT">
+        <Button text="← Retour" onAction="#returnToDashboard" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-font-weight: bold; -fx-cursor: hand;"/>
+    </HBox>
 
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>

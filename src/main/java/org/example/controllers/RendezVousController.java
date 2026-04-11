@@ -3,13 +3,23 @@ package org.example.controllers;
 import entities.*;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
 import services.*;
+import org.example.utils.DataSource;
+import org.example.utils.UserSession;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 public class RendezVousController {
 
-    @FXML private TextField txtNom;
-    @FXML private TextField txtPrenom;
+    @FXML private Label welcomeLabel;
+
     @FXML private TextField txtAge;
     @FXML private TextField txtAdresse;
 
@@ -22,20 +32,47 @@ public class RendezVousController {
     ServiceDisponibilite sd = new ServiceDisponibilite();
     ServiceTypeRendezVous st = new ServiceTypeRendezVous();
 
+    // =====================================================
+    // INITIALISATION USER + COMBOS
+    // =====================================================
     @FXML
     public void initialize() {
+
         comboTypes.setItems(FXCollections.observableArrayList(st.afficherTout()));
         comboDispos.setItems(FXCollections.observableArrayList(sd.getDisposLibres()));
+
+        try {
+            int userId = UserSession.getInstance().getId();
+
+            Connection cnx = DataSource.getInstance().getConnection();
+
+            String sql = "SELECT nom, prenom FROM user WHERE id = ?";
+            PreparedStatement ps = cnx.prepareStatement(sql);
+            ps.setInt(1, userId);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+
+                String nom = rs.getString("nom");
+                String prenom = rs.getString("prenom");
+
+                // ✔ AFFICHAGE PROPRE SUR UNE LIGNE
+                welcomeLabel.setText("Bienvenue " + nom + " " + prenom);
+            }
+
+        } catch (Exception e) {
+            System.out.println("❌ Erreur user: " + e.getMessage());
+        }
     }
 
+    // =====================================================
+    // AJOUT RDV
+    // =====================================================
     @FXML
-    void validerRendezVous() {
+    public void validerRendezVous() {
 
-        if (txtNom.getText().isEmpty()
-                || txtPrenom.getText().isEmpty()
-                || txtAge.getText().isEmpty()
-                || txtAdresse.getText().isEmpty()) {
-
+        if (txtAge.getText().isEmpty() || txtAdresse.getText().isEmpty()) {
             showMessage("Champs obligatoires", "red");
             return;
         }
@@ -43,7 +80,7 @@ public class RendezVousController {
         int age;
         try {
             age = Integer.parseInt(txtAge.getText());
-        } catch (NumberFormatException e) {
+        } catch (Exception e) {
             showMessage("Âge invalide", "red");
             return;
         }
@@ -56,13 +93,14 @@ public class RendezVousController {
             return;
         }
 
+        int userId = UserSession.getInstance().getId();
+
         RendezVous r = new RendezVous(
-                txtNom.getText().trim(),
-                txtPrenom.getText().trim(),
                 age,
                 txtAdresse.getText().trim(),
                 type.getId(),
-                dispo.getId()
+                dispo.getId(),
+                userId
         );
 
         if (srv.ajouter(r)) {
@@ -73,19 +111,49 @@ public class RendezVousController {
 
             clearFields();
 
+            comboDispos.setItems(
+                    FXCollections.observableArrayList(sd.getDisposLibres())
+            );
+
         } else {
             showMessage("Erreur lors de l'ajout", "red");
         }
     }
 
+    // =====================================================
+    // RETOUR DASHBOARD
+    // =====================================================
+    @FXML
+    public void returnToDashboard() {
+
+        try {
+            Parent root = FXMLLoader.load(
+                    getClass().getResource("/patient_dashboard.fxml")
+            );
+
+            BorderPane mainContainer =
+                    (BorderPane) txtAge.getScene().lookup("#mainContainer");
+
+            if (mainContainer != null) {
+                mainContainer.setCenter(root);
+            } else {
+                txtAge.getScene().setRoot(root);
+            }
+
+        } catch (IOException e) {
+            System.out.println("❌ Erreur retour dashboard: " + e.getMessage());
+        }
+    }
+
+    // =====================================================
+    // UI
+    // =====================================================
     private void showMessage(String msg, String color) {
         errorGlobal.setText(msg);
         errorGlobal.setStyle("-fx-text-fill: " + color + ";");
     }
 
     private void clearFields() {
-        txtNom.clear();
-        txtPrenom.clear();
         txtAge.clear();
         txtAdresse.clear();
         comboTypes.getSelectionModel().clearSelection();

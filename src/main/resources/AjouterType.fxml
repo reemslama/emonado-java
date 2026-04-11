@@ -9,7 +9,9 @@
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="org.example.controllers.AjouterTypeController"
       stylesheets="@/styles/style.css">
-
+    <HBox alignment="CENTER_LEFT">
+        <Button text="← Retour" onAction="#returnToDashboard" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-font-weight: bold; -fx-cursor: hand;"/>
+    </HBox>
     <padding>
         <Insets bottom="30.0" left="30.0" right="30.0" top="30.0"/>
     </padding>
@@ -29,4 +31,5 @@
     <Button text="Enregistrer"
             onAction="#ajouterType"
             prefWidth="120.0"/>
+
 </VBox>

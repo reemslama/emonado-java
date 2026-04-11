@@ -1,7 +1,7 @@
 package services;
 
 import entities.TypeRendezVous;
-import org.example.utils.MyDatabase;
+import org.example.utils.DataSource;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import java.util.List;
 
 public class ServiceTypeRendezVous {
 
-    Connection cnx = MyDatabase.getInstance().getConnection();
+    Connection cnx = DataSource.getInstance().getConnection();
 
     public boolean ajouter(TypeRendezVous t) {
 
