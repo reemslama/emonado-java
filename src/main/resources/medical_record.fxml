@@ -79,9 +79,21 @@
                 <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15;">
                     <Label text="Historique Medical" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #f0ad00;"/>
                     <TextArea fx:id="medicalHistoryArea" wrapText="true" prefRowCount="4"
-                              promptText="Ajoutez vos antecedents, allergies, traitements ou autres informations medicales..."/>
+                              promptText="Ajoutez vos allergies, traitements ou autres informations medicales..."/>
                     <Button text="Modifier l'historique medical" onAction="#handleSaveMedicalHistory"
                             style="-fx-background-color: #f0ad00; -fx-text-fill: #1b1b1b; -fx-background-radius: 6;"/>
+                </VBox>
+
+                <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15;">
+                    <Label text="Antecedents Medicaux" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #dc3545;"/>
+                    <TextField fx:id="antecedentTypeField" promptText="Type d'antecedent (ex: Allergie, Operation, Diabete)"/>
+                    <TextArea fx:id="antecedentDescriptionArea" wrapText="true" prefRowCount="3"
+                              promptText="Description de l'antecedent medical..."/>
+                    <DatePicker fx:id="antecedentDatePicker"/>
+                    <Button text="Ajouter l'antecedent medical" onAction="#handleAddAntecedent"
+                            style="-fx-background-color: #dc3545; -fx-text-fill: white; -fx-background-radius: 6;"/>
+                    <Label text="Liste des antecedents"/>
+                    <ListView fx:id="antecedentsListView" prefHeight="160"/>
                 </VBox>
 
                 <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15;">

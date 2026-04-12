@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.example.controller.PatientDashboardController"
@@ -12,28 +16,31 @@
             <Region HBox.hgrow="ALWAYS"/>
             <Button text="Mon profil" onAction="#goToProfil"
                     style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand;"/>
+            <Button text="Journaux" onAction="#goToJournaux"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand;"/>
             <Button text="Mes consultations" onAction="#goToConsultations"
                     style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand;"/>
             <Button text="Mon dossier medical" onAction="#goToMedicalRecord"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand;"/>
+            <Button text="Test" onAction="#goToTest"
                     style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand;"/>
             <Button text="Deconnexion" onAction="#handleLogout"
                     style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand;"/>
         </HBox>
     </top>
 
-<<<<<<< HEAD
     <center>
         <VBox alignment="CENTER" spacing="28" style="-fx-padding: 50;">
             <Label fx:id="welcomeLabel" text="Bienvenue"
                    style="-fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #233142;"/>
 
-            <Label text="Accedez a votre profil et a votre dossier medical depuis cet espace patient."
+            <Label text="Accedez a votre profil, vos journaux, vos consultations et votre dossier medical depuis cet espace patient."
                    wrapText="true"
-                   style="-fx-font-size: 16px; -fx-text-fill: #4c6272; -fx-max-width: 520; -fx-alignment: center;"/>
+                   style="-fx-font-size: 16px; -fx-text-fill: #4c6272; -fx-max-width: 700; -fx-alignment: center;"/>
 
-            <HBox alignment="CENTER" spacing="24">
+            <HBox alignment="CENTER" spacing="20">
                 <VBox onMouseClicked="#goToProfil" spacing="12" alignment="CENTER"
-                      prefWidth="220" prefHeight="180"
+                      prefWidth="180" prefHeight="170"
                       style="-fx-background-color: white; -fx-background-radius: 24; -fx-cursor: hand; -fx-padding: 25; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 18, 0, 0, 6);">
                     <Label text="Profil" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #198754;"/>
                     <Label text="Consulter et modifier vos informations personnelles."
@@ -41,20 +48,38 @@
                            style="-fx-font-size: 14px; -fx-text-fill: #5f6c7b;"/>
                 </VBox>
 
-                <VBox onMouseClicked="#goToMedicalRecord" spacing="12" alignment="CENTER"
-                      prefWidth="220" prefHeight="180"
+                <VBox onMouseClicked="#goToJournaux" spacing="12" alignment="CENTER"
+                      prefWidth="180" prefHeight="170"
                       style="-fx-background-color: white; -fx-background-radius: 24; -fx-cursor: hand; -fx-padding: 25; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 18, 0, 0, 6);">
-                    <Label text="Dossier medical" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #0d6efd;"/>
-                    <Label text="Ajouter des rappels, l'historique medical et vos consultations."
+                    <Label text="Journaux" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #0d6efd;"/>
+                    <Label text="Ajouter et suivre vos journaux emotionnels."
+                           wrapText="true" textAlignment="CENTER"
+                           style="-fx-font-size: 14px; -fx-text-fill: #5f6c7b;"/>
+                </VBox>
+
+                <VBox onMouseClicked="#goToMedicalRecord" spacing="12" alignment="CENTER"
+                      prefWidth="180" prefHeight="170"
+                      style="-fx-background-color: white; -fx-background-radius: 24; -fx-cursor: hand; -fx-padding: 25; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 18, 0, 0, 6);">
+                    <Label text="Dossier" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #f59e0b;"/>
+                    <Label text="Gerer vos informations medicales et antecedents."
                            wrapText="true" textAlignment="CENTER"
                            style="-fx-font-size: 14px; -fx-text-fill: #5f6c7b;"/>
                 </VBox>
 
                 <VBox onMouseClicked="#goToConsultations" spacing="12" alignment="CENTER"
-                      prefWidth="220" prefHeight="180"
+                      prefWidth="180" prefHeight="170"
                       style="-fx-background-color: white; -fx-background-radius: 24; -fx-cursor: hand; -fx-padding: 25; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 18, 0, 0, 6);">
                     <Label text="Consultations" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #198754;"/>
                     <Label text="Ajouter une consultation et consulter l'historique detaille."
+                           wrapText="true" textAlignment="CENTER"
+                           style="-fx-font-size: 14px; -fx-text-fill: #5f6c7b;"/>
+                </VBox>
+
+                <VBox onMouseClicked="#goToTest" spacing="12" alignment="CENTER"
+                      prefWidth="180" prefHeight="170"
+                      style="-fx-background-color: white; -fx-background-radius: 24; -fx-cursor: hand; -fx-padding: 25; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 18, 0, 0, 6);">
+                    <Label text="Test" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #8b5cf6;"/>
+                    <Label text="Passer les questionnaires de sante mentale."
                            wrapText="true" textAlignment="CENTER"
                            style="-fx-font-size: 14px; -fx-text-fill: #5f6c7b;"/>
                 </VBox>
@@ -62,26 +87,3 @@
         </VBox>
     </center>
 </BorderPane>
-=======
-    <HBox spacing="20" alignment="CENTER">
-        <VBox styleClass="icon-box-patient" onMouseClicked="#goToProfil" prefWidth="150" prefHeight="150" alignment="CENTER"
-              style="-fx-background-color: white; -fx-background-radius: 25; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
-            <Label text="Profil" style="-fx-font-size: 30px; -fx-text-fill: #7cb342; -fx-font-weight: bold;"/>
-            <Label text="Mon Profil" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
-        </VBox>
-
-        <VBox styleClass="icon-box-patient" onMouseClicked="#goToTest" prefWidth="150" prefHeight="150" alignment="CENTER"
-              style="-fx-background-color: white; -fx-background-radius: 25; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
-            <Label text="Test" style="-fx-font-size: 30px; -fx-text-fill: #7cb342; -fx-font-weight: bold;"/>
-            <Label text="Questionnaire" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
-        </VBox>
-
-        <VBox styleClass="icon-box-patient" onMouseClicked="#goToJournaux" prefWidth="150" prefHeight="150" alignment="CENTER"
-              style="-fx-background-color: white; -fx-background-radius: 25; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
-            <Label text="Journal" style="-fx-font-size: 30px; -fx-text-fill: #7cb342; -fx-font-weight: bold;"/>
-            <Label text="Mes Journaux" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
-        </VBox>
-    </HBox>
-
-</VBox>
->>>>>>> d0613d39f294842365d8edf17cb7726a89df6e44

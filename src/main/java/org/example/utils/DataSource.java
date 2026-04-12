@@ -6,13 +6,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DataSource {
-<<<<<<< HEAD
 
     private static final String DB_NAME = "emonado";
-
-    /**
-     * Paramètres recommandés pour XAMPP / MySQL 8 en local (évite erreurs SSL, timezone, clé publique).
-     */
     private static final String JDBC_PARAMS =
             "useSSL=false"
                     + "&allowPublicKeyRetrieval=true"
@@ -35,13 +30,6 @@ public class DataSource {
     public static String getLastConnectionError() {
         return lastConnectionError;
     }
-=======
-    private final String url = "jdbc:mysql://127.0.0.1:3306/emonado_java";
-    private final String user = "root";
-    private final String password = "";
-    private Connection connection;
-    public static DataSource instance;
->>>>>>> d0613d39f294842365d8edf17cb7726a89df6e44
 
     private DataSource() {
         this.urlWithDb = "jdbc:mysql://" + host + ":" + port + "/" + DB_NAME + "?" + JDBC_PARAMS;
@@ -49,10 +37,9 @@ public class DataSource {
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-<<<<<<< HEAD
             connection = openConnectionWithAutoCreateDb();
             lastConnectionError = null;
-            System.out.println("Connexion a la base '" + DB_NAME + "' reussie !");
+            System.out.println("Connexion a la base '" + DB_NAME + "' reussie.");
         } catch (ClassNotFoundException e) {
             lastConnectionError = "Driver MySQL introuvable : " + e.getMessage();
             System.err.println(lastConnectionError);
@@ -62,9 +49,6 @@ public class DataSource {
         }
     }
 
-    /**
-     * Ouvre une connexion ; si la base n'existe pas, tente de la créer puis reconnecte.
-     */
     private Connection openConnectionWithAutoCreateDb() throws SQLException {
         Connection c;
         try {
@@ -82,9 +66,6 @@ public class DataSource {
         return c;
     }
 
-    /**
-     * Schéma minimal attendu par l'application (inscription / connexion / profils).
-     */
     private void ensureUserTableExists(Connection c) {
         String sql = "CREATE TABLE IF NOT EXISTS `user` ("
                 + "id INT PRIMARY KEY AUTO_INCREMENT, "
@@ -109,19 +90,10 @@ public class DataSource {
     private void createDatabaseIfMissing() {
         try (Connection c = DriverManager.getConnection(urlNoDb, user, password);
              Statement st = c.createStatement()) {
-            st.executeUpdate(
-                    "CREATE DATABASE IF NOT EXISTS `" + DB_NAME + "` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-            System.out.println("Base '" + DB_NAME + "' creee (ou deja presente).");
+            st.executeUpdate("CREATE DATABASE IF NOT EXISTS `" + DB_NAME
+                    + "` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
         } catch (SQLException e) {
             System.err.println("Impossible de creer la base '" + DB_NAME + "' : " + e.getMessage());
-=======
-            connection = DriverManager.getConnection(url, user, password);
-            System.out.println("Connexion a la base emonado_java reussie.");
-        } catch (ClassNotFoundException e) {
-            System.err.println("Driver MySQL non trouve : " + e.getMessage());
-        } catch (SQLException e) {
-            System.err.println("Erreur de connexion a MySQL : " + e.getMessage());
->>>>>>> d0613d39f294842365d8edf17cb7726a89df6e44
         }
     }
 
@@ -139,13 +111,9 @@ public class DataSource {
                 lastConnectionError = null;
             }
         } catch (SQLException e) {
-<<<<<<< HEAD
             lastConnectionError = e.getMessage();
             System.err.println("Erreur lors de la recuperation de la connexion : " + lastConnectionError);
             connection = null;
-=======
-            System.err.println("Erreur lors de la recuperation de la connexion : " + e.getMessage());
->>>>>>> d0613d39f294842365d8edf17cb7726a89df6e44
         }
         return connection;
     }

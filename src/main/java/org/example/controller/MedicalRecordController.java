@@ -6,8 +6,10 @@ import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import org.example.entities.AntecedentMedical;
 import org.example.entities.User;
 import org.example.service.UserService;
 import org.example.utils.DataSource;
@@ -19,8 +21,11 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MedicalRecordController {
 
@@ -38,6 +43,10 @@ public class MedicalRecordController {
 
     @FXML private TextArea reminderArea;
     @FXML private TextArea medicalHistoryArea;
+    @FXML private TextField antecedentTypeField;
+    @FXML private TextArea antecedentDescriptionArea;
+    @FXML private DatePicker antecedentDatePicker;
+    @FXML private ListView<String> antecedentsListView;
     private User currentUser;
 
     @FXML
@@ -55,6 +64,7 @@ public class MedicalRecordController {
         fillPersonalInfo();
         ensureTables();
         loadMedicalRecord();
+        loadAntecedents();
         loadConsultationStats();
     }
 
@@ -76,6 +86,51 @@ public class MedicalRecordController {
         String reminderText = reminderArea.getText() == null ? "" : reminderArea.getText().trim();
         String historyText = medicalHistoryArea.getText() == null ? "" : medicalHistoryArea.getText().trim();
         saveOrUpdateMedicalRecord(reminderText, historyText);
+    }
+
+    @FXML
+    private void handleAddAntecedent() {
+        if (currentUser == null) {
+            return;
+        }
+
+        String type = antecedentTypeField.getText() == null ? "" : antecedentTypeField.getText().trim();
+        String description = antecedentDescriptionArea.getText() == null ? "" : antecedentDescriptionArea.getText().trim();
+        LocalDate dateDiagnostic = antecedentDatePicker.getValue();
+
+        if (type.isBlank()) {
+            showError("Veuillez saisir le type de l'antecedent medical.");
+            return;
+        }
+        if (description.length() < 5) {
+            showError("Veuillez saisir une description plus precise pour l'antecedent.");
+            return;
+        }
+
+        int dossierMedicalId = ensureMedicalRecordExists();
+        if (dossierMedicalId <= 0) {
+            showError("Impossible de rattacher l'antecedent au dossier medical.");
+            return;
+        }
+
+        String query = "INSERT INTO antecedent_medical (dossier_medical_id, type, description, date_diagnostic) VALUES (?, ?, ?, ?)";
+        try (Connection conn = DataSource.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, dossierMedicalId);
+            pstmt.setString(2, type);
+            pstmt.setString(3, description);
+            pstmt.setDate(4, dateDiagnostic != null ? Date.valueOf(dateDiagnostic) : null);
+            pstmt.executeUpdate();
+
+            antecedentTypeField.clear();
+            antecedentDescriptionArea.clear();
+            antecedentDatePicker.setValue(null);
+            loadAntecedents();
+            showInfo("Antecedent medical ajoute avec succes.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showError("Erreur lors de l'ajout de l'antecedent medical.");
+        }
     }
 
     @FXML
@@ -199,6 +254,106 @@ public class MedicalRecordController {
             e.printStackTrace();
             showError("Erreur lors de l'enregistrement du dossier medical.");
         }
+    }
+
+    private void loadAntecedents() {
+        if (antecedentsListView == null) {
+            return;
+        }
+
+        antecedentsListView.getItems().clear();
+        List<AntecedentMedical> antecedents = findAntecedents();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        if (antecedents.isEmpty()) {
+            antecedentsListView.getItems().add("Aucun antecedent medical enregistre.");
+            return;
+        }
+
+        for (AntecedentMedical antecedent : antecedents) {
+            String datePart = antecedent.getDateDiagnostic() == null
+                    ? "Date non precisee"
+                    : antecedent.getDateDiagnostic().format(formatter);
+            antecedentsListView.getItems().add(
+                    antecedent.getType() + " | " + datePart + System.lineSeparator() + antecedent.getDescription()
+            );
+        }
+    }
+
+    private List<AntecedentMedical> findAntecedents() {
+        List<AntecedentMedical> antecedents = new ArrayList<>();
+        int dossierMedicalId = findMedicalRecordId();
+        if (dossierMedicalId <= 0) {
+            return antecedents;
+        }
+
+        String query = "SELECT id, type, description, date_diagnostic FROM antecedent_medical " +
+                "WHERE dossier_medical_id = ? ORDER BY date_diagnostic DESC, id DESC";
+        try (Connection conn = DataSource.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, dossierMedicalId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    AntecedentMedical antecedent = new AntecedentMedical();
+                    antecedent.setId(rs.getInt("id"));
+                    antecedent.setDossierMedicalId(dossierMedicalId);
+                    antecedent.setType(rs.getString("type"));
+                    antecedent.setDescription(rs.getString("description"));
+                    Date dateDiagnostic = rs.getDate("date_diagnostic");
+                    if (dateDiagnostic != null) {
+                        antecedent.setDateDiagnostic(dateDiagnostic.toLocalDate());
+                    }
+                    antecedents.add(antecedent);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showError("Impossible de charger les antecedents medicaux.");
+        }
+        return antecedents;
+    }
+
+    private int ensureMedicalRecordExists() {
+        int existingId = findMedicalRecordId();
+        if (existingId > 0) {
+            return existingId;
+        }
+
+        String query = "INSERT INTO patient_medical_record (patient_id, reminder_text, medical_history) VALUES (?, '', '')";
+        try (Connection conn = DataSource.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setInt(1, currentUser.getId());
+            pstmt.executeUpdate();
+
+            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    int dossierId = generatedKeys.getInt(1);
+                    dossierCreationLabel.setText(LocalDate.now().toString());
+                    return dossierId;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showError("Impossible de creer le dossier medical.");
+        }
+        return findMedicalRecordId();
+    }
+
+    private int findMedicalRecordId() {
+        String query = "SELECT id FROM patient_medical_record WHERE patient_id = ?";
+        try (Connection conn = DataSource.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, currentUser.getId());
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("id");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showError("Impossible d'identifier le dossier medical.");
+        }
+        return -1;
     }
 
     private void loadConsultationStats() {
