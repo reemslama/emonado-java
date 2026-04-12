@@ -23,7 +23,6 @@ public class ResultatController {
         lblCategorie.setText("Catégorie : " + categorie.toUpperCase());
         lblScore.setText(score + " / " + scoreMax);
 
-        // Interprétation selon catégorie
         String[] resultat = interpreter(score, scoreMax, categorie);
         lblNiveau.setText(resultat[0]);
         lblNiveau.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: " + resultat[1] + ";");
@@ -81,6 +80,15 @@ public class ResultatController {
         }
     }
 
+    private void naviguerVers(Parent root) {
+        Stage stage = (Stage) lblScore.getScene().getWindow();
+        Scene scene = new Scene(root, stage.getWidth(), stage.getHeight());
+        stage.setScene(scene);
+        stage.setMaximized(true);
+        stage.setFullScreen(true);
+        stage.setFullScreenExitHint("");
+    }
+
     @FXML
     private void refaire() {
         try {
@@ -90,9 +98,7 @@ public class ResultatController {
             Parent root = loader.load();
             PasserTestController controller = loader.getController();
             controller.setCategorie(categorie);
-
-            Stage stage = (Stage) lblScore.getScene().getWindow();
-            stage.setScene(new Scene(root, 800, 600));
+            naviguerVers(root);
         } catch (Exception e) {
             System.out.println("Erreur : " + e.getMessage());
         }
@@ -105,8 +111,7 @@ public class ResultatController {
                     getClass().getResource("/fxml/test/ChoixCategorie.fxml")
             );
             Parent root = loader.load();
-            Stage stage = (Stage) lblScore.getScene().getWindow();
-            stage.setScene(new Scene(root, 800, 600));
+            naviguerVers(root);
         } catch (Exception e) {
             System.out.println("Erreur : " + e.getMessage());
         }

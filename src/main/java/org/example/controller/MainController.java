@@ -14,19 +14,38 @@ public class MainController {
     private BorderPane mainContainer;
 
     @FXML
+    private void goToHome(ActionEvent event) {
+        try {
+            Parent root = FXMLLoader.load(
+                    Objects.requireNonNull(getClass().getResource("/main.fxml"))
+            );
+            mainContainer.getScene().setRoot(root);
+        } catch (IOException e) {
+            System.err.println("Erreur retour accueil : " + e.getMessage());
+        }
+    }
+
+    @FXML
     private void goToRegister(ActionEvent event) {
         try {
-            // Charge le formulaire d'inscription dans le centre de la vue actuelle
-            Parent registerView = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/register.fxml")));
+            Parent registerView = FXMLLoader.load(
+                    Objects.requireNonNull(getClass().getResource("/register.fxml"))
+            );
             mainContainer.setCenter(registerView);
         } catch (IOException e) {
-            System.err.println("Erreur de chargement register.fxml : " + e.getMessage());
             e.printStackTrace();
         }
     }
+
     @FXML
-    private void goToLogin() throws Exception {
-        Parent loginView = FXMLLoader.load(getClass().getResource("/login.fxml"));
-        mainContainer.setCenter(loginView);
+    private void goToLogin() {
+        try {
+            Parent loginView = FXMLLoader.load(
+                    Objects.requireNonNull(getClass().getResource("/login.fxml"))
+            );
+            mainContainer.setCenter(loginView);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -8,39 +8,44 @@
 <ScrollPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.example.controllers.test.PasserTestController"
             fitToWidth="true"
-            style="-fx-background-color: rgba(221, 245, 131, 0.27);">
+            fitToHeight="true"
+            maxWidth="Infinity"
+            maxHeight="Infinity"
+            style="-fx-background-color: rgba(221, 245, 131, 0.27); -fx-background: rgba(221, 245, 131, 0.27);">
 
-    <VBox spacing="8"
-          style="-fx-background-color: rgba(221, 245, 131, 0.27); -fx-padding: 30;">
+    <VBox spacing="15"
+          maxWidth="Infinity"
+          maxHeight="Infinity"
+          style="-fx-background-color: rgba(221, 245, 131, 0.27); -fx-padding: 50 100 50 100;">
 
         <!-- TITRE -->
         <Label fx:id="lblTitre"
                text="Test"
-               style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+               style="-fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
 
         <!-- PROGRESSION -->
         <HBox spacing="10" alignment="CENTER_LEFT">
             <Label fx:id="lblProgression"
                    text="Question 1 / 5"
-                   style="-fx-font-size: 14px; -fx-text-fill: #7f8c8d;"/>
+                   style="-fx-font-size: 15px; -fx-text-fill: #7f8c8d;"/>
         </HBox>
 
         <!-- BARRE DE PROGRESSION -->
         <ProgressBar fx:id="progressBar"
-                     prefWidth="700"
-                     prefHeight="12"
+                     maxWidth="Infinity"
+                     prefHeight="14"
                      progress="0"
                      style="-fx-accent: #7cb342;"/>
 
         <!-- SEPARATEUR -->
-        <Separator style="-fx-padding: 3 0 3 0;"/>
+        <Separator style="-fx-padding: 5 0 5 0;"/>
 
         <!-- QUESTION -->
         <Label fx:id="lblQuestion"
                text=""
                wrapText="true"
-               maxWidth="700"
-               style="-fx-font-size: 17px; -fx-text-fill: #2c3e50; -fx-padding: 5 0 5 0; -fx-font-weight: bold;"/>
+               maxWidth="Infinity"
+               style="-fx-font-size: 19px; -fx-text-fill: #2c3e50; -fx-padding: 5 0 5 0; -fx-font-weight: bold;"/>
 
         <!-- IMAGE -->
         <HBox fx:id="hboxImage"
@@ -48,37 +53,41 @@
               visible="false"
               managed="false">
             <ImageView fx:id="imageView"
-                       fitWidth="450"
-                       fitHeight="280"
+                       fitWidth="550"
+                       fitHeight="350"
                        preserveRatio="true"
                        style="-fx-effect: dropshadow(gaussian, #aaaaaa, 10, 0, 0, 3);"/>
         </HBox>
 
         <!-- REPONSES -->
         <VBox fx:id="vboxReponses"
-              spacing="8"
+              spacing="12"
+              maxWidth="Infinity"
               style="-fx-padding: 0;"/>
 
         <!-- ERREUR -->
         <Label fx:id="lblErreur"
                text=""
-               style="-fx-text-fill: #e74c3c; -fx-font-size: 13px;"/>
+               style="-fx-text-fill: #e74c3c; -fx-font-size: 14px;"/>
+
+        <!-- SPACER pour pousser les boutons vers le bas -->
+        <Region VBox.vgrow="ALWAYS"/>
 
         <!-- BOUTONS -->
         <HBox spacing="20"
               alignment="CENTER_RIGHT"
-              style="-fx-padding: 15 0 0 0;">
+              style="-fx-padding: 20 0 0 0;">
 
             <Button fx:id="btnRetour"
                     text="← Retour"
                     onAction="#retour"
                     visible="false"
-                    style="-fx-background-color: white; -fx-text-fill: #2c3e50; -fx-font-size: 14px; -fx-pref-width: 130; -fx-pref-height: 45; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 3);"/>
+                    style="-fx-background-color: white; -fx-text-fill: #2c3e50; -fx-font-size: 15px; -fx-pref-width: 150; -fx-pref-height: 50; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 3);"/>
 
             <Button fx:id="btnSuivant"
                     text="Suivant →"
                     onAction="#suivant"
-                    style="-fx-background-color: #7cb342; -fx-text-fill: white; -fx-font-size: 14px; -fx-pref-width: 130; -fx-pref-height: 45; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 3);"/>
+                    style="-fx-background-color: #7cb342; -fx-text-fill: white; -fx-font-size: 15px; -fx-pref-width: 150; -fx-pref-height: 50; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 3);"/>
 
         </HBox>
 

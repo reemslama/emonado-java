@@ -7,7 +7,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.control.*;
 import org.example.entities.User;
 import java.io.IOException;
-import java.net.URL;
 
 public class AdminDashboardController {
 
@@ -27,7 +26,9 @@ public class AdminDashboardController {
     @FXML
     private void showHome() {
         headerTitle.setText("Dashboard");
-        contentArea.getChildren().setAll(new Label("Bienvenue dans le panneau d'administration"));
+        contentArea.getChildren().setAll(
+                new Label("Bienvenue dans le panneau d'administration")
+        );
     }
 
     @FXML
@@ -44,22 +45,9 @@ public class AdminDashboardController {
     private void showQuestionsReponses() {
         try {
             headerTitle.setText("Questions / Réponses");
-
-            // On essaie les deux syntaxes car Maven interprète parfois le point comme un slash
-            URL fxmlLocation = getClass().getResource("/fxml.test/QuestionsReponses.fxml");
-            if (fxmlLocation == null) {
-                fxmlLocation = getClass().getResource("/fxml/test/QuestionsReponses.fxml");
-            }
-
-            if (fxmlLocation == null) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Erreur de chemin");
-                alert.setContentText("Le fichier est introuvable dans resources/fxml.test/");
-                alert.showAndWait();
-                return;
-            }
-
-            FXMLLoader loader = new FXMLLoader(fxmlLocation);
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/fxml/test/QuestionsReponses.fxml")
+            );
             Parent view = loader.load();
             contentArea.getChildren().setAll(view);
         } catch (IOException e) {
@@ -70,10 +58,14 @@ public class AdminDashboardController {
     private void loadTable(String role, String title) {
         try {
             headerTitle.setText(title);
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/admin_users_table.fxml"));
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/admin_users_table.fxml")
+            );
             Parent tableRoot = loader.load();
+
             AdminTableController controller = loader.getController();
             controller.loadData(role);
+
             contentArea.getChildren().setAll(tableRoot);
         } catch (IOException e) {
             e.printStackTrace();

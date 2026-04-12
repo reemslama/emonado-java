@@ -12,7 +12,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.example.entities.Question;
 import org.example.entities.Reponse;
-import org.example.services.QuestionService;
+import org.example.service.QuestionService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -62,7 +62,6 @@ public class PasserTestController {
         lblQuestion.setText((indexCourant + 1) + ". " + q.getTexte());
         lblErreur.setText("");
 
-        // Gérer l'image
         if ("image".equals(q.getTypeQuestion())) {
             String imagePath = imageMap.get(q.getOrdre());
             if (imagePath != null) {
@@ -82,7 +81,6 @@ public class PasserTestController {
             imageView.setImage(null);
         }
 
-        // Réponses
         vboxReponses.getChildren().clear();
         toggleGroup = new ToggleGroup();
 
@@ -153,8 +151,15 @@ public class PasserTestController {
             controller.setResultat(score, categorie, questions.size());
 
             Stage stage = (Stage) btnSuivant.getScene().getWindow();
-            stage.setScene(new Scene(root, 800, 600));
+
+            Scene scene = new Scene(root, stage.getWidth(), stage.getHeight());
+            stage.setScene(scene);
             stage.setTitle("Résultat");
+
+            stage.setMaximized(true);
+            stage.setFullScreen(true);
+            stage.setFullScreenExitHint("");
+
         } catch (Exception e) {
             System.out.println("Erreur navigation : " + e.getMessage());
         }

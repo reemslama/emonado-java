@@ -42,8 +42,11 @@ public class ChoixCategorieController {
             controller.setCategorie(categorie);
 
             Stage stage = (Stage) rootBox.getScene().getWindow();
-            stage.setScene(new Scene(root, 800, 600));
+            Scene scene = new Scene(root, stage.getWidth(), stage.getHeight());
+            stage.setScene(scene);
             stage.setTitle("Test - " + categorie);
+            stage.setMaximized(true);
+
         } catch (Exception e) {
             System.out.println("Erreur navigation : " + e.getMessage());
         }

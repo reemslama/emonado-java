@@ -51,8 +51,16 @@ public class PatientDashboardController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/test/ChoixCategorie.fxml"));
             Parent root = loader.load();
+
             Stage stage = (Stage) welcomeLabel.getScene().getWindow();
-            stage.setScene(new Scene(root, 800, 600));
+
+            Scene scene = new Scene(root, stage.getWidth(), stage.getHeight());
+            stage.setScene(scene);
+
+            stage.setMaximized(true);
+            stage.setFullScreen(true);
+            stage.setFullScreenExitHint("");
+
         } catch (IOException e) {
             e.printStackTrace();
         }

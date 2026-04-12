@@ -7,45 +7,52 @@
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.example.controllers.test.ResultatController"
       alignment="CENTER"
-      spacing="25"
-      style="-fx-background-color: #f0f4f8; -fx-padding: 60;">
+      spacing="30"
+      maxWidth="Infinity"
+      maxHeight="Infinity"
+      style="-fx-background-color: #f0f4f8; -fx-padding: 60 100 60 100;">
 
     <Label text="📊 Résultat du Test"
-           style="-fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+           style="-fx-font-size: 34px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
 
     <Label fx:id="lblCategorie"
            text=""
-           style="-fx-font-size: 16px; -fx-text-fill: #7f8c8d;"/>
+           style="-fx-font-size: 18px; -fx-text-fill: #7f8c8d;"/>
 
     <VBox alignment="CENTER"
-          style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 30; -fx-effect: dropshadow(gaussian, #cccccc, 10, 0, 0, 3);"
-          spacing="15">
+          maxWidth="700"
+          style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 40; -fx-effect: dropshadow(gaussian, #cccccc, 10, 0, 0, 3);"
+          spacing="20">
 
         <Label fx:id="lblScore"
                text=""
-               style="-fx-font-size: 48px; -fx-font-weight: bold; -fx-text-fill: #2980b9;"/>
+               style="-fx-font-size: 56px; -fx-font-weight: bold; -fx-text-fill: #2980b9;"/>
 
         <Label fx:id="lblNiveau"
                text=""
-               style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
+               style="-fx-font-size: 26px; -fx-font-weight: bold;"/>
 
         <Label fx:id="lblDescription"
                text=""
                wrapText="true"
                alignment="CENTER"
-               style="-fx-font-size: 14px; -fx-text-fill: #555; -fx-max-width: 500;"/>
+               maxWidth="Infinity"
+               style="-fx-font-size: 15px; -fx-text-fill: #555;"/>
 
     </VBox>
 
-    <HBox spacing="20" alignment="CENTER">
+    <!-- SPACER -->
+    <Region VBox.vgrow="ALWAYS"/>
+
+    <HBox spacing="25" alignment="CENTER">
 
         <Button text="🔄 Refaire le test"
                 onAction="#refaire"
-                style="-fx-background-color: #2980b9; -fx-text-fill: white; -fx-font-size: 14px; -fx-pref-width: 180; -fx-pref-height: 45; -fx-background-radius: 8;"/>
+                style="-fx-background-color: #2980b9; -fx-text-fill: white; -fx-font-size: 15px; -fx-pref-width: 200; -fx-pref-height: 50; -fx-background-radius: 8; -fx-cursor: hand;"/>
 
         <Button text="🏠 Accueil"
                 onAction="#accueil"
-                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-size: 14px; -fx-pref-width: 180; -fx-pref-height: 45; -fx-background-radius: 8;"/>
+                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-size: 15px; -fx-pref-width: 200; -fx-pref-height: 50; -fx-background-radius: 8; -fx-cursor: hand;"/>
 
     </HBox>
 
