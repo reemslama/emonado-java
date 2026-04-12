@@ -6,7 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import org.example.entities.User;
 import org.example.service.AuthService;
-import org.example.utils.UserSession; // Import ajouté
+import org.example.utils.UserSession;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
@@ -33,7 +33,6 @@ public class LoginController {
         String password = passwordField.getText();
         ToggleButton selectedRole = (ToggleButton) roleGroup.getSelectedToggle();
 
-        // --- CONTRÔLE DE SAISIE (Inchangé) ---
         if (email.isEmpty() || password.isEmpty()) {
             errorLabel.setText("Veuillez saisir votre email et mot de passe.");
             return;
@@ -43,7 +42,11 @@ public class LoginController {
             errorLabel.setText("Le format de l'email est incorrect.");
             return;
         }
-        // -------------------------------------
+
+        if (selectedRole == null) {
+            errorLabel.setText("Veuillez sélectionner un rôle.");
+            return;
+        }
 
         User user = AuthService.authenticate(email, password);
 
@@ -55,10 +58,7 @@ public class LoginController {
             };
 
             if (user.getRole().equalsIgnoreCase(roleAttendu)) {
-                // 1. ON REMPLIT LA SESSION STATIQUE (Crucial pour éviter le NULL plus tard)
                 UserSession.setInstance(user);
-
-                // 2. ON REDIRIGE
                 redirectUser(user);
             } else {
                 errorLabel.setText("Accès refusé : Ce compte n'a pas le rôle " + selectedRole.getText());
@@ -82,20 +82,16 @@ public class LoginController {
             Object controller = loader.getController();
 
             if (controller != null) {
-                // INJECTION DE L'USER SELON LE TYPE DE CONTROLEUR
                 if (controller instanceof PatientDashboardController patCtrl) {
                     patCtrl.setUserData(user);
-                }
-                else if (controller instanceof PsyDashboardController psyCtrl) {
-                    psyCtrl.setUserData(user); // Ajout pour le Psychologue
+                } else if (controller instanceof PsyDashboardController psyCtrl) {
+                    psyCtrl.setUserData(user);
                     System.out.println("Injection réussie pour le Psychologue !");
-                }
-                else if (controller instanceof AdminDashboardController adminCtrl) {
+                } else if (controller instanceof AdminDashboardController adminCtrl) {
                     adminCtrl.setUserData(user);
                 }
             }
 
-            // CHANGEMENT DE VUE
             emailField.getScene().setRoot(view);
 
         } catch (IOException e) {

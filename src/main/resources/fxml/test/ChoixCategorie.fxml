@@ -13,6 +13,13 @@
       maxHeight="Infinity"
       style="-fx-background-color: rgba(221, 245, 131, 0.27); -fx-padding: 60;">
 
+    <!-- BOUTON RETOUR -->
+    <VBox alignment="TOP_LEFT" maxWidth="Infinity">
+        <Button text="← Retour"
+                onAction="#retour"
+                style="-fx-background-color: transparent; -fx-text-fill: #2c3e50; -fx-font-size: 15px; -fx-cursor: hand; -fx-font-weight: bold; -fx-border-color: transparent;"/>
+    </VBox>
+
     <Label text="Test de Sante Mentale"
            style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
 
@@ -70,7 +77,5 @@
            alignment="CENTER"
            style="-fx-font-size: 13px; -fx-text-fill: #e74c3c; -fx-padding: 15 0 0 0;"
            maxWidth="600"/>
-
-    <VBox.vgrow>ALWAYS</VBox.vgrow>
 
 </VBox>
