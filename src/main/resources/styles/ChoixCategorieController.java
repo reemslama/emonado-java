@@ -1,4 +1,4 @@
-package org.example.controllers.test;
+package styles;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -33,7 +33,9 @@ public class ChoixCategorieController {
 
     private void ouvrirTest(String categorie) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/test/PasserTest.fxml"));
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/fxml/test/PasserTest.fxml")
+            );
             Parent root = loader.load();
 
             PasserTestController controller = loader.getController();
@@ -53,13 +55,15 @@ public class ChoixCategorieController {
     @FXML
     private void retour() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/patient_dashboard.fxml"));
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/patient_dashboard.fxml")
+            );
             Parent root = loader.load();
 
             Stage stage = (Stage) rootBox.getScene().getWindow();
             Scene scene = new Scene(root, stage.getWidth(), stage.getHeight());
             stage.setScene(scene);
-            stage.setTitle("Espace Patient");
+            stage.setTitle("EmoNado");
             stage.setMaximized(true);
 
         } catch (Exception e) {

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox alignment="CENTER" spacing="20.0"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.controllers.DisponibiliteController"
+      stylesheets="@/styles/style.css">
+    <HBox alignment="CENTER_LEFT">
+        <Button text="← Retour" onAction="#returnToDashboard" style="-fx-background-color: transparent; -fx-text-fill: #333; -fx-font-weight: bold; -fx-cursor: hand;"/>
+    </HBox>
+    <padding>
+        <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
+    </padding>
+
+    <Label text="Ajouter une Disponibilité"
+           style="-fx-font-size: 22px; -fx-font-weight: bold;" />
+
+    <VBox spacing="5.0">
+        <Label text="Sélectionner la date :" />
+        <DatePicker fx:id="datePicker" prefWidth="300.0" promptText="JJ/MM/AAAA" />
+        <Label fx:id="errorDate"/>
+    </VBox>
+
+    <HBox spacing="20.0" alignment="CENTER">
+
+        <VBox spacing="5.0">
+            <Label text="Heure Début :" />
+            <ComboBox fx:id="comboHeureDebut" prefWidth="140.0" promptText="HH:mm" />
+            <Label fx:id="errorHeureDebut"/>
+        </VBox>
+
+        <VBox spacing="5.0">
+            <Label text="Heure Fin :" />
+            <ComboBox fx:id="comboHeureFin" prefWidth="140.0" promptText="HH:mm" />
+            <Label fx:id="errorHeureFin"/>
+        </VBox>
+
+    </HBox>
+
+    <Label fx:id="msgSuccess"/>
+    <Label fx:id="errorGlobal"/>
+
+    <Button text="ENREGISTRER"
+            onAction="#enregistrer"
+            prefWidth="200.0"/>
+</VBox>

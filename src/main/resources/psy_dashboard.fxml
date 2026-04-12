@@ -8,10 +8,37 @@
 
     <Label fx:id="welcomeLabel" text="Bienvenue Dr." style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
 
-    <VBox styleClass="icon-box" onMouseClicked="#goToProfil" prefWidth="150" prefHeight="150" alignment="CENTER"
-          style="-fx-background-color: white; -fx-background-radius: 25; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
-        <Label text="👤" style="-fx-font-size: 60px;"/>
-        <Label text="Mon Profil" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
-    </VBox>
+    <FlowPane hgap="20" vgap="20" alignment="CENTER" prefWrapLength="600">
+
+        <VBox styleClass="icon-box" onMouseClicked="#goToProfil" prefWidth="170" prefHeight="150" alignment="CENTER"
+              style="-fx-background-color: white; -fx-background-radius: 25; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
+            <Label text="👤" style="-fx-font-size: 50px;"/>
+            <Label text="Mon Profil" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+        </VBox>
+
+        <VBox styleClass="icon-box" onMouseClicked="#goToAnalyses" prefWidth="170" prefHeight="150" alignment="CENTER"
+              style="-fx-background-color: linear-gradient(to bottom right, #ffffff, #e8f4ff); -fx-background-radius: 28; -fx-cursor: hand; -fx-border-color: #5b9bd5; -fx-border-radius: 28; -fx-border-width: 1.4; -fx-effect: dropshadow(three-pass-box, rgba(30,80,120,0.12), 18, 0, 0, 6);">
+            <Label text="Analyse" style="-fx-font-size: 22px; -fx-text-fill: #2e6da4; -fx-font-weight: bold;"/>
+            <Label text="Emotionnelle" style="-fx-font-size: 16px; -fx-text-fill: #3d5a73; -fx-font-weight: bold;"/>
+        </VBox>
+
+        <VBox styleClass="icon-box" onMouseClicked="#goToListeRendezVous" prefWidth="170" prefHeight="150" alignment="CENTER"
+              style="-fx-background-color: white; -fx-background-radius: 25; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
+            <Label text="📋" style="-fx-font-size: 50px;"/>
+            <Label text="Mes RDV" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+        </VBox>
+
+        <VBox styleClass="icon-box" onMouseClicked="#goToDisponibilites" prefWidth="170" prefHeight="150" alignment="CENTER"
+              style="-fx-background-color: white; -fx-background-radius: 25; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
+            <Label text="⏰" style="-fx-font-size: 50px;"/>
+            <Label text="Disponibilités" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+        </VBox>
+        <VBox styleClass="icon-box-patient" onMouseClicked="#goToTypeRdv" prefWidth="150" prefHeight="150" alignment="CENTER"
+              style="-fx-background-color: white; -fx-background-radius: 25; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
+            <Label text="⚙️" style="-fx-font-size: 40px;"/>
+            <Label text="Types RDV" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+        </VBox>
+
+    </FlowPane>
 
 </VBox>
