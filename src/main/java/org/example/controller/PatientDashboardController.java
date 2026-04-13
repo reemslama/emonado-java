@@ -5,11 +5,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import org.example.entities.User;
 import org.example.utils.UserSession;
-
-import java.io.IOException;
 
 public class PatientDashboardController {
 
@@ -35,22 +34,12 @@ public class PatientDashboardController {
 
     @FXML
     private void goToProfil() {
-        openView("/profil_patient.fxml");
-    }
-
-    @FXML
-    private void goToMedicalRecord() {
-        openView("/medical_record.fxml");
-    }
-
-    @FXML
-    private void goToConsultations() {
-        openView("/consultations.fxml");
+        loadView("/profil_patient.fxml", "Profil");
     }
 
     @FXML
     private void goToJournaux() {
-        openView("/journal.fxml");
+        loadView("/journal.fxml", "Journal");
     }
 
     @FXML
@@ -58,53 +47,65 @@ public class PatientDashboardController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/test/ChoixCategorie.fxml"));
             Parent root = loader.load();
+
             Stage stage = (Stage) welcomeLabel.getScene().getWindow();
-            stage.setScene(new Scene(root, 800, 600));
-            stage.setTitle("Espace Patient");
-        } catch (IOException e) {
+            Scene scene = new Scene(root, stage.getWidth(), stage.getHeight());
+            stage.setScene(scene);
+            stage.setMaximized(true);
+            stage.setFullScreen(true);
+            stage.setFullScreenExitHint("");
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @FXML
-    private void handleLogout() {
-        UserSession.setInstance(null);
-        openSimpleView("/login.fxml");
+    private void goToRendezVous() {
+        loadView("/AjouterRendezVous.fxml", "Rendez-vous");
     }
 
-    private void openView(String fxmlPath) {
+    @FXML
+    private void goToMedicalRecord() {
+        loadView("/medical_record.fxml", "Dossier Medical");
+    }
+
+    @FXML
+    private void goToConsultations() {
+        loadView("/consultations.fxml", "Consultations");
+    }
+
+    private void loadView(String fxmlPath, String viewName) {
         if (currentUser == null) {
-            System.err.println("Erreur: currentUser est NULL.");
+            System.err.println("Erreur: utilisateur introuvable pour " + viewName);
             return;
         }
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent view = loader.load();
+            injectUserData(loader.getController());
 
-            Object controller = loader.getController();
-            if (controller instanceof ProfilPatientController profilController) {
-                profilController.setUserData(currentUser);
-            } else if (controller instanceof MedicalRecordController medicalRecordController) {
-                medicalRecordController.setUserData(currentUser);
-            } else if (controller instanceof ConsultationController consultationController) {
-                consultationController.setUserData(currentUser);
-            } else if (controller instanceof JournalController journalController) {
-                journalController.setUserData(currentUser);
+            BorderPane mainContainer = (BorderPane) welcomeLabel.getScene().lookup("#mainContainer");
+            if (mainContainer != null) {
+                mainContainer.setCenter(view);
+            } else {
+                welcomeLabel.getScene().setRoot(view);
             }
-
-            welcomeLabel.getScene().setRoot(view);
-        } catch (IOException e) {
+        } catch (Exception e) {
+            System.err.println("Erreur lors du chargement de la vue " + viewName);
             e.printStackTrace();
         }
     }
 
-    private void openSimpleView(String fxmlPath) {
-        try {
-            Parent view = FXMLLoader.load(getClass().getResource(fxmlPath));
-            welcomeLabel.getScene().setRoot(view);
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void injectUserData(Object controller) {
+        if (controller instanceof ProfilPatientController profilPatientController) {
+            profilPatientController.setUserData(currentUser);
+        } else if (controller instanceof JournalController journalController) {
+            journalController.setUserData(currentUser);
+        } else if (controller instanceof MedicalRecordController medicalRecordController) {
+            medicalRecordController.setUserData(currentUser);
+        } else if (controller instanceof ConsultationController consultationController) {
+            consultationController.setUserData(currentUser);
         }
     }
 }

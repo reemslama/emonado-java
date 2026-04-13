@@ -22,6 +22,7 @@ public class PasserTestController {
 
     @FXML private Label lblTitre;
     @FXML private Label lblProgression;
+    @FXML private Label lblNumeroQ;
     @FXML private Label lblQuestion;
     @FXML private Label lblErreur;
     @FXML private ProgressBar progressBar;
@@ -37,13 +38,36 @@ public class PasserTestController {
     private String categorie;
     private ToggleGroup toggleGroup;
 
-    private QuestionService questionService = new QuestionService();
+    private final QuestionService questionService = new QuestionService();
 
-    private Map<Integer, String> imageMap = new HashMap<>() {{
+    private final Map<Integer, String> imageMap = new HashMap<>() {{
         put(10, "/images/depression/image1.jpg");
         put(11, "/images/depression/image2.jpg");
         put(12, "/images/depression/image3.jpg");
     }};
+
+    private static final String STYLE_NORMAL =
+            "-fx-background-color: #f5faea;" +
+                    "-fx-background-radius: 9;" +
+                    "-fx-border-color: #c2dc98;" +
+                    "-fx-border-radius: 9;" +
+                    "-fx-border-width: 1.2;" +
+                    "-fx-padding: 11 15 11 15;" +
+                    "-fx-font-size: 13px;" +
+                    "-fx-text-fill: #253320;" +
+                    "-fx-cursor: hand;";
+
+    private static final String STYLE_SELECTED =
+            "-fx-background-color: #33502a;" +
+                    "-fx-background-radius: 9;" +
+                    "-fx-border-color: #33502a;" +
+                    "-fx-border-radius: 9;" +
+                    "-fx-border-width: 1.2;" +
+                    "-fx-padding: 11 15 11 15;" +
+                    "-fx-font-size: 13px;" +
+                    "-fx-text-fill: white;" +
+                    "-fx-font-weight: bold;" +
+                    "-fx-cursor: hand;";
 
     public void setCategorie(String categorie) {
         this.categorie = categorie;
@@ -58,16 +82,18 @@ public class PasserTestController {
         Question q = questions.get(indexCourant);
 
         lblProgression.setText("Question " + (indexCourant + 1) + " / " + questions.size());
-        progressBar.setProgress((double) indexCourant / questions.size());
+        progressBar.setProgress((double) (indexCourant + 1) / questions.size());
         lblQuestion.setText((indexCourant + 1) + ". " + q.getTexte());
         lblErreur.setText("");
+
+        if (lblNumeroQ != null)
+            lblNumeroQ.setText("QUESTION " + String.format("%02d", indexCourant + 1));
 
         if ("image".equals(q.getTypeQuestion())) {
             String imagePath = imageMap.get(q.getOrdre());
             if (imagePath != null) {
                 try {
-                    Image image = new Image(getClass().getResourceAsStream(imagePath));
-                    imageView.setImage(image);
+                    imageView.setImage(new Image(getClass().getResourceAsStream(imagePath)));
                     hboxImage.setVisible(true);
                     hboxImage.setManaged(true);
                 } catch (Exception e) {
@@ -88,35 +114,42 @@ public class PasserTestController {
             RadioButton rb = new RadioButton(r.getTexte());
             rb.setToggleGroup(toggleGroup);
             rb.setUserData(r.getValeur());
-            rb.setStyle("-fx-font-size: 15px; -fx-padding: 6;");
+            rb.setMaxWidth(Double.MAX_VALUE);
 
-            if (reponses.containsKey(q.getId()) &&
-                    reponses.get(q.getId()) == r.getValeur()) {
-                rb.setSelected(true);
-            }
+            boolean isSelected = reponses.containsKey(q.getId())
+                    && reponses.get(q.getId()) == r.getValeur();
+            rb.setStyle(isSelected ? STYLE_SELECTED : STYLE_NORMAL);
+            if (isSelected) rb.setSelected(true);
+
+            rb.selectedProperty().addListener((obs, was, now) -> {
+                if (now) {
+                    vboxReponses.getChildren().forEach(node -> {
+                        if (node instanceof RadioButton)
+                            ((RadioButton) node).setStyle(STYLE_NORMAL);
+                    });
+                    rb.setStyle(STYLE_SELECTED);
+                }
+            });
 
             vboxReponses.getChildren().add(rb);
         }
 
-        btnRetour.setVisible(indexCourant > 0);
+        // Retour : gérer visible ET managed ensemble
+        boolean showRetour = indexCourant > 0;
+        btnRetour.setVisible(showRetour);
+        btnRetour.setManaged(showRetour);
 
-        if (indexCourant == questions.size() - 1) {
-            btnSuivant.setText("Terminer ✓");
-        } else {
-            btnSuivant.setText("Suivant →");
-        }
+        btnSuivant.setText(indexCourant == questions.size() - 1 ? "Terminer ✓" : "Suivant →");
     }
 
     @FXML
     private void suivant() {
         if (toggleGroup.getSelectedToggle() == null) {
-            lblErreur.setText("⚠ Veuillez choisir une réponse !");
+            lblErreur.setText("⚠  Veuillez choisir une réponse avant de continuer !");
             return;
         }
-
         Question q = questions.get(indexCourant);
-        int valeur = (int) toggleGroup.getSelectedToggle().getUserData();
-        reponses.put(q.getId(), valeur);
+        reponses.put(q.getId(), (int) toggleGroup.getSelectedToggle().getUserData());
 
         if (indexCourant < questions.size() - 1) {
             indexCourant++;
@@ -131,8 +164,7 @@ public class PasserTestController {
         if (indexCourant > 0) {
             if (toggleGroup.getSelectedToggle() != null) {
                 Question q = questions.get(indexCourant);
-                int valeur = (int) toggleGroup.getSelectedToggle().getUserData();
-                reponses.put(q.getId(), valeur);
+                reponses.put(q.getId(), (int) toggleGroup.getSelectedToggle().getUserData());
             }
             indexCourant--;
             afficherQuestion();
@@ -141,9 +173,7 @@ public class PasserTestController {
 
     private void allerAuResultat() {
         try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/fxml/test/Resultat.fxml")
-            );
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/test/Resultat.fxml"));
             Parent root = loader.load();
 
             ResultatController controller = loader.getController();
@@ -151,11 +181,8 @@ public class PasserTestController {
             controller.setResultat(score, categorie, questions.size());
 
             Stage stage = (Stage) btnSuivant.getScene().getWindow();
-
-            Scene scene = new Scene(root, stage.getWidth(), stage.getHeight());
-            stage.setScene(scene);
+            stage.setScene(new Scene(root, stage.getWidth(), stage.getHeight()));
             stage.setTitle("Résultat");
-
             stage.setMaximized(true);
             stage.setFullScreen(true);
             stage.setFullScreenExitHint("");

@@ -3,33 +3,66 @@ package org.example.controller;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.util.StringConverter;
 import org.example.entities.User;
 import org.example.service.AuthService;
+
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.regex.Pattern;
 
 public class RegisterController {
 
-    @FXML private TextField nomField, prenomField, emailField, phoneField;
+    @FXML private TextField nomField;
+    @FXML private TextField prenomField;
+    @FXML private TextField emailField;
+    @FXML private TextField phoneField;
     @FXML private PasswordField passwordField;
     @FXML private ComboBox<String> sexeCombo;
     @FXML private DatePicker datePicker;
     @FXML private Label errorLabel;
+
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     @FXML
     public void initialize() {
         if (sexeCombo != null) {
             sexeCombo.getItems().addAll("Homme", "Femme");
         }
+
+        if (datePicker != null) {
+            datePicker.setConverter(new StringConverter<>() {
+                @Override
+                public String toString(LocalDate date) {
+                    return date == null ? "" : formatter.format(date);
+                }
+
+                @Override
+                public LocalDate fromString(String text) {
+                    if (text == null || text.trim().isEmpty()) {
+                        return null;
+                    }
+                    try {
+                        return LocalDate.parse(text.trim(), formatter);
+                    } catch (DateTimeParseException e) {
+                        return null;
+                    }
+                }
+            });
+        }
     }
 
     @FXML
     private void handleRegister() {
-        errorLabel.setText(""); // Reset erreur
-
-        // --- CONTROLE DE SAISIE ---
+        errorLabel.setText("");
 
         String nom = nomField.getText().trim();
         String prenom = prenomField.getText().trim();
@@ -37,38 +70,47 @@ public class RegisterController {
         String password = passwordField.getText();
         String phone = phoneField.getText().trim();
         String sexe = sexeCombo.getValue();
-        LocalDate dateNais = datePicker.getValue();
+        LocalDate dateNais = parseBirthDate();
 
-        // 1. Vérification des champs vides
-        if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || password.isEmpty() || phone.isEmpty() || sexe == null || dateNais == null) {
+        if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || password.isEmpty()
+                || phone.isEmpty() || sexe == null || dateNais == null) {
             errorLabel.setText("Tous les champs sont obligatoires.");
             return;
         }
 
-        // 2. Format Email
-        String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
+        if (nom.length() <= 4) {
+            errorLabel.setText("Le nom doit contenir plus de 4 caracteres.");
+            return;
+        }
+        if (prenom.length() <= 4) {
+            errorLabel.setText("Le prenom doit contenir plus de 4 caracteres.");
+            return;
+        }
+
+        LocalDate dateMax = LocalDate.now().minusYears(16);
+        if (dateNais.isAfter(dateMax)) {
+            errorLabel.setText("Le patient doit avoir au moins 16 ans (ne avant le "
+                    + formatter.format(dateMax) + ").");
+            return;
+        }
+
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
         if (!Pattern.matches(emailRegex, email)) {
             errorLabel.setText("Format d'email invalide (ex: exemple@mail.com).");
             return;
         }
 
-        // 3. Complexité Mot de passe (8 carac, 1 Maj, 1 Chiffre, 1 Spécial)
-        // Regex : (?=.*[0-9]) (un chiffre) (?=.*[a-z]) (minuscule) (?=.*[A-Z]) (Majuscule) (?=.*[@#$%^&+=!]) (Spécial)
-        String pwdRegex = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&+=!/\\*\\-]).{8,}$";
+        String pwdRegex = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$";
         if (!Pattern.matches(pwdRegex, password)) {
-            errorLabel.setText("MDP: 8 caractères min, 1 Majuscule, 1 Chiffre et 1 Caractère spécial.");
+            errorLabel.setText("MDP: 8 caracteres min, 1 Majuscule, 1 Chiffre, 1 Caractere special.");
             return;
         }
 
-        // 4. Téléphone (8 chiffres)
         if (!phone.matches("\\d{8}")) {
-            errorLabel.setText("Le numéro de téléphone doit contenir exactement 8 chiffres.");
+            errorLabel.setText("Le numero de telephone doit contenir exactement 8 chiffres.");
             return;
         }
 
-
-
-        // --- SI TOUT EST OK ---
         User nouveauPatient = new User();
         nouveauPatient.setNom(nom);
         nouveauPatient.setPrenom(prenom);
@@ -78,15 +120,47 @@ public class RegisterController {
         nouveauPatient.setSexe(sexe);
         nouveauPatient.setDateNaissance(dateNais);
 
-        AuthService.addPatient(nouveauPatient);
+        try {
+            AuthService.addPatient(nouveauPatient);
+        } catch (RuntimeException e) {
+            errorLabel.setText(extractErrorMessage(e));
+            return;
+        }
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Succès");
+        alert.setTitle("Succes");
         alert.setHeaderText(null);
-        alert.setContentText("Compte créé avec succès !");
+        alert.setContentText("Compte cree avec succes !");
         alert.showAndWait();
 
         goToLogin();
+    }
+
+    private LocalDate parseBirthDate() {
+        String text = datePicker.getEditor().getText();
+        if (text == null || text.trim().isEmpty()) {
+            return datePicker.getValue();
+        }
+
+        try {
+            LocalDate parsedDate = LocalDate.parse(text.trim(), formatter);
+            datePicker.setValue(parsedDate);
+            return parsedDate;
+        } catch (DateTimeParseException e) {
+            errorLabel.setText("Date invalide. Utilisez le format jj/MM/aaaa.");
+            return null;
+        }
+    }
+
+    private String extractErrorMessage(RuntimeException e) {
+        String message = e.getMessage();
+        if (message == null || message.isBlank()) {
+            return "Erreur lors de l'inscription.";
+        }
+        if (message.contains("Duplicate entry") || message.contains("duplicate")) {
+            return "Cet email existe deja.";
+        }
+        return message;
     }
 
     @FXML

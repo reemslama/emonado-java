@@ -68,12 +68,19 @@
                                       promptText="Decrivez votre consultation (minimum 10 caracteres)&#10;- Raison de la consultation&#10;- Symptomes observes&#10;- Questions ou preoccupations"/>
                             <Label text="Le compte rendu est obligatoire (minimum 10 caracteres)."
                                    style="-fx-text-fill: #6b7280; -fx-font-size: 13px;"/>
+                            <Label text="Note psychologue"
+                                   style="-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #334155;"/>
+                            <TextArea fx:id="psychologueNotesArea" wrapText="true" prefRowCount="3" editable="false"
+                                      promptText="La note psychologue apparaitra ici apres validation du psychologue."/>
                         </VBox>
                     </HBox>
 
-                    <HBox style="-fx-padding: 0 18 0 18;">
-                        <Button text="Enregistrer la consultation" onAction="#handleAddConsultation"
+                    <HBox spacing="10" style="-fx-padding: 0 18 0 18;">
+                        <Button fx:id="saveConsultationButton" text="Enregistrer la consultation" onAction="#handleSaveConsultation"
                                 style="-fx-background-color: #198754; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 12 18;"/>
+                        <Button fx:id="cancelEditButton" text="Annuler la modification" onAction="#handleCancelEdit"
+                                visible="false" managed="false"
+                                style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-font-size: 16px; -fx-background-radius: 8; -fx-padding: 12 18;"/>
                     </HBox>
 
                     <HBox style="-fx-padding: 0 18 0 18;">

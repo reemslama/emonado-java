@@ -3,8 +3,10 @@ package org.example.controller;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import org.example.entities.User;
 import java.io.IOException;
 
@@ -16,6 +18,13 @@ public class AdminDashboardController {
 
     private User currentAdmin;
 
+    @FXML
+    public void initialize() {
+        if (headerTitle != null && contentArea != null) {
+            showHome();
+        }
+    }
+
     public void setUserData(User user) {
         this.currentAdmin = user;
         if (adminEmailLabel != null) {
@@ -26,9 +35,17 @@ public class AdminDashboardController {
     @FXML
     private void showHome() {
         headerTitle.setText("Dashboard");
-        contentArea.getChildren().setAll(
-                new Label("Bienvenue dans le panneau d'administration")
-        );
+        VBox box = new VBox(15);
+        box.setStyle("-fx-alignment: center-left; -fx-padding: 20; -fx-background-color: white; -fx-background-radius: 10;");
+        Label welcome = new Label("Bienvenue dans le panneau d'administration");
+        welcome.setStyle("-fx-font-size: 18; -fx-font-weight: bold;");
+        Label description = new Label("Accedez a la gestion medicale pour consulter, modifier et supprimer les dossiers, antecedents et consultations des patients.");
+        description.setWrapText(true);
+        Button medicalButton = new Button("Gestion medicale");
+        medicalButton.setStyle("-fx-background-color: #198754; -fx-text-fill: white; -fx-font-weight: bold;");
+        medicalButton.setOnAction(event -> showMedicalManagement());
+        box.getChildren().addAll(welcome, description, medicalButton);
+        contentArea.getChildren().setAll(box);
     }
 
     @FXML
@@ -67,6 +84,20 @@ public class AdminDashboardController {
             controller.loadData(role);
 
             contentArea.getChildren().setAll(tableRoot);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void showMedicalManagement() {
+        try {
+            headerTitle.setText("Gestion medicale");
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/medical_management.fxml"));
+            Parent view = loader.load();
+            MedicalManagementController controller = loader.getController();
+            controller.initForAdmin(currentAdmin);
+            contentArea.getChildren().setAll(view);
         } catch (IOException e) {
             e.printStackTrace();
         }

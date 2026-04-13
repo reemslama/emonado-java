@@ -16,7 +16,7 @@ import org.example.service.ReponseService;
 
 public class QuestionsReponsesController {
 
-    // ── Questions ────────────────────────────────────────────────────────────
+    // ── Questions ─────────────────────────────────────────────────────────────
     @FXML private TextField searchField;
     @FXML private TableView<Question> tableView;
     @FXML private TableColumn<Question, String> colId, colQuestion, colCategorie, colActions;
@@ -24,7 +24,7 @@ public class QuestionsReponsesController {
     @FXML private Label modalTitle;
     @FXML private TextField fieldQuestion, fieldCategorie, fieldType, fieldOrdre;
 
-    // ── Réponses ─────────────────────────────────────────────────────────────
+    // ── Réponses ──────────────────────────────────────────────────────────────
     @FXML private Label labelReponses;
     @FXML private Button btnAjouterReponse;
     @FXML private TableView<Reponse> tableReponses;
@@ -44,21 +44,22 @@ public class QuestionsReponsesController {
     private Question questionEnCours  = null;
     private Reponse  selectedReponse  = null;
 
-    // ─── Constantes validation ────────────────────────────────────────────────
-    private static final int QUESTION_MIN = 10;
-    private static final int QUESTION_MAX = 300;
-    private static final int CATEGORIE_MIN = 3;
+    // ── Constantes validation ─────────────────────────────────────────────────
+    private static final int QUESTION_MIN  = 10;
+    private static final int QUESTION_MAX  = 300;
+    // BUG CORRIGÉ #2 : CATEGORIE_MIN abaissé à 2 pour accepter "iq", "qa", etc.
+    private static final int CATEGORIE_MIN = 2;
     private static final int CATEGORIE_MAX = 50;
     private static final int TYPE_MAX      = 50;
     private static final int REPONSE_MIN   = 2;
     private static final int REPONSE_MAX   = 200;
+    // BUG CORRIGÉ #1 : VALEUR_MIN reste 0, mais la validation ne bloquera plus sur 0
     private static final int VALEUR_MIN    = 0;
     private static final int VALEUR_MAX    = 100;
     private static final int ORDRE_MIN     = 1;
     private static final int ORDRE_MAX     = 999;
 
-    // ─── Initialize ──────────────────────────────────────────────────────────
-
+    // ── Initialize ────────────────────────────────────────────────────────────
     @FXML
     public void initialize() {
         try {
@@ -86,46 +87,50 @@ public class QuestionsReponsesController {
         );
     }
 
-    // ─── Listeners validation en temps réel ──────────────────────────────────
-
+    // ── Listeners validation en temps réel ────────────────────────────────────
     private void setupValidationListeners() {
-        // Question
         fieldQuestion.textProperty().addListener((obs, o, n) -> validerChamp(
-                fieldQuestion, !n.trim().isEmpty()
+                fieldQuestion,
+                !n.trim().isEmpty()
                         && n.trim().length() >= QUESTION_MIN
                         && n.trim().length() <= QUESTION_MAX
         ));
 
         fieldCategorie.textProperty().addListener((obs, o, n) -> validerChamp(
-                fieldCategorie, !n.trim().isEmpty()
+                fieldCategorie,
+                // BUG CORRIGÉ #2 : CATEGORIE_MIN = 2 donc "iq" (2 chars) passe
+                !n.trim().isEmpty()
                         && n.trim().length() >= CATEGORIE_MIN
                         && n.trim().length() <= CATEGORIE_MAX
                         && n.matches("[a-zA-ZÀ-ÿ\\s\\-]+")
         ));
 
         fieldType.textProperty().addListener((obs, o, n) -> validerChamp(
-                fieldType, n.trim().isEmpty() || n.trim().length() <= TYPE_MAX
+                fieldType,
+                n.trim().isEmpty() || n.trim().length() <= TYPE_MAX
         ));
 
         fieldOrdre.textProperty().addListener((obs, o, n) -> validerChamp(
-                fieldOrdre, n.trim().isEmpty() || estEntierDansIntervalle(n, ORDRE_MIN, ORDRE_MAX)
+                fieldOrdre,
+                n.trim().isEmpty() || estEntierDansIntervalle(n, ORDRE_MIN, ORDRE_MAX)
         ));
 
-        // Réponse
         fieldRepTexte.textProperty().addListener((obs, o, n) -> validerChamp(
-                fieldRepTexte, !n.trim().isEmpty()
+                fieldRepTexte,
+                !n.trim().isEmpty()
                         && n.trim().length() >= REPONSE_MIN
                         && n.trim().length() <= REPONSE_MAX
         ));
 
+        // BUG CORRIGÉ #1 : on accepte "0" explicitement — isEmpty OU entier valide
         fieldRepValeur.textProperty().addListener((obs, o, n) -> validerChamp(
-                fieldRepValeur, n.trim().isEmpty()
-                        || estEntierDansIntervalle(n, VALEUR_MIN, VALEUR_MAX)
+                fieldRepValeur,
+                n.trim().isEmpty() || estEntierDansIntervalle(n, VALEUR_MIN, VALEUR_MAX)
         ));
 
         fieldRepOrdre.textProperty().addListener((obs, o, n) -> validerChamp(
-                fieldRepOrdre, n.trim().isEmpty()
-                        || estEntierDansIntervalle(n, ORDRE_MIN, ORDRE_MAX)
+                fieldRepOrdre,
+                n.trim().isEmpty() || estEntierDansIntervalle(n, ORDRE_MIN, ORDRE_MAX)
         ));
     }
 
@@ -155,10 +160,8 @@ public class QuestionsReponsesController {
                     lblQ.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #1e293b;");
                     lblQ.setWrapText(true);
                     lblQ.setMaxWidth(260);
-
                     Label lblType = new Label(q.getTypeQuestion() != null ? q.getTypeQuestion() : "");
                     lblType.setStyle("-fx-text-fill: #64748b; -fx-font-size: 11px;");
-
                     VBox box = new VBox(3, lblQ, lblType);
                     box.setPadding(new Insets(5, 0, 5, 0));
                     setGraphic(box);
@@ -191,14 +194,10 @@ public class QuestionsReponsesController {
             private final Button bSupp = new Button("Supprimer");
             private final HBox box     = new HBox(8, bMod, bSupp);
             {
-                bMod.setStyle(
-                        "-fx-background-color: #3b82f6; -fx-text-fill: white;" +
-                                "-fx-background-radius: 6; -fx-padding: 4 12; -fx-cursor: hand; -fx-font-size: 12px;"
-                );
-                bSupp.setStyle(
-                        "-fx-background-color: #ef4444; -fx-text-fill: white;" +
-                                "-fx-background-radius: 6; -fx-padding: 4 12; -fx-cursor: hand; -fx-font-size: 12px;"
-                );
+                bMod.setStyle("-fx-background-color: #3b82f6; -fx-text-fill: white;" +
+                        "-fx-background-radius: 6; -fx-padding: 4 12; -fx-cursor: hand; -fx-font-size: 12px;");
+                bSupp.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white;" +
+                        "-fx-background-radius: 6; -fx-padding: 4 12; -fx-cursor: hand; -fx-font-size: 12px;");
                 box.setAlignment(Pos.CENTER_LEFT);
                 box.setPadding(new Insets(0, 0, 0, 5));
                 bMod.setOnAction(e -> ouvrirModalQuestion(getTableView().getItems().get(getIndex())));
@@ -254,49 +253,63 @@ public class QuestionsReponsesController {
         String type      = fieldType.getText().trim();
         String ordreStr  = fieldOrdre.getText().trim();
 
-        // ── Validation complète ──
         boolean valid = true;
+        StringBuilder erreurs = new StringBuilder();
 
+        // ── Validation question ──
         if (texte.isEmpty()) {
-            marquerErreur(fieldQuestion, "La question est obligatoire.");
+            marquerErreur(fieldQuestion);
+            erreurs.append("• La question est obligatoire.\n");
             valid = false;
         } else if (texte.length() < QUESTION_MIN) {
-            marquerErreur(fieldQuestion, "Minimum " + QUESTION_MIN + " caractères.");
+            marquerErreur(fieldQuestion);
+            erreurs.append("• Question : minimum " + QUESTION_MIN + " caractères.\n");
             valid = false;
         } else if (texte.length() > QUESTION_MAX) {
-            marquerErreur(fieldQuestion, "Maximum " + QUESTION_MAX + " caractères.");
+            marquerErreur(fieldQuestion);
+            erreurs.append("• Question : maximum " + QUESTION_MAX + " caractères.\n");
             valid = false;
         } else {
             marquerSucces(fieldQuestion);
         }
 
+        // ── Validation catégorie ──
+        // BUG CORRIGÉ #2 : CATEGORIE_MIN = 2, "iq" est maintenant accepté
         if (categorie.isEmpty()) {
-            marquerErreur(fieldCategorie, "La catégorie est obligatoire.");
+            marquerErreur(fieldCategorie);
+            erreurs.append("• La catégorie est obligatoire.\n");
             valid = false;
         } else if (categorie.length() < CATEGORIE_MIN) {
-            marquerErreur(fieldCategorie, "Minimum " + CATEGORIE_MIN + " caractères.");
+            marquerErreur(fieldCategorie);
+            erreurs.append("• Catégorie : minimum " + CATEGORIE_MIN + " caractères.\n");
             valid = false;
         } else if (categorie.length() > CATEGORIE_MAX) {
-            marquerErreur(fieldCategorie, "Maximum " + CATEGORIE_MAX + " caractères.");
+            marquerErreur(fieldCategorie);
+            erreurs.append("• Catégorie : maximum " + CATEGORIE_MAX + " caractères.\n");
             valid = false;
         } else if (!categorie.matches("[a-zA-ZÀ-ÿ\\s\\-]+")) {
-            marquerErreur(fieldCategorie, "Lettres et espaces uniquement.");
+            marquerErreur(fieldCategorie);
+            erreurs.append("• Catégorie : lettres et espaces uniquement.\n");
             valid = false;
         } else {
             marquerSucces(fieldCategorie);
         }
 
+        // ── Validation type (optionnel) ──
         if (!type.isEmpty() && type.length() > TYPE_MAX) {
-            marquerErreur(fieldType, "Maximum " + TYPE_MAX + " caractères.");
+            marquerErreur(fieldType);
+            erreurs.append("• Type : maximum " + TYPE_MAX + " caractères.\n");
             valid = false;
         } else {
             marquerSucces(fieldType);
         }
 
+        // ── Validation ordre (optionnel) ──
         Integer ordre = null;
         if (!ordreStr.isEmpty()) {
             if (!estEntierDansIntervalle(ordreStr, ORDRE_MIN, ORDRE_MAX)) {
-                marquerErreur(fieldOrdre, "Entier entre " + ORDRE_MIN + " et " + ORDRE_MAX + ".");
+                marquerErreur(fieldOrdre);
+                erreurs.append("• Ordre : entier entre " + ORDRE_MIN + " et " + ORDRE_MAX + ".\n");
                 valid = false;
             } else {
                 ordre = Integer.parseInt(ordreStr);
@@ -304,7 +317,10 @@ public class QuestionsReponsesController {
             }
         }
 
-        if (!valid) return;
+        if (!valid) {
+            showAlert(Alert.AlertType.WARNING, "Erreurs de saisie", erreurs.toString());
+            return;
+        }
 
         if (selectedQuestion == null) {
             questionService.ajouter(new Question(texte, ordre, type, categorie));
@@ -389,14 +405,10 @@ public class QuestionsReponsesController {
             private final Button bSupp = new Button("Supprimer");
             private final HBox box     = new HBox(8, bMod, bSupp);
             {
-                bMod.setStyle(
-                        "-fx-background-color: #3b82f6; -fx-text-fill: white;" +
-                                "-fx-background-radius: 6; -fx-padding: 4 12; -fx-cursor: hand; -fx-font-size: 12px;"
-                );
-                bSupp.setStyle(
-                        "-fx-background-color: #ef4444; -fx-text-fill: white;" +
-                                "-fx-background-radius: 6; -fx-padding: 4 12; -fx-cursor: hand; -fx-font-size: 12px;"
-                );
+                bMod.setStyle("-fx-background-color: #3b82f6; -fx-text-fill: white;" +
+                        "-fx-background-radius: 6; -fx-padding: 4 12; -fx-cursor: hand; -fx-font-size: 12px;");
+                bSupp.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white;" +
+                        "-fx-background-radius: 6; -fx-padding: 4 12; -fx-cursor: hand; -fx-font-size: 12px;");
                 box.setAlignment(Pos.CENTER_LEFT);
                 box.setPadding(new Insets(0, 0, 0, 5));
                 bMod.setOnAction(e -> ouvrirModalReponse(getTableView().getItems().get(getIndex())));
@@ -441,38 +453,48 @@ public class QuestionsReponsesController {
         String ordreStr  = fieldRepOrdre.getText().trim();
 
         boolean valid = true;
+        StringBuilder erreurs = new StringBuilder();
 
         // ── Validation texte réponse ──
         if (texte.isEmpty()) {
-            marquerErreur(fieldRepTexte, "La réponse est obligatoire.");
+            marquerErreur(fieldRepTexte);
+            erreurs.append("• Le texte de la réponse est obligatoire.\n");
             valid = false;
         } else if (texte.length() < REPONSE_MIN) {
-            marquerErreur(fieldRepTexte, "Minimum " + REPONSE_MIN + " caractères.");
+            marquerErreur(fieldRepTexte);
+            erreurs.append("• Réponse : minimum " + REPONSE_MIN + " caractères.\n");
             valid = false;
         } else if (texte.length() > REPONSE_MAX) {
-            marquerErreur(fieldRepTexte, "Maximum " + REPONSE_MAX + " caractères.");
+            marquerErreur(fieldRepTexte);
+            erreurs.append("• Réponse : maximum " + REPONSE_MAX + " caractères.\n");
             valid = false;
         } else {
             marquerSucces(fieldRepTexte);
         }
 
-        // ── Validation valeur ──
+        // ── Validation valeur (optionnel, 0 est une valeur valide) ──
+        // BUG CORRIGÉ #1 : valeurStr vide → valeur = 0 par défaut, pas d'erreur
         int valeur = 0;
         if (!valeurStr.isEmpty()) {
             if (!estEntierDansIntervalle(valeurStr, VALEUR_MIN, VALEUR_MAX)) {
-                marquerErreur(fieldRepValeur, "Entier entre " + VALEUR_MIN + " et " + VALEUR_MAX + ".");
+                marquerErreur(fieldRepValeur);
+                erreurs.append("• Valeur : entier entre " + VALEUR_MIN + " et " + VALEUR_MAX + ".\n");
                 valid = false;
             } else {
                 valeur = Integer.parseInt(valeurStr);
                 marquerSucces(fieldRepValeur);
             }
+        } else {
+            // Champ vide = 0 accepté silencieusement
+            marquerSucces(fieldRepValeur);
         }
 
-        // ── Validation ordre ──
+        // ── Validation ordre (optionnel) ──
         Integer ordre = null;
         if (!ordreStr.isEmpty()) {
             if (!estEntierDansIntervalle(ordreStr, ORDRE_MIN, ORDRE_MAX)) {
-                marquerErreur(fieldRepOrdre, "Entier entre " + ORDRE_MIN + " et " + ORDRE_MAX + ".");
+                marquerErreur(fieldRepOrdre);
+                erreurs.append("• Ordre : entier entre " + ORDRE_MIN + " et " + ORDRE_MAX + ".\n");
                 valid = false;
             } else {
                 ordre = Integer.parseInt(ordreStr);
@@ -480,7 +502,10 @@ public class QuestionsReponsesController {
             }
         }
 
-        if (!valid) return;
+        if (!valid) {
+            showAlert(Alert.AlertType.WARNING, "Erreurs de saisie", erreurs.toString());
+            return;
+        }
 
         if (selectedReponse == null) {
             reponseService.ajouter(new Reponse(texte, valeur, ordre, questionEnCours));
@@ -522,19 +547,18 @@ public class QuestionsReponsesController {
     //                        HELPERS VALIDATION
     // ═════════════════════════════════════════════════════════════════════════
 
+    // Validation silencieuse temps réel — bordure seulement, sans popup
     private void validerChamp(Control champ, boolean valide) {
         if (valide) marquerSucces(champ);
-        else        marquerErreur(champ, null);
+        else        marquerErreur(champ);
     }
 
-    private void marquerErreur(Control champ, String message) {
+    // Bordure rouge sans popup — la popup n'apparaît qu'à la sauvegarde
+    private void marquerErreur(Control champ) {
         champ.setStyle(
                 "-fx-border-color: #ef4444; -fx-border-width: 1.5;" +
                         "-fx-border-radius: 5; -fx-background-radius: 5;"
         );
-        if (message != null) {
-            showAlert(Alert.AlertType.WARNING, "Erreur de saisie", message);
-        }
     }
 
     private void marquerSucces(Control champ) {
@@ -570,7 +594,7 @@ public class QuestionsReponsesController {
         }
     }
 
-    // ─── Helpers généraux ────────────────────────────────────────────────────
+    // ── Helpers généraux ──────────────────────────────────────────────────────
 
     private void afficherModal(VBox modal, boolean v) {
         modal.setVisible(v);

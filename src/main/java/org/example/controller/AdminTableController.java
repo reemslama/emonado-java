@@ -44,6 +44,24 @@ public class AdminTableController {
         }
     }
 
+    @FXML
+    private void handleAddUser() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/admin_add_user.fxml"));
+            Parent root = loader.load();
+
+            AdminAddUserController controller = loader.getController();
+            controller.setDefaultRole(currentRole);
+
+            StackPane contentArea = (StackPane) userTable.getScene().lookup("#contentArea");
+            if (contentArea != null) {
+                contentArea.getChildren().setAll(root);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void addActionsToTable() {
         colActions.setCellFactory(param -> new TableCell<>() {
             private final Button btnEdit = new Button("Modifier");

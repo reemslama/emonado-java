@@ -1,39 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="mainContainer" prefHeight="700.0" prefWidth="1000.0" xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.controller.AdminDashboardController">
+<BorderPane fx:id="mainContainer" prefHeight="700.0" prefWidth="1000.0"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.controller.AdminDashboardController">
 
     <left>
         <VBox spacing="5" prefWidth="240.0" style="-fx-background-color: #111827; -fx-padding: 20 0 0 0;">
             <Label text="ADMIN PANEL" textFill="WHITE" alignment="CENTER" maxWidth="Infinity">
-                <font><Font name="System Bold" size="18.0" /></font>
+                <font><Font name="System Bold" size="18.0"/></font>
                 <VBox.margin><Insets bottom="20"/></VBox.margin>
             </Label>
 
-            <Button text=" Dashboard"          onAction="#showHome"               styleClass="side-button" maxWidth="Infinity" alignment="BASELINE_LEFT" />
-            <Button text=" Patients"            onAction="#showPatients"            styleClass="side-button" maxWidth="Infinity" alignment="BASELINE_LEFT" />
-            <Button text=" Psychologues"        onAction="#showPsychologues"        styleClass="side-button" maxWidth="Infinity" alignment="BASELINE_LEFT" />
-            <Button text=" Questions/Réponses"  onAction="#showQuestionsReponses"   styleClass="side-button" maxWidth="Infinity" alignment="BASELINE_LEFT" />
+            <Button text=" Dashboard" onAction="#showHome" styleClass="side-button" maxWidth="Infinity" alignment="BASELINE_LEFT"/>
+            <Button text=" Patients" onAction="#showPatients" styleClass="side-button" maxWidth="Infinity" alignment="BASELINE_LEFT"/>
+            <Button text=" Psychologues" onAction="#showPsychologues" styleClass="side-button" maxWidth="Infinity" alignment="BASELINE_LEFT"/>
+            <Button text=" Gestion medicale" onAction="#showMedicalManagement" styleClass="side-button" maxWidth="Infinity" alignment="BASELINE_LEFT"/>
+            <Button text=" Questions/Reponses" onAction="#showQuestionsReponses" styleClass="side-button" maxWidth="Infinity" alignment="BASELINE_LEFT"/>
 
-            <Region VBox.vgrow="ALWAYS" />
-            <Separator opacity="0.3" />
-            <Button text=" Déconnexion" onAction="#handleLogout" styleClass="logout-button" maxWidth="Infinity" alignment="BASELINE_LEFT" />
+            <Region VBox.vgrow="ALWAYS"/>
+            <Separator opacity="0.3"/>
+            <Button text=" Deconnexion" onAction="#handleLogout" styleClass="logout-button" maxWidth="Infinity" alignment="BASELINE_LEFT"/>
         </VBox>
     </left>
 
     <center>
         <VBox spacing="20" style="-fx-background-color: #f1f5f9; -fx-padding: 25;">
             <HBox style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 3);">
-                <Label fx:id="headerTitle" text="Dashboard" style="-fx-font-size: 20; -fx-font-weight: bold;" />
-                <Region HBox.hgrow="ALWAYS" />
-                <Label fx:id="adminEmailLabel" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-padding: 5 10; -fx-background-radius: 5;" text="admin@emonado.tn" />
+                <Label fx:id="headerTitle" text="Dashboard" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="adminEmailLabel" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-padding: 5 10; -fx-background-radius: 5;" text="admin@emonado.tn"/>
             </HBox>
 
             <StackPane fx:id="contentArea" VBox.vgrow="ALWAYS">
-                <Label text="Bienvenue dans le panneau d'administration" textFill="#64748b" />
+                <Label text="Bienvenue dans le panneau d'administration" textFill="#64748b"/>
             </StackPane>
         </VBox>
     </center>
