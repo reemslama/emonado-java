@@ -90,4 +90,40 @@ public class PsyDashboardController {
             e.printStackTrace();
         }
     }
+    @FXML
+    private void goToListeRendezVous() {
+        loadView("/ListeRendezVousPsy.fxml", "Liste des Rendez-vous");
+    }
+
+    @FXML
+    private void goToDisponibilites() {
+        loadView("/AjouterDisponibilite.fxml", "Gestion des Disponibilités");
+    }
+    @FXML
+    private void goToTypeRdv() {
+        loadView("/AjouterType.fxml", "Types de Rendez-vous");
+    }
+    /**
+     * Méthode utilitaire pour changer le contenu central (si tu utilises un BorderPane)
+     */
+    private void loadView(String fxmlPath, String title) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent view = loader.load();
+
+            // Si tu as un BorderPane nommé mainContainer dans ta fenêtre principale
+            BorderPane mainContainer = (BorderPane) welcomeLabel.getScene().lookup("#mainContainer");
+            if (mainContainer != null) {
+                mainContainer.setCenter(view);
+            } else {
+                // Sinon, on remplace la racine (moins propre mais fonctionne)
+                welcomeLabel.getScene().setRoot(view);
+            }
+        } catch (IOException e) {
+            System.err.println("Erreur chargement " + title + " : " + e.getMessage());
+            e.printStackTrace();
+        }
+
+
+    }
 }

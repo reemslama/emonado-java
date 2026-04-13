@@ -15,8 +15,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import org.example.entities.Journal;
 import org.example.entities.User;
+import org.example.service.ContentValidationService;
 import org.example.service.JournalService;
-import org.example.utils.JournalValidator;
 import org.example.utils.UserSession;
 
 import java.io.IOException;
@@ -221,7 +221,7 @@ public class JournalController {
         if (humeur == null || humeur.isBlank()) {
             return "Veuillez choisir une humeur.";
         }
-        return JournalValidator.validateContent(contenu);
+        return ContentValidationService.validateContent(contenu);
     }
 
     private void loadView(String fxmlPath, boolean injectUser) {

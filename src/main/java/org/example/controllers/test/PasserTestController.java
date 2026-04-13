@@ -4,11 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -16,7 +12,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.example.entities.Question;
 import org.example.entities.Reponse;
-import org.example.services.QuestionService;
+import org.example.service.QuestionService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -37,13 +33,13 @@ public class PasserTestController {
 
     private List<Question> questions;
     private int indexCourant = 0;
-    private final Map<Integer, Integer> reponses = new HashMap<>();
+    private Map<Integer, Integer> reponses = new HashMap<>();
     private String categorie;
     private ToggleGroup toggleGroup;
 
-    private final QuestionService questionService = new QuestionService();
+    private QuestionService questionService = new QuestionService();
 
-    private final Map<Integer, String> imageMap = new HashMap<>() {{
+    private Map<Integer, String> imageMap = new HashMap<>() {{
         put(10, "/images/depression/image1.jpg");
         put(11, "/images/depression/image2.jpg");
         put(12, "/images/depression/image3.jpg");
@@ -94,7 +90,8 @@ public class PasserTestController {
             rb.setUserData(r.getValeur());
             rb.setStyle("-fx-font-size: 15px; -fx-padding: 6;");
 
-            if (reponses.containsKey(q.getId()) && reponses.get(q.getId()) == r.getValeur()) {
+            if (reponses.containsKey(q.getId()) &&
+                    reponses.get(q.getId()) == r.getValeur()) {
                 rb.setSelected(true);
             }
 
@@ -104,16 +101,16 @@ public class PasserTestController {
         btnRetour.setVisible(indexCourant > 0);
 
         if (indexCourant == questions.size() - 1) {
-            btnSuivant.setText("Terminer");
+            btnSuivant.setText("Terminer ✓");
         } else {
-            btnSuivant.setText("Suivant");
+            btnSuivant.setText("Suivant →");
         }
     }
 
     @FXML
     private void suivant() {
         if (toggleGroup.getSelectedToggle() == null) {
-            lblErreur.setText("Veuillez choisir une reponse.");
+            lblErreur.setText("⚠ Veuillez choisir une réponse !");
             return;
         }
 
@@ -144,7 +141,9 @@ public class PasserTestController {
 
     private void allerAuResultat() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/test/Resultat.fxml"));
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/fxml/test/Resultat.fxml")
+            );
             Parent root = loader.load();
 
             ResultatController controller = loader.getController();
@@ -152,23 +151,17 @@ public class PasserTestController {
             controller.setResultat(score, categorie, questions.size());
 
             Stage stage = (Stage) btnSuivant.getScene().getWindow();
-            stage.setScene(new Scene(root, 800, 600));
-            stage.setTitle("Resultat");
+
+            Scene scene = new Scene(root, stage.getWidth(), stage.getHeight());
+            stage.setScene(scene);
+            stage.setTitle("Résultat");
+
+            stage.setMaximized(true);
+            stage.setFullScreen(true);
+            stage.setFullScreenExitHint("");
+
         } catch (Exception e) {
             System.out.println("Erreur navigation : " + e.getMessage());
-        }
-    }
-
-    @FXML
-    private void retourDashboard() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/patient_dashboard.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) btnSuivant.getScene().getWindow();
-            stage.setScene(new Scene(root, 800, 600));
-            stage.setTitle("Espace Patient");
-        } catch (Exception e) {
-            System.out.println("Erreur retour : " + e.getMessage());
         }
     }
 }

@@ -12,7 +12,7 @@ import org.example.entities.AnalyseEmotionnelle;
 import org.example.entities.JournalAnalyseRow;
 import org.example.entities.User;
 import org.example.service.AnalyseEmotionnelleService;
-import org.example.utils.JournalValidator;
+import org.example.service.ContentValidationService;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -106,11 +106,11 @@ public class AnalyseEmotionnelleEditController {
         if (niveauCombo.getValue() == null || niveauCombo.getValue().isBlank()) {
             return "Choisissez un niveau.";
         }
-        String declencheurError = JournalValidator.validateContent(declencheurArea.getText());
+        String declencheurError = ContentValidationService.validateContent(declencheurArea.getText());
         if (declencheurError != null) {
             return "Declencheur: " + declencheurError;
         }
-        String conseilError = JournalValidator.validateContent(conseilArea.getText());
+        String conseilError = ContentValidationService.validateContent(conseilArea.getText());
         if (conseilError != null) {
             return "Conseil: " + conseilError;
         }

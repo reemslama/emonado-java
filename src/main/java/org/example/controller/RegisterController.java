@@ -60,19 +60,13 @@ public class RegisterController {
             return;
         }
 
-        // 4. Téléphone (8 chiffres, espaces ou tirets ignorés)
-        String phoneDigits = phone.replaceAll("\\D", "");
-        if (phoneDigits.length() != 8) {
+        // 4. Téléphone (8 chiffres)
+        if (!phone.matches("\\d{8}")) {
             errorLabel.setText("Le numéro de téléphone doit contenir exactement 8 chiffres.");
             return;
         }
-        phone = phoneDigits;
 
-        // 5. Date de naissance (Moins de 2015)
-        if (dateNais.getYear() >= 2015) {
-            errorLabel.setText("La date de naissance doit être antérieure à 2015.");
-            return;
-        }
+
 
         // --- SI TOUT EST OK ---
         User nouveauPatient = new User();
@@ -84,11 +78,7 @@ public class RegisterController {
         nouveauPatient.setSexe(sexe);
         nouveauPatient.setDateNaissance(dateNais);
 
-        String err = AuthService.addPatient(nouveauPatient);
-        if (err != null) {
-            errorLabel.setText(err);
-            return;
-        }
+        AuthService.addPatient(nouveauPatient);
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Succès");

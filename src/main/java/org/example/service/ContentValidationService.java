@@ -1,11 +1,11 @@
-package org.example.utils;
+package org.example.service;
 
 import java.util.regex.Pattern;
 
-public final class JournalValidator {
+public final class ContentValidationService {
     private static final Pattern WORD_PATTERN = Pattern.compile("[A-Za-zÀ-ÿ]{2,}");
 
-    private JournalValidator() {
+    private ContentValidationService() {
     }
 
     public static String validateContent(String contenu) {

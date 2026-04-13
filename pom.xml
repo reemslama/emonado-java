@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.example</groupId>
-    <artifactId>pi</artifactId>
+    <artifactId>PI</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
@@ -20,11 +20,19 @@
             <artifactId>javafx-controls</artifactId>
             <version>17.0.13</version>
         </dependency>
+
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>17.0.13</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>9.0.0</version>
+        </dependency>
+
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -44,5 +52,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

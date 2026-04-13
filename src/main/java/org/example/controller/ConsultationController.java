@@ -31,11 +31,15 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class ConsultationController {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy 'a' HH:mm");
+    private static final int CONSULTATION_NOTES_MIN_LENGTH = 10;
+    private static final int CONSULTATION_NOTES_MAX_LENGTH = 2000;
+    private static final Pattern INVALID_NOTE_PATTERN = Pattern.compile("^[\\p{Punct}\\s]+$");
 
     @FXML private Label pageTitleLabel;
     @FXML private Label historyCountLabel;
@@ -76,28 +80,27 @@ public class ConsultationController {
     @FXML
     private void handleAddConsultation() {
         if (currentUser == null) {
+            showError("Session utilisateur introuvable.");
             return;
         }
 
         LocalDate consultationDate = consultationDatePicker.getValue();
         String notes = consultationNotesArea.getText() == null ? "" : consultationNotesArea.getText().trim();
 
-        if (consultationDate == null) {
-            showError("Veuillez choisir une date de consultation.");
+        String validationError = validateConsultationInput(consultationDate, notes);
+        if (validationError != null) {
+            showError(validationError);
             return;
         }
-        if (consultationDate.isBefore(LocalDate.now())) {
-            showError("La date doit etre aujourd'hui ou dans le futur.");
-            return;
-        }
-        if (notes.length() < 10) {
-            showError("Le compte rendu doit contenir au moins 10 caracteres.");
+
+        Connection conn = DataSource.getInstance().getConnection();
+        if (conn == null) {
+            showError("Connexion a la base de donnees indisponible.");
             return;
         }
 
         String query = "INSERT INTO patient_consultation (patient_id, consultation_date, notes) VALUES (?, ?, ?)";
-        try (Connection conn = DataSource.getInstance().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setInt(1, currentUser.getId());
             pstmt.setDate(2, Date.valueOf(consultationDate));
             pstmt.setString(3, notes);
@@ -186,12 +189,16 @@ public class ConsultationController {
     private void loadConsultations() {
         consultationHistoryBox.getChildren().clear();
 
-        List<ConsultationItem> items = new ArrayList<>();
-        String query = "SELECT consultation_date, notes, created_at FROM patient_consultation " +
-                "WHERE patient_id = ? ORDER BY consultation_date DESC, id DESC";
+        Connection conn = DataSource.getInstance().getConnection();
+        if (conn == null) {
+            showError("Connexion a la base de donnees indisponible.");
+            return;
+        }
 
-        try (Connection conn = DataSource.getInstance().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
+        List<ConsultationItem> items = new ArrayList<>();
+        String query = "SELECT consultation_date, notes, created_at FROM patient_consultation WHERE patient_id = ? ORDER BY consultation_date DESC, id DESC";
+
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setInt(1, currentUser.getId());
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
@@ -208,10 +215,7 @@ public class ConsultationController {
             return;
         }
 
-        List<ConsultationItem> filteredItems = items.stream()
-                .filter(this::matchesFilter)
-                .toList();
-
+        List<ConsultationItem> filteredItems = items.stream().filter(this::matchesFilter).toList();
         historyCountLabel.setText(String.valueOf(filteredItems.size()));
 
         if (filteredItems.isEmpty()) {
@@ -259,23 +263,18 @@ public class ConsultationController {
                 ? "Consultation personnelle (en attente de suivi)"
                 : "Consultation personnelle (terminee)");
         statusBadge.setStyle(pendingFollowUp
-                ? "-fx-background-color: #ffc107; -fx-background-radius: 8; -fx-text-fill: #1b1b1b; "
-                + "-fx-padding: 5 10; -fx-font-weight: bold;"
-                : "-fx-background-color: #dbeafe; -fx-background-radius: 8; -fx-text-fill: #1d4ed8; "
-                + "-fx-padding: 5 10; -fx-font-weight: bold;");
+                ? "-fx-background-color: #ffc107; -fx-background-radius: 8; -fx-text-fill: #1b1b1b; -fx-padding: 5 10; -fx-font-weight: bold;"
+                : "-fx-background-color: #dbeafe; -fx-background-radius: 8; -fx-text-fill: #1d4ed8; -fx-padding: 5 10; -fx-font-weight: bold;");
 
         Label notesTitle = new Label("Compte rendu :");
         notesTitle.setStyle("-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #1f2937;");
 
         Label notesLabel = new Label(item.notes());
         notesLabel.setWrapText(true);
-        notesLabel.setStyle("-fx-background-color: #f5f8fc; -fx-background-radius: 10; "
-                + "-fx-padding: 14; -fx-text-fill: #334155; -fx-font-size: 14px;");
+        notesLabel.setStyle("-fx-background-color: #f5f8fc; -fx-background-radius: 10; -fx-padding: 14; -fx-text-fill: #334155; -fx-font-size: 14px;");
         notesLabel.setMaxWidth(Double.MAX_VALUE);
 
-        String createdAtText = item.createdAt() == null
-                ? "-"
-                : item.createdAt().toLocalDateTime().format(DATE_TIME_FORMATTER);
+        String createdAtText = item.createdAt() == null ? "-" : item.createdAt().toLocalDateTime().format(DATE_TIME_FORMATTER);
         Label createdAtLabel = new Label("Consultation enregistree le " + createdAtText);
         createdAtLabel.setStyle("-fx-text-fill: #64748b; -fx-font-size: 13px;");
 
@@ -284,22 +283,49 @@ public class ConsultationController {
     }
 
     private void ensureConsultationTable() {
-        String createConsultationTable = "CREATE TABLE IF NOT EXISTS patient_consultation (" +
-                "id INT PRIMARY KEY AUTO_INCREMENT, " +
-                "patient_id INT NOT NULL, " +
-                "consultation_date DATE NOT NULL, " +
-                "notes TEXT NOT NULL, " +
-                "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
-                "CONSTRAINT fk_patient_consultation_user FOREIGN KEY (patient_id) REFERENCES user(id) ON DELETE CASCADE" +
-                ")";
+        Connection conn = DataSource.getInstance().getConnection();
+        if (conn == null) {
+            showError("Connexion a la base de donnees indisponible.");
+            return;
+        }
 
-        try (Connection conn = DataSource.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(createConsultationTable)) {
+        String createConsultationTable = "CREATE TABLE IF NOT EXISTS patient_consultation ("
+                + "id INT PRIMARY KEY AUTO_INCREMENT, "
+                + "patient_id INT NOT NULL, "
+                + "consultation_date DATE NOT NULL, "
+                + "notes TEXT NOT NULL, "
+                + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
+                + "CONSTRAINT fk_patient_consultation_user FOREIGN KEY (patient_id) REFERENCES user(id) ON DELETE CASCADE"
+                + ")";
+
+        try (PreparedStatement stmt = conn.prepareStatement(createConsultationTable)) {
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
             showError("Impossible d'initialiser la table des consultations.");
         }
+    }
+
+    private String validateConsultationInput(LocalDate consultationDate, String notes) {
+        if (consultationDate == null) {
+            return "Veuillez choisir une date de consultation.";
+        }
+        if (consultationDate.isBefore(LocalDate.now())) {
+            return "La date doit etre aujourd'hui ou dans le futur.";
+        }
+        if (notes.isBlank()) {
+            return "Le compte rendu est obligatoire.";
+        }
+        if (notes.length() < CONSULTATION_NOTES_MIN_LENGTH) {
+            return "Le compte rendu doit contenir au moins 10 caracteres.";
+        }
+        if (notes.length() > CONSULTATION_NOTES_MAX_LENGTH) {
+            return "Le compte rendu ne doit pas depasser 2000 caracteres.";
+        }
+        if (INVALID_NOTE_PATTERN.matcher(notes).matches()) {
+            return "Le compte rendu doit contenir un contenu explicite.";
+        }
+        return null;
     }
 
     private void showInfo(String message) {

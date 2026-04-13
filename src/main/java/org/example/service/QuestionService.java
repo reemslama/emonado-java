@@ -1,8 +1,8 @@
-package org.example.services;
+package org.example.service;
 
 import org.example.entities.Question;
 import org.example.entities.Reponse;
-import org.example.utils.MyDatabase;
+import org.example.utils.DataSource;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ public class QuestionService implements IService<Question> {
     private Connection connection;
 
     public QuestionService() {
-        connection = MyDatabase.getInstance().getConnection();
+        connection = DataSource.getInstance().getConnection();
     }
 
     @Override
