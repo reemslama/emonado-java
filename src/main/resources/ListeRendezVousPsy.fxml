@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.controllers.ListeRendezVousPsyController"
+      stylesheets="@styles/style.css"
+      spacing="15">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <HBox alignment="CENTER_LEFT">
+        <Button text="Retour" onAction="#returnToDashboard"/>
+    </HBox>
+
+    <Label text="Rendez-vous des patients" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+    <Label fx:id="errorGlobal"/>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Button fx:id="btnModifier" text="Modifier" onAction="#modifierRendezVous"/>
+        <Button fx:id="btnSupprimer" text="Supprimer" onAction="#supprimerRendezVous"/>
+    </HBox>
+
+    <TableView fx:id="tableRdv" prefHeight="320" prefWidth="900">
+        <columns>
+            <TableColumn fx:id="colNom" text="Nom" prefWidth="100"/>
+            <TableColumn fx:id="colPrenom" text="Prenom" prefWidth="100"/>
+            <TableColumn fx:id="colAge" text="Age" prefWidth="70"/>
+            <TableColumn fx:id="colAdresse" text="Adresse" prefWidth="180"/>
+            <TableColumn fx:id="colType" text="Type" prefWidth="140"/>
+            <TableColumn fx:id="colDate" text="Date" prefWidth="120"/>
+            <TableColumn fx:id="colHeure" text="Horaire" prefWidth="170"/>
+        </columns>
+    </TableView>
+</VBox>

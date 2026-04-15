@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="15" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.example.controller.QuestionsReponsesController"
+      style="-fx-padding: 10;">
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!--                        SECTION QUESTIONS                          -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+
+    <Label text="Questions"
+           style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #1e293b;" />
+
+    <!-- Toolbar Questions -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <TextField fx:id="searchField"
+                   promptText="Rechercher une question..."
+                   prefWidth="300"
+                   onKeyReleased="#handleSearch" />
+        <Button text="+ Ajouter Question"
+                onAction="#handleAjouter"
+                style="-fx-background-color: #3b82f6; -fx-text-fill: white;
+                       -fx-background-radius: 6; -fx-padding: 8 16; -fx-cursor: hand;" />
+    </HBox>
+
+    <!-- Table Questions -->
+    <TableView fx:id="tableView" fixedCellSize="55" prefHeight="250"
+               style="-fx-background-color: white; -fx-background-radius: 10;">
+        <columns>
+            <TableColumn fx:id="colId"        text="#"         prefWidth="50"  />
+            <TableColumn fx:id="colQuestion"  text="Question"  prefWidth="280" />
+            <TableColumn fx:id="colCategorie" text="Catégorie" prefWidth="130" />
+            <TableColumn fx:id="colActions"   text="Actions"   prefWidth="180" />
+        </columns>
+        <placeholder>
+            <Label text="Aucune question." style="-fx-text-fill: #94a3b8;" />
+        </placeholder>
+    </TableView>
+
+    <!-- Modal Question -->
+    <VBox fx:id="modalBox" spacing="12" managed="false" visible="false"
+          style="-fx-background-color: white; -fx-padding: 20;
+                 -fx-background-radius: 10;
+                 -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
+
+        <Label fx:id="modalTitle" text="Nouvelle Question"
+               style="-fx-font-size: 15; -fx-font-weight: bold;" />
+        <Separator />
+
+        <GridPane hgap="15" vgap="12">
+            <columnConstraints>
+                <ColumnConstraints prefWidth="130" />
+                <ColumnConstraints hgrow="ALWAYS" />
+            </columnConstraints>
+
+            <Label text="Question *" style="-fx-font-weight: bold;"
+                   GridPane.rowIndex="0" GridPane.columnIndex="0" />
+            <TextField fx:id="fieldQuestion" promptText="Entrez la question..."
+                       GridPane.rowIndex="0" GridPane.columnIndex="1" />
+
+            <Label text="Ordre"
+                   GridPane.rowIndex="1" GridPane.columnIndex="0" />
+            <TextField fx:id="fieldOrdre" promptText="Ex: 1"
+                       GridPane.rowIndex="1" GridPane.columnIndex="1" />
+
+            <Label text="Type"
+                   GridPane.rowIndex="2" GridPane.columnIndex="0" />
+            <TextField fx:id="fieldType" promptText="Ex: choix_multiple, vrai_faux..."
+                       GridPane.rowIndex="2" GridPane.columnIndex="1" />
+
+            <Label text="Catégorie"
+                   GridPane.rowIndex="3" GridPane.columnIndex="0" />
+            <TextField fx:id="fieldCategorie" promptText="Ex: Anxiété, Dépression..."
+                       GridPane.rowIndex="3" GridPane.columnIndex="1" />
+        </GridPane>
+
+        <Separator />
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <Button text="Annuler" onAction="#handleAnnuler"
+                    style="-fx-background-color: #e2e8f0; -fx-background-radius: 6;
+                           -fx-padding: 8 16; -fx-cursor: hand;" />
+            <Button text="Sauvegarder" onAction="#handleSauvegarder"
+                    style="-fx-background-color: #3b82f6; -fx-text-fill: white;
+                           -fx-background-radius: 6; -fx-padding: 8 16; -fx-cursor: hand;" />
+        </HBox>
+    </VBox>
+
+    <Separator />
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!--                        SECTION RÉPONSES                           -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Label fx:id="labelReponses" text="Réponses — sélectionnez une question"
+               style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #1e293b;" />
+        <Region HBox.hgrow="ALWAYS" />
+        <Button fx:id="btnAjouterReponse" text="+ Ajouter Réponse"
+                onAction="#handleAjouterReponse" disable="true"
+                style="-fx-background-color: #10b981; -fx-text-fill: white;
+                       -fx-background-radius: 6; -fx-padding: 8 16; -fx-cursor: hand;" />
+    </HBox>
+
+    <!-- Table Réponses -->
+    <TableView fx:id="tableReponses" fixedCellSize="50" prefHeight="200"
+               style="-fx-background-color: white; -fx-background-radius: 10;">
+        <columns>
+            <TableColumn fx:id="colRepId"    text="#"       prefWidth="50"  />
+            <TableColumn fx:id="colRepTexte" text="Réponse" prefWidth="310" />
+            <TableColumn fx:id="colRepValeur" text="Valeur" prefWidth="80"  />
+            <TableColumn fx:id="colRepOrdre" text="Ordre"   prefWidth="80"  />
+            <TableColumn fx:id="colRepActions" text="Actions" prefWidth="170" />
+        </columns>
+        <placeholder>
+            <Label text="Sélectionnez une question pour voir ses réponses."
+                   style="-fx-text-fill: #94a3b8;" />
+        </placeholder>
+    </TableView>
+
+    <!-- Modal Réponse -->
+    <VBox fx:id="modalReponseBox" spacing="12" managed="false" visible="false"
+          style="-fx-background-color: white; -fx-padding: 20;
+                 -fx-background-radius: 10;
+                 -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
+
+        <Label fx:id="modalReponseTitle" text="Nouvelle Réponse"
+               style="-fx-font-size: 15; -fx-font-weight: bold;" />
+        <Separator />
+
+        <GridPane hgap="15" vgap="12">
+            <columnConstraints>
+                <ColumnConstraints prefWidth="130" />
+                <ColumnConstraints hgrow="ALWAYS" />
+            </columnConstraints>
+
+            <Label text="Réponse *" style="-fx-font-weight: bold;"
+                   GridPane.rowIndex="0" GridPane.columnIndex="0" />
+            <TextArea fx:id="fieldRepTexte" promptText="Entrez la réponse..."
+                      prefRowCount="3" wrapText="true"
+                      GridPane.rowIndex="0" GridPane.columnIndex="1" />
+
+            <Label text="Valeur"
+                   GridPane.rowIndex="1" GridPane.columnIndex="0" />
+            <TextField fx:id="fieldRepValeur" promptText="Ex: 1, 2, 3..."
+                       GridPane.rowIndex="1" GridPane.columnIndex="1" />
+
+            <Label text="Ordre"
+                   GridPane.rowIndex="2" GridPane.columnIndex="0" />
+            <TextField fx:id="fieldRepOrdre" promptText="Ex: 1"
+                       GridPane.rowIndex="2" GridPane.columnIndex="1" />
+        </GridPane>
+
+        <Separator />
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <Button text="Annuler" onAction="#handleAnnulerReponse"
+                    style="-fx-background-color: #e2e8f0; -fx-background-radius: 6;
+                           -fx-padding: 8 16; -fx-cursor: hand;" />
+            <Button text="Sauvegarder" onAction="#handleSauvegarderReponse"
+                    style="-fx-background-color: #10b981; -fx-text-fill: white;
+                           -fx-background-radius: 6; -fx-padding: 8 16; -fx-cursor: hand;" />
+        </HBox>
+    </VBox>
+
+</VBox>

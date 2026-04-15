@@ -8,7 +8,7 @@
 
 /* Navbar */
 .navbar {
-    -fx-background-color: #198754;
+    -fx-background-color: #c5df43;
     -fx-padding: 15;
 }
 
@@ -33,7 +33,7 @@
 
 /* Bouton principal */
 .btn-custom {
-    -fx-background-color: #198754;
+    -fx-background-color: #c5df43;
     -fx-text-fill: white;
     -fx-padding: 10 30;
     -fx-background-radius: 50;

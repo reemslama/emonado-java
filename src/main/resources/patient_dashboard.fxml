@@ -1,17 +1,203 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.geometry.Insets?>
 
-<VBox spacing="30" alignment="CENTER" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.example.controller.PatientDashboardController"
-      style="-fx-background-color: rgba(221, 245, 131, 0.27); -fx-padding: 60;">
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.controller.PatientDashboardController"
+            style="-fx-background-color: linear-gradient(to bottom right, #f0fdf4, #ecfdf5, #f0f9ff);">
 
-    <Label fx:id="welcomeLabel" text="Bienvenue" style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+    <top>
+        <!-- Top Bar -->
+        <HBox alignment="CENTER_LEFT" spacing="15"
+              style="-fx-background-color: white; -fx-padding: 20 40; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 20, 0, 0, 2);">
+            <Label text="🌿" style="-fx-font-size: 28px;"/>
+            <Label text="Emonado" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #166534; -fx-font-family: 'Segoe UI';"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label text="🔔" style="-fx-font-size: 20px; -fx-cursor: hand; -fx-opacity: 0.7;"/>
+            <Region prefWidth="10"/>
+            <VBox alignment="CENTER_RIGHT" spacing="2">
+                <Label fx:id="welcomeLabel" text="Bienvenue, Patient"
+                       style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #1e293b; -fx-font-family: 'Segoe UI';"/>
+                <Label text="Tableau de bord"
+                       style="-fx-font-size: 12px; -fx-text-fill: #64748b; -fx-font-family: 'Segoe UI';"/>
+            </VBox>
+            <StackPane prefWidth="42" prefHeight="42"
+                       style="-fx-background-color: linear-gradient(to bottom right, #22c55e, #16a34a); -fx-background-radius: 21;">
+                <Label text="👤" style="-fx-font-size: 20px;"/>
+            </StackPane>
+        </HBox>
+    </top>
 
-    <VBox styleClass="icon-box-patient" onMouseClicked="#goToProfil" prefWidth="150" prefHeight="150" alignment="CENTER"
-          style="-fx-background-color: white; -fx-background-radius: 25; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
-        <Label text="👤" style="-fx-font-size: 60px; -fx-text-fill: #7cb342;"/>
-        <Label text="Mon Profil" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
-    </VBox>
+    <center>
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER"
+                    style="-fx-background: transparent; -fx-background-color: transparent; -fx-border-color: transparent;">
+            <VBox spacing="35" alignment="CENTER"
+                  style="-fx-padding: 50 60;">
 
-</VBox>
+                <!-- Welcome Section -->
+                <VBox spacing="8" alignment="CENTER">
+                    <Label text="👋" style="-fx-font-size: 42px;"/>
+                    <Label text="Bienvenue sur votre espace santé"
+                           style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #0f172a; -fx-font-family: 'Segoe UI';"/>
+                    <Label text="Gérez votre bien-être mental en toute simplicité"
+                           style="-fx-font-size: 15px; -fx-text-fill: #64748b; -fx-font-family: 'Segoe UI';"/>
+                </VBox>
+
+                <!-- Quick Stats Bar -->
+                <HBox spacing="20" alignment="CENTER">
+                    <HBox spacing="10" alignment="CENTER"
+                          style="-fx-background-color: white; -fx-background-radius: 16; -fx-padding: 16 24;
+                                 -fx-effect: dropshadow(gaussian, rgba(34,197,94,0.12), 20, 0, 0, 4);">
+                        <Label text="📅" style="-fx-font-size: 22px;"/>
+                        <VBox spacing="2">
+                            <Label text="Prochain RDV" style="-fx-font-size: 11px; -fx-text-fill: #94a3b8; -fx-font-family: 'Segoe UI';"/>
+                            <Label text="Aujourd'hui, 14h" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #166534; -fx-font-family: 'Segoe UI';"/>
+                        </VBox>
+                    </HBox>
+                    <HBox spacing="10" alignment="CENTER"
+                          style="-fx-background-color: white; -fx-background-radius: 16; -fx-padding: 16 24;
+                                 -fx-effect: dropshadow(gaussian, rgba(34,197,94,0.12), 20, 0, 0, 4);">
+                        <Label text="💚" style="-fx-font-size: 22px;"/>
+                        <VBox spacing="2">
+                            <Label text="Humeur du jour" style="-fx-font-size: 11px; -fx-text-fill: #94a3b8; -fx-font-family: 'Segoe UI';"/>
+                            <Label text="Bonne 😊" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #166534; -fx-font-family: 'Segoe UI';"/>
+                        </VBox>
+                    </HBox>
+                    <HBox spacing="10" alignment="CENTER"
+                          style="-fx-background-color: white; -fx-background-radius: 16; -fx-padding: 16 24;
+                                 -fx-effect: dropshadow(gaussian, rgba(34,197,94,0.12), 20, 0, 0, 4);">
+                        <Label text="📊" style="-fx-font-size: 22px;"/>
+                        <VBox spacing="2">
+                            <Label text="Tests complétés" style="-fx-font-size: 11px; -fx-text-fill: #94a3b8; -fx-font-family: 'Segoe UI';"/>
+                            <Label text="12 cette semaine" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #166534; -fx-font-family: 'Segoe UI';"/>
+                        </VBox>
+                    </HBox>
+                </HBox>
+
+                <!-- Section Title -->
+                <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 0 0 0 5;">
+                    <Region prefWidth="4" prefHeight="24"
+                            style="-fx-background-color: linear-gradient(to bottom, #22c55e, #16a34a); -fx-background-radius: 2;"/>
+                    <Label text="Accès rapide"
+                           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1e293b; -fx-font-family: 'Segoe UI';"/>
+                </HBox>
+
+                <!-- Cards Grid -->
+                <FlowPane hgap="24" vgap="24" alignment="CENTER" prefWrapLength="750">
+
+                    <!-- Mon Profil -->
+                    <VBox onMouseClicked="#goToProfil" spacing="12"
+                          prefWidth="210" prefHeight="200" alignment="CENTER"
+                          style="-fx-background-color: white; -fx-background-radius: 24; -fx-cursor: hand;
+                                 -fx-padding: 25 20;
+                                 -fx-border-color: transparent;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 25, 0, 0, 8);">
+                        <StackPane prefWidth="60" prefHeight="60"
+                                   style="-fx-background-color: linear-gradient(to bottom right, #dcfce7, #bbf7d0); -fx-background-radius: 18;">
+                            <Label text="👤" style="-fx-font-size: 30px;"/>
+                        </StackPane>
+                        <Label text="Mon Profil"
+                               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b; -fx-font-family: 'Segoe UI';"/>
+                        <Label text="Voir et modifier vos infos"
+                               style="-fx-font-size: 12px; -fx-text-fill: #94a3b8; -fx-font-family: 'Segoe UI';"
+                               wrapText="true" textAlignment="CENTER"/>
+                    </VBox>
+
+                    <!-- Questionnaire -->
+                    <VBox onMouseClicked="#goToTest" spacing="12"
+                          prefWidth="210" prefHeight="200" alignment="CENTER"
+                          style="-fx-background-color: white; -fx-background-radius: 24; -fx-cursor: hand;
+                                 -fx-padding: 25 20;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 25, 0, 0, 8);">
+                        <StackPane prefWidth="60" prefHeight="60"
+                                   style="-fx-background-color: linear-gradient(to bottom right, #fef3c7, #fde68a); -fx-background-radius: 18;">
+                            <Label text="📝" style="-fx-font-size: 30px;"/>
+                        </StackPane>
+                        <Label text="Questionnaire"
+                               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b; -fx-font-family: 'Segoe UI';"/>
+                        <Label text="Évaluer votre état mental"
+                               style="-fx-font-size: 12px; -fx-text-fill: #94a3b8; -fx-font-family: 'Segoe UI';"
+                               wrapText="true" textAlignment="CENTER"/>
+                    </VBox>
+
+                    <!-- Mes Journaux -->
+                    <VBox onMouseClicked="#goToJournaux" spacing="12"
+                          prefWidth="210" prefHeight="200" alignment="CENTER"
+                          style="-fx-background-color: white; -fx-background-radius: 24; -fx-cursor: hand;
+                                 -fx-padding: 25 20;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 25, 0, 0, 8);">
+                        <StackPane prefWidth="60" prefHeight="60"
+                                   style="-fx-background-color: linear-gradient(to bottom right, #e0e7ff, #c7d2fe); -fx-background-radius: 18;">
+                            <Label text="📖" style="-fx-font-size: 30px;"/>
+                        </StackPane>
+                        <Label text="Mes Journaux"
+                               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b; -fx-font-family: 'Segoe UI';"/>
+                        <Label text="Écrire et relire vos pensées"
+                               style="-fx-font-size: 12px; -fx-text-fill: #94a3b8; -fx-font-family: 'Segoe UI';"
+                               wrapText="true" textAlignment="CENTER"/>
+                    </VBox>
+
+                    <!-- Rendez-vous -->
+                    <VBox onMouseClicked="#goToRendezVous" spacing="12"
+                          prefWidth="210" prefHeight="200" alignment="CENTER"
+                          style="-fx-background-color: white; -fx-background-radius: 24; -fx-cursor: hand;
+                                 -fx-padding: 25 20;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 25, 0, 0, 8);">
+                        <StackPane prefWidth="60" prefHeight="60"
+                                   style="-fx-background-color: linear-gradient(to bottom right, #fce7f3, #fbcfe8); -fx-background-radius: 18;">
+                            <Label text="📅" style="-fx-font-size: 30px;"/>
+                        </StackPane>
+                        <Label text="Rendez-vous"
+                               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b; -fx-font-family: 'Segoe UI';"/>
+                        <Label text="Planifier vos consultations"
+                               style="-fx-font-size: 12px; -fx-text-fill: #94a3b8; -fx-font-family: 'Segoe UI';"
+                               wrapText="true" textAlignment="CENTER"/>
+                    </VBox>
+
+                    <!-- Dossier Médical -->
+                    <VBox onMouseClicked="#goToMedicalRecord" spacing="12"
+                          prefWidth="210" prefHeight="200" alignment="CENTER"
+                          style="-fx-background-color: white; -fx-background-radius: 24; -fx-cursor: hand;
+                                 -fx-padding: 25 20;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 25, 0, 0, 8);">
+                        <StackPane prefWidth="60" prefHeight="60"
+                                   style="-fx-background-color: linear-gradient(to bottom right, #ccfbf1, #99f6e4); -fx-background-radius: 18;">
+                            <Label text="🗂️" style="-fx-font-size: 30px;"/>
+                        </StackPane>
+                        <Label text="Dossier Médical"
+                               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b; -fx-font-family: 'Segoe UI';"/>
+                        <Label text="Historique et documents"
+                               style="-fx-font-size: 12px; -fx-text-fill: #94a3b8; -fx-font-family: 'Segoe UI';"
+                               wrapText="true" textAlignment="CENTER"/>
+                    </VBox>
+
+                    <!-- Consultations -->
+                    <VBox onMouseClicked="#goToConsultations" spacing="12"
+                          prefWidth="210" prefHeight="200" alignment="CENTER"
+                          style="-fx-background-color: white; -fx-background-radius: 24; -fx-cursor: hand;
+                                 -fx-padding: 25 20;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 25, 0, 0, 8);">
+                        <StackPane prefWidth="60" prefHeight="60"
+                                   style="-fx-background-color: linear-gradient(to bottom right, #fed7aa, #fdba74); -fx-background-radius: 18;">
+                            <Label text="🩺" style="-fx-font-size: 30px;"/>
+                        </StackPane>
+                        <Label text="Consultations"
+                               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b; -fx-font-family: 'Segoe UI';"/>
+                        <Label text="Historique des séances"
+                               style="-fx-font-size: 12px; -fx-text-fill: #94a3b8; -fx-font-family: 'Segoe UI';"
+                               wrapText="true" textAlignment="CENTER"/>
+                    </VBox>
+
+                </FlowPane>
+
+                <!-- Footer -->
+                <Label text="© 2026 Emonado — Votre bien-être, notre priorité 🌿"
+                       style="-fx-font-size: 12px; -fx-text-fill: #94a3b8; -fx-font-family: 'Segoe UI'; -fx-padding: 20 0 0 0;"/>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+
+</BorderPane>

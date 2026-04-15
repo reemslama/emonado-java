@@ -5,23 +5,25 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DataSource {
-    // L'URL pointe maintenant vers ta base "emonado"
-    private final String url = "jdbc:mysql://127.0.0.1:3306/emonado";
-    private final String user = "root";
-    private final String password = ""; // Vide par défaut sur XAMPP
-    private Connection connection;
+
     private static DataSource instance;
+    private Connection connection;
+
+    // ✅ Modifie ces valeurs selon ta config
+    private static final String URL      = "jdbc:mysql://localhost:3306/emonado";
+    private static final String USER     = "root";
+    private static final String PASSWORD = "";  // ton mot de passe MySQL
 
     private DataSource() {
         try {
-            // Chargement explicite du driver (optionnel mais recommandé)
             Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection(url, user, password);
-            System.out.println("✅ Connexion à la base 'emonado' réussie !");
+            this.connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            System.out.println("✅ Connexion MySQL réussie !");
         } catch (ClassNotFoundException e) {
-            System.err.println("❌ Driver MySQL non trouvé : " + e.getMessage());
+            System.err.println("❌ Driver MySQL introuvable : " + e.getMessage());
         } catch (SQLException e) {
-            System.err.println("❌ Erreur de connexion à MySQL : " + e.getMessage());
+            System.err.println("❌ Erreur connexion MySQL : " + e.getMessage());
+            System.err.println("👉 Vérifie que MySQL est démarré (XAMPP / WAMP / services)");
         }
     }
 
@@ -34,12 +36,13 @@ public class DataSource {
 
     public Connection getConnection() {
         try {
-            // Si la connexion est nulle ou a été fermée par erreur, on la réouvre
+            // Reconnexion automatique si connexion perdue
             if (connection == null || connection.isClosed()) {
-                connection = DriverManager.getConnection(url, user, password);
+                System.err.println("⚠️ Connexion perdue, tentative de reconnexion...");
+                connection = DriverManager.getConnection(URL, USER, PASSWORD);
             }
         } catch (SQLException e) {
-            System.err.println("Erreur lors de la récupération de la connexion : " + e.getMessage());
+            System.err.println("❌ Reconnexion échouée : " + e.getMessage());
         }
         return connection;
     }

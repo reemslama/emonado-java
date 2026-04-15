@@ -62,4 +62,96 @@ public class PsyDashboardController {
             e.printStackTrace();
         }
     }
+
+    @FXML
+    private void goToAnalyses() {
+        if (this.currentUser == null) {
+            this.currentUser = UserSession.getInstance();
+        }
+        if (this.currentUser == null) {
+            System.err.println("Erreur: aucun psychologue en session.");
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/analyse_emotionnelle.fxml"));
+            Parent analyseView = loader.load();
+
+            AnalyseEmotionnelleController controller = loader.getController();
+            controller.initForPsychologueView();
+
+            BorderPane mainContainer = (BorderPane) welcomeLabel.getScene().lookup("#mainContainer");
+            if (mainContainer != null) {
+                mainContainer.setCenter(analyseView);
+            } else {
+                welcomeLabel.getScene().setRoot(analyseView);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    @FXML
+    private void goToListeRendezVous() {
+        loadView("/ListeRendezVousPsy.fxml", "Liste des Rendez-vous");
+    }
+
+    @FXML
+    private void goToDisponibilites() {
+        loadView("/AjouterDisponibilite.fxml", "Gestion des Disponibilités");
+    }
+    @FXML
+    private void goToTypeRdv() {
+        loadView("/AjouterType.fxml", "Types de Rendez-vous");
+    }
+
+    @FXML
+    private void goToMedicalManagement() {
+        if (this.currentUser == null) {
+            this.currentUser = UserSession.getInstance();
+        }
+        if (this.currentUser == null) {
+            System.err.println("Erreur: aucun psychologue en session.");
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/medical_management.fxml"));
+            Parent view = loader.load();
+            MedicalManagementController controller = loader.getController();
+            controller.initForPsychologue(this.currentUser);
+
+            BorderPane mainContainer = (BorderPane) welcomeLabel.getScene().lookup("#mainContainer");
+            if (mainContainer != null) {
+                mainContainer.setCenter(view);
+            } else {
+                welcomeLabel.getScene().setRoot(view);
+            }
+        } catch (IOException e) {
+            System.err.println("Erreur chargement suivi medical : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    /**
+     * Méthode utilitaire pour changer le contenu central (si tu utilises un BorderPane)
+     */
+    private void loadView(String fxmlPath, String title) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent view = loader.load();
+
+            // Si tu as un BorderPane nommé mainContainer dans ta fenêtre principale
+            BorderPane mainContainer = (BorderPane) welcomeLabel.getScene().lookup("#mainContainer");
+            if (mainContainer != null) {
+                mainContainer.setCenter(view);
+            } else {
+                // Sinon, on remplace la racine (moins propre mais fonctionne)
+                welcomeLabel.getScene().setRoot(view);
+            }
+        } catch (IOException e) {
+            System.err.println("Erreur chargement " + title + " : " + e.getMessage());
+            e.printStackTrace();
+        }
+
+
+    }
 }

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="TOP_CENTER" spacing="15.0"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.controllers.RendezVousController"
+      stylesheets="@/styles/style.css">
+
+    <padding>
+        <Insets top="20" bottom="20" left="20" right="20"/>
+    </padding>
+
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Button text="Retour" onAction="#returnToDashboard"/>
+        <Label fx:id="welcomeLabel" text="Bienvenue" style="-fx-font-size:14px; -fx-font-weight:bold;"/>
+    </HBox>
+
+    <HBox alignment="CENTER" spacing="20">
+        <Label fx:id="patientNomLabel" text="Nom :"/>
+        <Label fx:id="patientPrenomLabel" text="Prenom :"/>
+    </HBox>
+
+    <Label text="Gestion des Rendez-vous" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+    <TextField fx:id="txtAge" promptText="Age"/>
+    <TextField fx:id="txtAdresse" promptText="Adresse"/>
+    <ComboBox fx:id="comboTypes" promptText="Type de rendez-vous"/>
+    <ComboBox fx:id="comboDispos" promptText="Creneau disponible"/>
+
+    <Label fx:id="errorGlobal"/>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Button fx:id="btnValider" text="Ajouter" onAction="#validerRendezVous"/>
+        <Button fx:id="btnModifier" text="Modifier" onAction="#modifierRendezVous"/>
+        <Button fx:id="btnSupprimer" text="Supprimer" onAction="#supprimerRendezVous"/>
+    </HBox>
+
+    <TableView fx:id="tableRendezVous" prefHeight="320" prefWidth="760">
+        <columns>
+            <TableColumn fx:id="colAge" text="Age" prefWidth="80"/>
+            <TableColumn fx:id="colAdresse" text="Adresse" prefWidth="180"/>
+            <TableColumn fx:id="colType" text="Type" prefWidth="150"/>
+            <TableColumn fx:id="colDate" text="Date" prefWidth="140"/>
+            <TableColumn fx:id="colHeure" text="Horaire" prefWidth="180"/>
+        </columns>
+    </TableView>
+</VBox>
