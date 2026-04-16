@@ -2,7 +2,12 @@ package org.example.service;
 
 import org.example.entities.User;
 import org.example.utils.DataSource;
-import java.sql.*;
+
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class AuthService {
 
@@ -10,7 +15,12 @@ public class AuthService {
      * Inscription d'un nouveau patient
      */
     public static void addPatient(User user) {
-        String query = "INSERT INTO user (nom, prenom, email, password, role, telephone, sexe, dateNaissance) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        user.setRole("ROLE_PATIENT");
+        addUser(user);
+    }
+
+    public static void addUser(User user) {
+        String query = "INSERT INTO user (nom, prenom, email, password, role, telephone, sexe, dateNaissance, specialite) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         // Utilisation du try-with-resources pour garantir la fermeture de la connexion et du statement
         try (Connection conn = DataSource.getInstance().getConnection();
@@ -20,7 +30,7 @@ public class AuthService {
             pstmt.setString(2, user.getPrenom());
             pstmt.setString(3, user.getEmail());
             pstmt.setString(4, user.getPassword());
-            pstmt.setString(5, "ROLE_PATIENT");
+            pstmt.setString(5, user.getRole());
             pstmt.setString(6, user.getTelephone());
             pstmt.setString(7, user.getSexe());
 
@@ -42,7 +52,7 @@ public class AuthService {
     }
 
     /**
-     * Authentification et récupération de TOUTES les données de l'utilisateur
+     * Authentification et recuperation de toutes les donnees de l'utilisateur
      */
     public static User authenticate(String email, String password) {
         String query = "SELECT * FROM user WHERE email = ? AND password = ?";

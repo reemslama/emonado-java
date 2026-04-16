@@ -31,4 +31,19 @@ public class UserService {
         } catch (SQLException e) { e.printStackTrace(); }
         return users;
     }
+
+    public static void updatePatientProfile(User user) throws SQLException {
+        String query = "UPDATE user SET nom = ?, prenom = ?, email = ?, telephone = ?, sexe = ?, dateNaissance = ? WHERE id = ?";
+        try (Connection conn = DataSource.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1, user.getNom());
+            pstmt.setString(2, user.getPrenom());
+            pstmt.setString(3, user.getEmail());
+            pstmt.setString(4, user.getTelephone());
+            pstmt.setString(5, user.getSexe());
+            pstmt.setDate(6, user.getDateNaissance() != null ? Date.valueOf(user.getDateNaissance()) : null);
+            pstmt.setInt(7, user.getId());
+            pstmt.executeUpdate();
+        }
+    }
 }

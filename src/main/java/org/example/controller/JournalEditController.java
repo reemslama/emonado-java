@@ -10,8 +10,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import org.example.entities.Journal;
 import org.example.entities.User;
+import org.example.service.ContentValidationService;
 import org.example.service.JournalService;
-import org.example.utils.JournalValidator;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -53,7 +53,7 @@ public class JournalEditController {
             errorLabel.setText("Veuillez choisir une humeur.");
             return;
         }
-        String contentError = JournalValidator.validateContent(contenu);
+        String contentError = ContentValidationService.validateContent(contenu);
         if (contentError != null) {
             errorLabel.setText(contentError);
             return;

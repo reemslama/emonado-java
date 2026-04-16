@@ -10,8 +10,6 @@ import javafx.stage.Stage;
 import org.example.entities.User;
 import org.example.utils.UserSession;
 
-import java.io.IOException;
-
 public class PatientDashboardController {
 
     @FXML private Label welcomeLabel;
@@ -25,7 +23,9 @@ public class PatientDashboardController {
     }
 
     public void setUserData(User user) {
-        if (user == null) return;
+        if (user == null) {
+            return;
+        }
         this.currentUser = user;
         if (welcomeLabel != null) {
             welcomeLabel.setText("Bienvenue, " + user.getPrenom() + " " + user.getNom());
@@ -50,9 +50,14 @@ public class PatientDashboardController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/test/ChoixCategorie.fxml"));
             Parent root = loader.load();
+
             Stage stage = (Stage) welcomeLabel.getScene().getWindow();
-            stage.setScene(new Scene(root, 800, 600));
-        } catch (IOException e) {
+            Scene scene = new Scene(root, stage.getWidth(), stage.getHeight());
+            stage.setScene(scene);
+            stage.setMaximized(true);
+            stage.setFullScreen(true);
+            stage.setFullScreenExitHint("");
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.controller.MedicalManagementController"
+      spacing="16" style="-fx-background-color: #f8fafc; -fx-padding: 20;">
+
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <VBox spacing="4">
+            <Label fx:id="titleLabel" text="Gestion medicale" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+            <Label fx:id="subtitleLabel" text="Gestion des dossiers patients" wrapText="true" style="-fx-text-fill: #64748b;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Retour" onAction="#handleBack"
+                style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-background-radius: 8;"/>
+    </HBox>
+
+    <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 14;">
+        <Label text="Patient" style="-fx-font-weight: bold;"/>
+        <ComboBox fx:id="patientComboBox" prefWidth="360"/>
+        <Button text="Rafraichir" onAction="#handleRefreshPatients"
+                style="-fx-background-color: #0d6efd; -fx-text-fill: white; -fx-background-radius: 8;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="emptyPatientLabel" text="Aucun patient disponible." visible="false" managed="false"
+               style="-fx-text-fill: #dc3545; -fx-font-weight: bold;"/>
+    </HBox>
+
+    <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+        <tabs>
+            <Tab text="Dossier medical">
+                <ScrollPane fitToWidth="true">
+                    <VBox spacing="12" style="-fx-background-color: transparent; -fx-padding: 16;">
+                        <VBox spacing="8" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 16;">
+                            <Label text="Rappel" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                            <TextArea fx:id="dossierReminderArea" wrapText="true" prefRowCount="4"/>
+                            <Label text="Historique medical" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                            <TextArea fx:id="dossierHistoryArea" wrapText="true" prefRowCount="6"/>
+                            <HBox spacing="10">
+                                <Button fx:id="saveDossierButton" text="Enregistrer le dossier" onAction="#handleSaveDossier"
+                                        style="-fx-background-color: #198754; -fx-text-fill: white;"/>
+                                <Button fx:id="deleteDossierButton" text="Supprimer le dossier" onAction="#handleDeleteDossier"
+                                        style="-fx-background-color: #dc3545; -fx-text-fill: white;"/>
+                            </HBox>
+                        </VBox>
+                    </VBox>
+                </ScrollPane>
+            </Tab>
+
+            <Tab text="Antecedents">
+                <ScrollPane fitToWidth="true">
+                    <VBox spacing="12" style="-fx-background-color: transparent; -fx-padding: 16;">
+                        <VBox spacing="8" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 16;">
+                            <Label text="Formulaire antecedent" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                            <TextField fx:id="antecedentTypeField" promptText="Type d'antecedent"/>
+                            <TextArea fx:id="antecedentDescriptionArea" wrapText="true" prefRowCount="4" promptText="Description"/>
+                            <DatePicker fx:id="antecedentDatePicker"/>
+                            <HBox spacing="10">
+                                <Button fx:id="saveAntecedentButton" text="Enregistrer l'antecedent" onAction="#handleSaveAntecedent"
+                                        style="-fx-background-color: #198754; -fx-text-fill: white;"/>
+                                <Button fx:id="cancelAntecedentButton" text="Annuler" onAction="#handleCancelAntecedent"
+                                        visible="false" managed="false"
+                                        style="-fx-background-color: #6c757d; -fx-text-fill: white;"/>
+                            </HBox>
+                        </VBox>
+
+                        <Separator/>
+
+                        <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 16;">
+                            <Label text="Liste des antecedents" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                            <VBox fx:id="antecedentListContainer" spacing="10"/>
+                        </VBox>
+                    </VBox>
+                </ScrollPane>
+            </Tab>
+
+            <Tab text="Consultations">
+                <ScrollPane fitToWidth="true">
+                    <VBox spacing="12" style="-fx-background-color: transparent; -fx-padding: 16;">
+                        <VBox spacing="8" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 16;">
+                            <Label text="Edition consultation selectionnee" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                            <DatePicker fx:id="consultationDatePicker"/>
+                            <TextArea fx:id="consultationPatientNotesArea" wrapText="true" prefRowCount="5" promptText="Compte rendu patient"/>
+                            <TextArea fx:id="consultationPsychologueNotesArea" wrapText="true" prefRowCount="4" promptText="Note psychologue"/>
+                            <HBox spacing="10">
+                                <Button fx:id="saveConsultationButton" text="Mettre a jour la consultation" onAction="#handleSaveConsultation"
+                                        style="-fx-background-color: #198754; -fx-text-fill: white;"/>
+                                <Button fx:id="cancelConsultationButton" text="Annuler" onAction="#handleCancelConsultation"
+                                        visible="false" managed="false"
+                                        style="-fx-background-color: #6c757d; -fx-text-fill: white;"/>
+                            </HBox>
+                        </VBox>
+
+                        <Separator/>
+
+                        <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 16;">
+                            <Label text="Historique des consultations" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                            <VBox fx:id="consultationListContainer" spacing="10"/>
+                        </VBox>
+                    </VBox>
+                </ScrollPane>
+            </Tab>
+        </tabs>
+    </TabPane>
+</VBox>

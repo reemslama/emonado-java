@@ -16,6 +16,7 @@ public class DataSource {
 
     private DataSource() {
         try {
+            // Chargement explicite du driver (optionnel mais recommandé)
             Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection(url, user, password);
             System.out.println("✅ Connexion MySQL réussie !");
@@ -33,6 +34,7 @@ public class DataSource {
 
     public Connection getConnection() {
         try {
+            // Si la connexion est nulle ou a été fermée par erreur, on la réouvre
             if (connection == null || connection.isClosed()) {
                 connection = DriverManager.getConnection(url, user, password);
             }
