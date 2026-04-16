@@ -10,13 +10,13 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/main.fxml"));
-        Scene scene = new Scene(loader.load(), 900, 600);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/EspaceEnfant.fxml"));
+        Scene scene = new Scene(loader.load(), 1100, 720);
 
         // Ajouter CSS
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/styles/template.css")).toExternalForm());
 
-        stage.setTitle("EmoNado");
+        stage.setTitle("EmoNado - Espace Enfant");
         stage.setScene(scene);
         stage.show();
     }
