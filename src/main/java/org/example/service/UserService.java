@@ -25,6 +25,7 @@ public class UserService {
                 u.setSpecialite(rs.getString("specialite"));
                 u.setRole(rs.getString("role"));
                 Date d = rs.getDate("dateNaissance");
+                u.setHasChild(rs.getBoolean("hasChild"));
                 if (d != null) u.setDateNaissance(d.toLocalDate());
                 users.add(u);
             }

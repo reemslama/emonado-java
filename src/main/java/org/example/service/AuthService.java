@@ -20,7 +20,8 @@ public class AuthService {
     }
 
     public static void addUser(User user) {
-        String query = "INSERT INTO user (nom, prenom, email, password, role, telephone, sexe, dateNaissance, specialite) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO user (nom, prenom, email, password, role, telephone, sexe, dateNaissance, specialite, hasChild) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
 
         Connection conn = DataSource.getInstance().getConnection();
 
@@ -34,7 +35,9 @@ public class AuthService {
             pstmt.setString(7, user.getSexe());
             pstmt.setDate(8, user.getDateNaissance() != null ? Date.valueOf(user.getDateNaissance()) : null);
             pstmt.setString(9, user.getSpecialite());
+            pstmt.setBoolean(10, user.isHasChild());
             pstmt.executeUpdate();
+
         } catch (SQLException e) {
             throw new RuntimeException("Erreur SQL lors de l'inscription : " + e.getMessage(), e);
         }

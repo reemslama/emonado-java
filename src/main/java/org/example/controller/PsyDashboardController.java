@@ -103,34 +103,6 @@ public class PsyDashboardController {
     private void goToTypeRdv() {
         loadView("/AjouterType.fxml", "Types de Rendez-vous");
     }
-
-    @FXML
-    private void goToMedicalManagement() {
-        if (this.currentUser == null) {
-            this.currentUser = UserSession.getInstance();
-        }
-        if (this.currentUser == null) {
-            System.err.println("Erreur: aucun psychologue en session.");
-            return;
-        }
-
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/medical_management.fxml"));
-            Parent view = loader.load();
-            MedicalManagementController controller = loader.getController();
-            controller.initForPsychologue(this.currentUser);
-
-            BorderPane mainContainer = (BorderPane) welcomeLabel.getScene().lookup("#mainContainer");
-            if (mainContainer != null) {
-                mainContainer.setCenter(view);
-            } else {
-                welcomeLabel.getScene().setRoot(view);
-            }
-        } catch (IOException e) {
-            System.err.println("Erreur chargement suivi medical : " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
     /**
      * Méthode utilitaire pour changer le contenu central (si tu utilises un BorderPane)
      */
