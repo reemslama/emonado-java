@@ -8,6 +8,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class AuthService {
 
@@ -83,5 +84,48 @@ public class AuthService {
             System.err.println("Erreur SQL Authentification : " + e.getMessage());
         }
         return null;
+    }
+
+    public static User findByEmail(String email) {
+        String query = "SELECT * FROM user WHERE email = ?";
+        Connection conn = DataSource.getInstance().getConnection();
+
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1, email);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    User user = new User();
+                    user.setId(rs.getInt("id"));
+                    user.setNom(rs.getString("nom"));
+                    user.setPrenom(rs.getString("prenom"));
+                    user.setEmail(rs.getString("email"));
+                    user.setRole(rs.getString("role"));
+                    user.setTelephone(rs.getString("telephone"));
+                    user.setSexe(rs.getString("sexe"));
+                    user.setSpecialite(rs.getString("specialite"));
+                    user.setHasChild(rs.getBoolean("hasChild"));
+                    if (rs.getDate("dateNaissance") != null) {
+                        user.setDateNaissance(rs.getDate("dateNaissance").toLocalDate());
+                    }
+                    return user;
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur SQL lors de la recherche email : " + e.getMessage(), e);
+        }
+        return null;
+    }
+
+    public static boolean updatePasswordByEmail(String email, String newPassword) {
+        String query = "UPDATE user SET password = ? WHERE email = ?";
+        Connection conn = DataSource.getInstance().getConnection();
+
+        try (PreparedStatement pstmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setString(1, newPassword);
+            pstmt.setString(2, email);
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur SQL lors de la mise a jour du mot de passe : " + e.getMessage(), e);
+        }
     }
 }
