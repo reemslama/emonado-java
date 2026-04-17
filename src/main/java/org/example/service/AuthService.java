@@ -72,6 +72,7 @@ public class AuthService {
                     user.setTelephone(rs.getString("telephone"));
                     user.setSexe(rs.getString("sexe"));
                     user.setSpecialite(rs.getString("specialite"));
+                    user.setHasChild(rs.getBoolean("hasChild"));
                     if (rs.getDate("dateNaissance") != null) {
                         user.setDateNaissance(rs.getDate("dateNaissance").toLocalDate());
                     }

@@ -70,11 +70,16 @@ public class LoginController {
 
     private void redirectUser(User user) {
         try {
-            String fxmlPath = switch (user.getRole().toUpperCase()) {
-                case "ROLE_ADMIN" -> "/admin_dashboard.fxml";
-                case "ROLE_PSYCHOLOGUE" -> "/psy_dashboard.fxml";
-                default -> "/patient_dashboard.fxml";
-            };
+            String fxmlPath;
+            if ("ROLE_ADMIN".equalsIgnoreCase(user.getRole())) {
+                fxmlPath = "/admin_dashboard.fxml";
+            } else if ("ROLE_PSYCHOLOGUE".equalsIgnoreCase(user.getRole())) {
+                fxmlPath = "/psy_dashboard.fxml";
+            } else if (user.isHasChild()) {
+                fxmlPath = "/EspaceEnfant.fxml";
+            } else {
+                fxmlPath = "/patient_dashboard.fxml";
+            }
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent view = loader.load();

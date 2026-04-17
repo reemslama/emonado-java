@@ -95,7 +95,7 @@
 }
 
 /* Style quand le bouton est sélectionné (cliqué) */
-.option-btn:selected {
+.option-btn::selection {
     -fx-background-color: #c5df43; /* Vert de ton application */
     -fx-text-fill: white;
     -fx-border-color: #c5df43;

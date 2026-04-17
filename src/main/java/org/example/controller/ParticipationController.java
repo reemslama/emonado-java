@@ -292,7 +292,7 @@ public class ParticipationController {
         if (resourcesPrefixIndex >= 0) {
             fromResourcesRoot = normalized.substring(resourcesPrefixIndex + "src/main/resources/".length());
         }
-        String fileName = simplifyImageLabel(normalized);
+        String fileName = extractFileName(normalized);
 
         String[] candidates = new String[] {
                 normalized,
@@ -301,8 +301,9 @@ public class ParticipationController {
                 fromResourcesRoot.startsWith("/") ? fromResourcesRoot : "/" + fromResourcesRoot,
                 normalized.startsWith("/images/") ? normalized : "/images/" + fileName,
                 "/images/animaux/" + fileName,
-                "/images/depression/" + fileName,
                 "/images/nature/" + fileName
+                ,
+                "/images/situation/" + fileName
         };
 
         for (String candidate : candidates) {
@@ -361,6 +362,15 @@ public class ParticipationController {
             cursor = cursor.getParent();
         }
         return candidate;
+    }
+
+    private String extractFileName(String imagePath) {
+        if (imagePath == null || imagePath.isBlank()) {
+            return "";
+        }
+        String normalized = imagePath.replace("\\", "/");
+        int slashIndex = normalized.lastIndexOf('/');
+        return slashIndex >= 0 ? normalized.substring(slashIndex + 1) : normalized;
     }
 
     private void clearMessages() {

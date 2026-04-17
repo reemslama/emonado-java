@@ -17,20 +17,20 @@
         <Insets top="15.0" right="20.0" bottom="15.0" left="20.0"/>
     </padding>
 
-    <Label text="Jeu Enfant" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+    <Label text="Jeu enfant" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
 
-    <ComboBox fx:id="comboJeux" promptText="Selectionner un jeu" prefWidth="420.0"/>
+    <ComboBox fx:id="comboJeux" promptText="Sélectionner un jeu" prefWidth="420.0"/>
     <Label fx:id="errorJeu" style="-fx-font-size: 11px;"/>
     <Label fx:id="labelDisponibilite" style="-fx-font-size: 11px;"/>
 
     <Label fx:id="labelUserNom" text="Participant (Enfant) : " style="-fx-font-weight: bold; -fx-font-size: 13px;"/>
 
-    <Label text="L'enfant choisit une image pour exprimer son etat emotionnel :" style="-fx-font-weight: bold; -fx-font-size: 13px;"/>
+    <Label text="L'enfant choisit une image pour exprimer son état émotionnel :" style="-fx-font-weight: bold; -fx-font-size: 13px;"/>
     <TilePane fx:id="imageChoicesPane" hgap="8.0" vgap="8.0" prefColumns="4" prefWidth="920.0"/>
     <Label fx:id="selectedImageLabel" style="-fx-font-size: 11px;"/>
     <Label fx:id="errorChoix" style="-fx-font-size: 11px;"/>
 
-    <Label text="Resultat psychologique :" style="-fx-font-weight: bold; -fx-font-size: 13px;"/>
+    <Label text="Résultat psychologique :" style="-fx-font-weight: bold; -fx-font-size: 13px;"/>
     <Label fx:id="labelInterpretation" style="-fx-text-fill: #2e7d32; -fx-font-size: 13px;" wrapText="true" maxWidth="900.0"/>
 
     <Label fx:id="msgSuccess" style="-fx-font-size: 13px; -fx-font-weight: bold;"/>

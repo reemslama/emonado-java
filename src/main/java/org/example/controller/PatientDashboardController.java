@@ -4,19 +4,19 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.example.entities.User;
 import org.example.utils.UserSession;
 
-import java.io.IOException; // ✅ Import manquant ajouté
+import java.io.IOException;
 
 public class PatientDashboardController {
 
     @FXML private Label welcomeLabel;
-    @FXML private Button espaceEnfantBtn; // ✅ Bouton Espace Enfant
+    @FXML private VBox espaceEnfantBtn;
     private User currentUser;
 
     @FXML
@@ -27,7 +27,9 @@ public class PatientDashboardController {
     }
 
     public void setUserData(User user) {
-        if (user == null) return;
+        if (user == null) {
+            return;
+        }
 
         this.currentUser = user;
 
@@ -35,14 +37,11 @@ public class PatientDashboardController {
             welcomeLabel.setText("Bienvenue, " + user.getPrenom() + " " + user.getNom());
         }
 
-        // ✅ Afficher le bouton seulement si le patient a des enfants
         if (espaceEnfantBtn != null && user.isHasChild()) {
             espaceEnfantBtn.setVisible(true);
             espaceEnfantBtn.setManaged(true);
         }
     }
-
-    // --- NAVIGATION EXISTANTE ---
 
     @FXML
     private void goToProfil() {
@@ -66,7 +65,7 @@ public class PatientDashboardController {
             stage.setMaximized(true);
             stage.setFullScreen(true);
             stage.setFullScreenExitHint("");
-        } catch (IOException e) { // ✅ IOException au lieu de Exception générique
+        } catch (IOException e) {
             System.err.println("Erreur chargement test : " + e.getMessage());
             e.printStackTrace();
         }
@@ -77,13 +76,20 @@ public class PatientDashboardController {
         loadView("/AjouterRendezVous.fxml", "Rendez-vous");
     }
 
-    // ✅ Nouvelle méthode pour ouvrir l'Espace Enfant
+    @FXML
+    private void goToMedicalRecord() {
+        loadView("/medical_record.fxml", "Dossier medical");
+    }
+
+    @FXML
+    private void goToConsultations() {
+        loadView("/consultations.fxml", "Consultations");
+    }
+
     @FXML
     private void openEspaceEnfant() {
         loadView("/EspaceEnfant.fxml", "Espace Enfant");
     }
-
-    // --- MÉTHODE UTILITAIRE ---
 
     private void loadView(String fxmlPath, String viewName) {
         if (this.currentUser == null) {
@@ -93,9 +99,8 @@ public class PatientDashboardController {
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Parent view = loader.load(); // ✅ Plus d'erreur grâce à l'import IOException
+            Parent view = loader.load();
 
-            // Passer les données utilisateur si le contrôleur le supporte
             Object controller = loader.getController();
             if (controller != null) {
                 try {
@@ -103,13 +108,12 @@ public class PatientDashboardController {
                             .getMethod("setUserData", User.class)
                             .invoke(controller, this.currentUser);
                 } catch (NoSuchMethodException e) {
-                    System.out.println("Note: " + viewName + " ne nécessite pas setUserData.");
+                    System.out.println("Note: " + viewName + " ne necessite pas setUserData.");
                 } catch (Exception e) {
                     System.err.println("Erreur injection user dans " + viewName + " : " + e.getMessage());
                 }
             }
 
-            // Chercher le BorderPane principal et y injecter la vue
             BorderPane mainContainer = (BorderPane) welcomeLabel.getScene().lookup("#mainContainer");
             if (mainContainer != null) {
                 mainContainer.setCenter(view);
@@ -117,7 +121,7 @@ public class PatientDashboardController {
                 welcomeLabel.getScene().setRoot(view);
             }
 
-        } catch (IOException e) { // ✅ Correctement catchée maintenant
+        } catch (IOException e) {
             System.err.println("Erreur chargement vue [" + viewName + "] : " + e.getMessage());
             e.printStackTrace();
         }
