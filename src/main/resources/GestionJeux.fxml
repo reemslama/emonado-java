@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="TOP_CENTER" spacing="6.0"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.controller.JeuController"
+      stylesheets="@/styles/style.css">
+
+    <padding>
+        <Insets top="15.0" right="20.0" bottom="15.0" left="20.0"/>
+    </padding>
+
+    <Label text="CRUD Jeux de Cartes" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+    <TextField fx:id="txtTitre" promptText="Titre du jeu"/>
+    <Label fx:id="errorTitre" style="-fx-font-size: 11px;"/>
+
+    <TextArea fx:id="txtDescription" promptText="Description du jeu" prefRowCount="2" wrapText="true"/>
+    <Label fx:id="errorDescription" style="-fx-font-size: 11px;"/>
+
+    <TextArea fx:id="txtImagesAuto" promptText="Images statiques generees automatiquement selon le titre" prefRowCount="4" wrapText="true"/>
+    <Label fx:id="errorImages" style="-fx-font-size: 11px;"/>
+
+    <TextArea fx:id="txtInterpretationBase" promptText="Interpretations (1 ligne par image, meme ordre)" prefRowCount="3" wrapText="true"/>
+    <Label fx:id="errorInterpretation" style="-fx-font-size: 11px;"/>
+
+    <HBox spacing="15.0" alignment="CENTER">
+        <TextField fx:id="txtMaxParticipants" promptText="Max participants" prefWidth="180.0"/>
+        <CheckBox fx:id="checkActif" text="Jeu actif"/>
+    </HBox>
+    <Label fx:id="errorMaxParticipants" style="-fx-font-size: 11px;"/>
+
+    <Label fx:id="msgSuccess" style="-fx-font-size: 12px;"/>
+    <Label fx:id="errorGlobal" style="-fx-font-size: 12px;"/>
+
+    <HBox spacing="10.0" alignment="CENTER">
+        <Button text="Ajouter" onAction="#ajouterJeu"/>
+        <Button text="Modifier" onAction="#modifierJeu"/>
+        <Button text="Supprimer" onAction="#supprimerJeu"/>
+    </HBox>
+
+    <TableView fx:id="tableJeux" prefHeight="280.0" prefWidth="900.0">
+        <columns>
+            <TableColumn fx:id="colTitre" text="Titre" prefWidth="220.0"/>
+            <TableColumn fx:id="colImages" text="Image" prefWidth="360.0"/>
+            <TableColumn fx:id="colParticipants" text="Participants" prefWidth="130.0"/>
+            <TableColumn fx:id="colEtat" text="Etat" prefWidth="160.0"/>
+        </columns>
+    </TableView>
+</VBox>
