@@ -25,7 +25,7 @@ public class JeuController {
 
     @FXML private TextField txtTitre;
     @FXML private TextArea txtDescription;
-    @FXML private TextArea txtImagesAuto;
+    @FXML private TextArea txtCheminsImages;
     @FXML private TextArea txtInterpretationBase;
     @FXML private TextField txtMaxParticipants;
     @FXML private CheckBox checkActif;
@@ -45,26 +45,6 @@ public class JeuController {
     private final ServiceJeu serviceJeu = new ServiceJeu();
     private final ServiceImageCarte serviceImageCarte = new ServiceImageCarte();
     private Jeu selectedJeu;
-    private static final String THEME_ANIMAUX = "animaux";
-    private static final String THEME_NATURE = "nature";
-    private static final String THEME_SITUATION = "situation";
-    private static final Map<String, List<String>> STATIC_THEME_IMAGES = Map.of(
-            THEME_ANIMAUX, List.of(
-                    "/images/animaux/lion.png",
-                    "/images/animaux/chat.png",
-                    "/images/animaux/chien.png"
-            ),
-            THEME_NATURE, List.of(
-                    "/images/nature/soleil.png",
-                    "/images/nature/ciel.png",
-                    "/images/nature/arbre.png"
-            ),
-            THEME_SITUATION, List.of(
-                    "/images/situation/enfant_seul.png",
-                    "/images/situation/enfant_dessin.png",
-                    "/images/situation/enfants_groupe.png"
-            )
-    );
 
     @FXML
     public void initialize() {
@@ -83,13 +63,11 @@ public class JeuController {
             selectedJeu = newValue;
             populateForm(newValue);
         });
-        txtTitre.textProperty().addListener((obs, oldValue, newValue) -> updateAutoImagesPreview(newValue));
 
         txtMaxParticipants.setText("3");
         txtMaxParticipants.setDisable(true);
         checkActif.setSelected(true);
-        txtImagesAuto.setEditable(false);
-        updateAutoImagesPreview("");
+        txtCheminsImages.setPromptText("Chemins des images (un par ligne, ex: /images/animaux/lion.png)");
         serviceImageCarte.migrerAnciennesImages();
         refreshTable();
     }
@@ -106,7 +84,7 @@ public class JeuController {
                     .filter(item -> item.getTitre().equalsIgnoreCase(jeu.getTitre()))
                     .findFirst()
                     .orElse(null);
-            if (jeuSaved != null && !saveImagesForJeu(jeuSaved.getId(), jeu.getTitre())) {
+            if (jeuSaved != null && !saveImagesForJeu(jeuSaved.getId())) {
                 showError(errorGlobal, "Jeu ajoute, mais erreur lors de l'ajout des images.");
                 return;
             }
@@ -136,7 +114,7 @@ public class JeuController {
             for (ImageCarte old : oldImages) {
                 serviceImageCarte.supprimer(old.getId());
             }
-            if (!saveImagesForJeu(selectedJeu.getId(), jeu.getTitre())) {
+            if (!saveImagesForJeu(selectedJeu.getId())) {
                 showError(errorGlobal, "Jeu modifie, mais erreur lors de l'ajout des images.");
                 return;
             }
@@ -168,11 +146,10 @@ public class JeuController {
         selectedJeu = null;
         txtTitre.clear();
         txtDescription.clear();
-        txtImagesAuto.clear();
+        txtCheminsImages.clear();
         txtInterpretationBase.clear();
         txtMaxParticipants.setText("3");
         checkActif.setSelected(true);
-        updateAutoImagesPreview("");
         clearMessages();
         tableJeux.getSelectionModel().clearSelection();
     }
@@ -183,7 +160,7 @@ public class JeuController {
 
         String titre = normalizeText(txtTitre.getText());
         String description = normalizeText(txtDescription.getText());
-        List<String> imagePaths = getStaticImagesForTitre(titre);
+        List<String> imagePaths = parseMultilineValues(txtCheminsImages.getText());
         List<String> interpretations = parseMultilineValues(txtInterpretationBase.getText());
 
         if (!isValidText(titre, 3, 80)) {
@@ -197,7 +174,7 @@ public class JeuController {
         }
 
         if (imagePaths.isEmpty()) {
-            showError(errorImages, "Impossible de generer les images statiques du theme.");
+            showError(errorImages, "Entrez au moins un chemin d'image.");
             valid = false;
         }
 
@@ -278,7 +255,7 @@ public class JeuController {
 
         txtTitre.setText(jeu.getTitre());
         txtDescription.setText(jeu.getDescription());
-        updateAutoImagesPreview(jeu.getTitre());
+        txtCheminsImages.setText(jeu.getImages().stream().map(ImageCarte::getImagePath).collect(Collectors.joining("\n")));
         txtInterpretationBase.setText(jeu.getImages().stream().map(ImageCarte::getInterpretationPsy).collect(Collectors.joining("\n")));
         txtMaxParticipants.setText(String.valueOf(jeu.getMaxParticipants()));
         checkActif.setSelected(jeu.isActif());
@@ -293,8 +270,8 @@ public class JeuController {
         tableJeux.setItems(FXCollections.observableArrayList(jeux));
     }
 
-    private boolean saveImagesForJeu(int jeuId, String titreJeu) {
-        List<String> imagePaths = getStaticImagesForTitre(titreJeu);
+    private boolean saveImagesForJeu(int jeuId) {
+        List<String> imagePaths = parseMultilineValues(txtCheminsImages.getText());
         List<String> interpretations = parseMultilineValues(txtInterpretationBase.getText());
         if (imagePaths.size() != interpretations.size()) {
             return false;
@@ -310,27 +287,6 @@ public class JeuController {
             }
         }
         return true;
-    }
-
-    private void updateAutoImagesPreview(String titre) {
-        List<String> imagePaths = getStaticImagesForTitre(titre);
-        String theme = resolveThemeFromTitre(titre);
-        txtImagesAuto.setText("Theme detecte: " + theme + "\n" + String.join("\n", imagePaths));
-    }
-
-    private List<String> getStaticImagesForTitre(String titre) {
-        return STATIC_THEME_IMAGES.getOrDefault(resolveThemeFromTitre(titre), STATIC_THEME_IMAGES.get(THEME_ANIMAUX));
-    }
-
-    private String resolveThemeFromTitre(String titre) {
-        String normalized = titre == null ? "" : titre.toLowerCase();
-        if (normalized.contains("nature") || normalized.contains("soleil") || normalized.contains("ciel")) {
-            return THEME_NATURE;
-        }
-        if (normalized.contains("situation") || normalized.contains("enfant") || normalized.contains("groupe")) {
-            return THEME_SITUATION;
-        }
-        return THEME_ANIMAUX;
     }
 
     private List<String> parseMultilineValues(String rawText) {

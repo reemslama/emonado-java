@@ -6,6 +6,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
 
 <BorderPane fx:id="mainContainer"
             xmlns="http://javafx.com/javafx/17"
@@ -15,19 +16,28 @@
             style="-fx-background-color: linear-gradient(to bottom, #fff9e8, #f6fbff);">
 
     <top>
-        <HBox alignment="CENTER_LEFT" spacing="14.0"
-              style="-fx-background-color: white; -fx-padding: 16 24; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12,0,0,4);">
+        <VBox>
             <children>
-                <Label text="Espace Enfant" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1f6f5f;"/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <Button text="Gestion Jeux" onAction="#openJeux"
-                        style="-fx-background-color: #1f6f5f; -fx-text-fill: white; -fx-background-radius: 18; -fx-padding: 8 18; -fx-font-weight: bold;"/>
-                <Button text="Participant (Enfant)" onAction="#openParticipations"
-                        style="-fx-background-color: #e7a83c; -fx-text-fill: white; -fx-background-radius: 18; -fx-padding: 8 18; -fx-font-weight: bold;"/>
+                <!-- Barre de navigation principale -->
+                <HBox alignment="CENTER_LEFT" spacing="14.0"
+                      style="-fx-background-color: white; -fx-padding: 16 24; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12,0,0,4);">
+                    <children>
+                        <Label text="Espace Enfant" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1f6f5f;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button text="Gestion Jeux" onAction="#openJeux"
+                                style="-fx-background-color: #1f6f5f; -fx-text-fill: white; -fx-background-radius: 18; -fx-padding: 8 18; -fx-font-weight: bold;"/>
+                        <Button text="Participant (Enfant)" onAction="#openParticipations"
+                                style="-fx-background-color: #1f6f5f; -fx-text-fill: white; -fx-background-radius: 18; -fx-padding: 8 18; -fx-font-weight: bold;"/>
+                        <Button text="Heatmap" onAction="#openHeatmap"
+                                style="-fx-background-color: #1f6f5f; -fx-text-fill: white; -fx-background-radius: 18; -fx-padding: 8 18; -fx-font-weight: bold;"/>
+                        <Button text="Deconnexion" onAction="#goToDeconnexion"
+                                style="-fx-background-color: #1f6f5f; -fx-text-fill: white; -fx-background-radius: 18; -fx-padding: 8 18; -fx-font-weight: bold;"/>
+                    </children>
+                    <padding>
+                        <Insets top="8.0" right="8.0" bottom="8.0" left="8.0"/>
+                    </padding>
+                </HBox>
             </children>
-            <padding>
-                <Insets top="8.0" right="8.0" bottom="8.0" left="8.0"/>
-            </padding>
-        </HBox>
+        </VBox>
     </top>
 </BorderPane>
