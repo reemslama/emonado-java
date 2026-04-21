@@ -47,13 +47,13 @@ public class QuestionsReponsesController {
     // ── Constantes validation ─────────────────────────────────────────────────
     private static final int QUESTION_MIN  = 10;
     private static final int QUESTION_MAX  = 300;
-    // BUG CORRIGÉ #2 : CATEGORIE_MIN abaissé à 2 pour accepter "iq", "qa", etc.
+    //  CATEGORIE_MIN abaissé à 2 pour accepter "iq", "qa", etc.
     private static final int CATEGORIE_MIN = 2;
     private static final int CATEGORIE_MAX = 50;
     private static final int TYPE_MAX      = 50;
     private static final int REPONSE_MIN   = 2;
     private static final int REPONSE_MAX   = 200;
-    // BUG CORRIGÉ #1 : VALEUR_MIN reste 0, mais la validation ne bloquera plus sur 0
+    //   VALEUR_MIN reste 0, mais la validation ne bloquera plus sur 0
     private static final int VALEUR_MIN    = 0;
     private static final int VALEUR_MAX    = 100;
     private static final int ORDRE_MIN     = 1;
@@ -98,7 +98,7 @@ public class QuestionsReponsesController {
 
         fieldCategorie.textProperty().addListener((obs, o, n) -> validerChamp(
                 fieldCategorie,
-                // BUG CORRIGÉ #2 : CATEGORIE_MIN = 2 donc "iq" (2 chars) passe
+                //  CATEGORIE_MIN = 2 donc "iq" (2 chars) passe
                 !n.trim().isEmpty()
                         && n.trim().length() >= CATEGORIE_MIN
                         && n.trim().length() <= CATEGORIE_MAX
@@ -122,7 +122,7 @@ public class QuestionsReponsesController {
                         && n.trim().length() <= REPONSE_MAX
         ));
 
-        // BUG CORRIGÉ #1 : on accepte "0" explicitement — isEmpty OU entier valide
+        //  on accepte "0" explicitement — isEmpty OU entier valide
         fieldRepValeur.textProperty().addListener((obs, o, n) -> validerChamp(
                 fieldRepValeur,
                 n.trim().isEmpty() || estEntierDansIntervalle(n, VALEUR_MIN, VALEUR_MAX)
