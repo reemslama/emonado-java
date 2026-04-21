@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.controller.ConsultationController"
+            styleClass="background">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="14" style="-fx-background-color: #198754; -fx-padding: 16 28;">
+            <Label text="EmoNado" style="-fx-text-fill: white; -fx-font-size: 24px; -fx-font-weight: bold;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Accueil" onAction="#returnToDashboard"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand;"/>
+            <Button text="Mon espace" onAction="#goToMedicalRecord"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand;"/>
+            <Button text="Deconnexion" onAction="#handleLogout"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand;"/>
+        </HBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background: transparent; -fx-padding: 18;">
+            <VBox spacing="24" style="-fx-padding: 30 34 34 34;">
+                <HBox alignment="CENTER_LEFT" spacing="16">
+                    <Label fx:id="pageTitleLabel" text="Mes Consultations"
+                           style="-fx-font-size: 42px; -fx-font-weight: bold; -fx-text-fill: #1f2937;"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="Retour au tableau de bord" onAction="#returnToDashboard"
+                            style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 10 18;"/>
+                </HBox>
+
+                <VBox spacing="16" style="-fx-background-color: white; -fx-background-radius: 16; -fx-padding: 0 0 18 0; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 16, 0, 0, 5);">
+                    <Label text="Ajouter une nouvelle consultation"
+                           style="-fx-background-color: #198754; -fx-background-radius: 16 16 0 0; -fx-text-fill: white; -fx-font-size: 26px; -fx-font-weight: bold; -fx-padding: 14 18;"/>
+
+                    <HBox spacing="18" alignment="TOP_LEFT" style="-fx-padding: 0 18;">
+                        <VBox spacing="8" HBox.hgrow="ALWAYS" maxWidth="320">
+                            <Label text="Date de consultation *" style="-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #334155;"/>
+                            <DatePicker fx:id="consultationDatePicker" maxWidth="1.7976931348623157E308"/>
+                            <Label text="La date doit etre aujourd'hui ou dans le futur"
+                                   style="-fx-text-fill: #6b7280; -fx-font-size: 13px;"/>
+                        </VBox>
+
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <HBox alignment="CENTER_LEFT" spacing="12">
+                                <Label text="Compte rendu *" style="-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #334155;"/>
+                                <HBox spacing="4" style="-fx-background-color: #e2e8f0; -fx-background-radius: 9; -fx-padding: 3;">
+                                    <ToggleButton fx:id="writeModeButton" text="Ecrire ou parler" onAction="#activateWriteMode"
+                                                  style="-fx-background-color: #6b7280; -fx-text-fill: white; -fx-background-radius: 7; -fx-font-weight: bold;"/>
+                                    <ToggleButton fx:id="speakModeButton" text="Parler" onAction="#activateSpeechMode"
+                                                  style="-fx-background-color: white; -fx-text-fill: #2563eb; -fx-background-radius: 7; -fx-font-weight: bold;"/>
+                                </HBox>
+                            </HBox>
+                            <TextArea fx:id="consultationNotesArea" wrapText="true" prefRowCount="5"
+                                      promptText="Decrivez votre consultation (minimum 10 caracteres)&#10;- Raison de la consultation&#10;- Symptomes observes&#10;- Questions ou preoccupations"/>
+                            <Label text="Le compte rendu est obligatoire (minimum 10 caracteres)."
+                                   style="-fx-text-fill: #6b7280; -fx-font-size: 13px;"/>
+                            <Label text="Note psychologue"
+                                   style="-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #334155;"/>
+                            <TextArea fx:id="psychologueNotesArea" wrapText="true" prefRowCount="3" editable="false"
+                                      promptText="La note psychologue apparaitra ici apres validation du psychologue."/>
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="10" style="-fx-padding: 0 18 0 18;">
+                        <Button fx:id="saveConsultationButton" text="Enregistrer la consultation" onAction="#handleSaveConsultation"
+                                style="-fx-background-color: #198754; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 12 18;"/>
+                        <Button fx:id="cancelEditButton" text="Annuler la modification" onAction="#handleCancelEdit"
+                                visible="false" managed="false"
+                                style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-font-size: 16px; -fx-background-radius: 8; -fx-padding: 12 18;"/>
+                    </HBox>
+
+                    <HBox style="-fx-padding: 0 18 0 18;">
+                        <Label text="Information : Cette consultation sera ajoutee a votre dossier medical. Un psychologue pourra la consulter et y ajouter ses notes professionnelles."
+                               wrapText="true"
+                               style="-fx-background-color: #dff3ff; -fx-background-radius: 10; -fx-text-fill: #14526b; -fx-font-size: 15px; -fx-padding: 14 18;"/>
+                    </HBox>
+                </VBox>
+
+                <VBox spacing="16" style="-fx-background-color: #1d6ff2; -fx-background-radius: 16 16 0 0;">
+                    <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 14 18;">
+                        <Label text="Historique des consultations"
+                               style="-fx-text-fill: white; -fx-font-size: 26px; -fx-font-weight: bold;"/>
+                        <Label fx:id="historyCountLabel" text="0"
+                               style="-fx-background-color: white; -fx-background-radius: 8; -fx-text-fill: #1d4ed8; -fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 4 10;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <MenuButton fx:id="filterMenuButton" text="Filtrer : toutes"
+                                    style="-fx-background-color: white; -fx-text-fill: #111827; -fx-background-radius: 8; -fx-font-weight: bold;">
+                            <items>
+                                <MenuItem text="Toutes" onAction="#showAllConsultations"/>
+                                <MenuItem text="A venir" onAction="#showUpcomingConsultations"/>
+                                <MenuItem text="Passees" onAction="#showPastConsultations"/>
+                            </items>
+                        </MenuButton>
+                    </HBox>
+
+                    <VBox spacing="12" style="-fx-background-color: transparent; -fx-padding: 0 0 18 0;">
+                        <Separator opacity="0.0"/>
+                        <VBox fx:id="consultationHistoryBox" spacing="12" style="-fx-padding: 0 18 18 18;"/>
+                    </VBox>
+                </VBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>

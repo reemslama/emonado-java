@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="18" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.example.controller.AdminAddUserController"
+      style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 24;">
+
+    <Label fx:id="formTitle" text="Ajouter un patient" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
+
+    <GridPane hgap="12" vgap="12">
+        <Label text="Role" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <ComboBox fx:id="roleCombo" prefWidth="220" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+        <Label text="Nom" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <TextField fx:id="nomField" promptText="Nom" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+        <Label text="Prenom" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <TextField fx:id="prenomField" promptText="Prenom" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+        <Label text="Email" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+        <TextField fx:id="emailField" promptText="Email" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+        <Label text="Mot de passe" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+        <TextField fx:id="passwordField" promptText="Mot de passe" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+
+        <Label text="Telephone" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+        <TextField fx:id="phoneField" promptText="Telephone" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+
+        <Label text="Sexe" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+        <ComboBox fx:id="sexeCombo" prefWidth="220" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+
+        <Label text="Date de naissance" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+        <DatePicker fx:id="datePicker" prefWidth="220" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+
+        <Label fx:id="specialiteLabel" text="Specialite" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+        <TextField fx:id="specialiteField" promptText="Specialite" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+    </GridPane>
+
+    <Label fx:id="errorLabel" textFill="red" wrapText="true"/>
+
+    <HBox spacing="10">
+        <Button text="Enregistrer" onAction="#handleSave"
+                style="-fx-background-color: #198754; -fx-text-fill: white; -fx-font-weight: bold;"/>
+        <Button text="Annuler" onAction="#handleCancel"
+                style="-fx-background-color: #6c757d; -fx-text-fill: white;"/>
+    </HBox>
+
+    <padding>
+        <Insets top="6" right="6" bottom="6" left="6"/>
+    </padding>
+</VBox>

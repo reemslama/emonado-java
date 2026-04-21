@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="VcsDirectoryMappings">
+<<<<<<< HEAD
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+=======
+    <mapping directory="" vcs="Git" />
+>>>>>>> 8bb506aecfcac6958cbfad61b8729f7fb373a506
     <mapping directory="$PROJECT_DIR$/emonado-java" vcs="Git" />
   </component>
 </project>

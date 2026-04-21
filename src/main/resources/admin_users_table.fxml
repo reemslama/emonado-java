@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="16" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.example.controller.AdminTableController"
+      style="-fx-padding: 0;"
+      stylesheets="@styles/admin.css">
+
+    <!-- Header row -->
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <Label text="Liste des utilisateurs"
+               style="-fx-font-size: 17; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="＋  Ajouter" onAction="#handleAddUser" styleClass="btn-add"/>
+    </HBox>
+
+    <!-- Table -->
+    <TableView fx:id="userTable" VBox.vgrow="ALWAYS" styleClass="table-view">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+            <TableColumn fx:id="colNom" text="Nom" prefWidth="100"/>
+            <TableColumn fx:id="colPrenom" text="Prénom" prefWidth="100"/>
+            <TableColumn fx:id="colEmail" text="Email" prefWidth="180"/>
+            <TableColumn fx:id="colPhone" text="Téléphone" prefWidth="110"/>
+            <TableColumn fx:id="colSexe" text="Sexe" prefWidth="80"/>
+            <TableColumn fx:id="colDateNaissance" text="Date Naissance" prefWidth="120"/>
+            <TableColumn fx:id="colSpecialite" text="Spécialité" prefWidth="120"/>
+            <TableColumn fx:id="colActions" text="Actions" prefWidth="120"/>
+        </columns>
+    </TableView>
+</VBox>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import java.net.URL?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.controller.JournalEditController"
+            style="-fx-background-color: linear-gradient(to bottom, #8fd9ee 0%, #dff7ff 100%);">
+
+    <stylesheets>
+        <URL value="@/styles/template.css" />
+    </stylesheets>
+
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="18" style="-fx-background-color: #1f8b57;">
+            <padding>
+                <Insets top="16" right="24" bottom="16" left="24" />
+            </padding>
+            <Label text="EmoNado" styleClass="brand" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Button text="Retour" onAction="#handleCancel" style="-fx-background-color: white; -fx-text-fill: #1f8b57; -fx-font-weight: bold; -fx-background-radius: 12;" />
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="16" maxWidth="680" alignment="CENTER" style="-fx-padding: 30;">
+            <VBox spacing="12" style="-fx-background-color: rgba(255, 255, 255, 0.95); -fx-background-radius: 18; -fx-padding: 22; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.12), 14, 0, 0, 4);">
+                <Label fx:id="titleLabel" text="Modifier le journal" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1f3a4d;" />
+                <Label text="Humeur" />
+                <ComboBox fx:id="humeurCombo" promptText="Selectionnez une humeur" />
+                <Label text="Contenu" />
+                <TextArea fx:id="contenuArea" wrapText="true" prefRowCount="14" />
+                <Label fx:id="errorLabel" textFill="#c62828" wrapText="true" />
+                <HBox spacing="10">
+                    <Button text="Enregistrer" onAction="#handleSave" style="-fx-background-color: #1976f3; -fx-text-fill: white; -fx-background-radius: 12; -fx-padding: 10 18; -fx-font-weight: bold;" />
+                    <Button text="Annuler" onAction="#handleCancel" style="-fx-background-color: white; -fx-border-color: #1976f3; -fx-border-radius: 12; -fx-background-radius: 12; -fx-text-fill: #1976f3; -fx-padding: 10 18; -fx-font-weight: bold;" />
+                </HBox>
+            </VBox>
+        </VBox>
+    </center>
+</BorderPane>

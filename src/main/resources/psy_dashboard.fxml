@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane fitToWidth="true" fitToHeight="true"
+            style="-fx-background: #eff6ff; -fx-background-color: #eff6ff;"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.controller.PsyDashboardController">
+
+    <VBox spacing="0" alignment="TOP_CENTER">
+
+        <!-- ===================== NAVBAR ===================== -->
+        <HBox alignment="CENTER" spacing="0"
+              style="-fx-background-color: white; -fx-padding: 16 32;">
+            <HBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" spacing="10">
+                <Label text="🧠" style="-fx-font-size: 28px;"/>
+                <Label text="Emonado"
+                       style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #1e40af;"/>
+                <Label text="PSY"
+                       style="-fx-font-size: 11px; -fx-text-fill: white;
+                              -fx-background-color: #3b82f6;
+                              -fx-background-radius: 8; -fx-padding: 2 8;"/>
+            </HBox>
+            <HBox alignment="CENTER_RIGHT" spacing="16">
+                <Label text="🔔" style="-fx-font-size: 20px; -fx-cursor: hand;"/>
+                <VBox alignment="CENTER_RIGHT">
+                    <Label text="Bienvenue, Docteur"
+                           style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                    <Label text="Tableau de bord"
+                           style="-fx-font-size: 11px; -fx-text-fill: #64748b;"/>
+                </VBox>
+                <StackPane>
+                    <Region style="-fx-background-color: #3b82f6;
+                                   -fx-background-radius: 50;
+                                   -fx-min-width: 44; -fx-min-height: 44;"/>
+                    <Label text="🩺" style="-fx-font-size: 22px;"/>
+                </StackPane>
+            </HBox>
+        </HBox>
+
+        <VBox spacing="32" alignment="TOP_CENTER" style="-fx-padding: 40 32;">
+
+            <!-- =============== WELCOME =============== -->
+            <VBox alignment="CENTER" spacing="8">
+                <Label text="👨‍⚕️" style="-fx-font-size: 52px;"/>
+                <Label fx:id="welcomeLabel" text="Bienvenue Dr."
+                       style="-fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                <Label text="Gérez vos patients et consultations efficacement"
+                       style="-fx-font-size: 14px; -fx-text-fill: #64748b;"/>
+            </VBox>
+
+            <!-- ============== STATS ============== -->
+            <HBox spacing="16" alignment="CENTER">
+
+                <HBox spacing="12" alignment="CENTER_LEFT"
+                      style="-fx-background-color: white; -fx-background-radius: 20; -fx-padding: 16 24;">
+                    <Label text="📅" style="-fx-font-size: 24px;"/>
+                    <VBox>
+                        <Label text="RDV aujourd'hui"
+                               style="-fx-font-size: 11px; -fx-text-fill: #64748b;"/>
+                        <Label text="5 patients"
+                               style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #1e40af;"/>
+                    </VBox>
+                </HBox>
+
+                <HBox spacing="12" alignment="CENTER_LEFT"
+                      style="-fx-background-color: white; -fx-background-radius: 20; -fx-padding: 16 24;">
+                    <Label text="👥" style="-fx-font-size: 24px;"/>
+                    <VBox>
+                        <Label text="Total patients"
+                               style="-fx-font-size: 11px; -fx-text-fill: #64748b;"/>
+                        <Label text="48 actifs"
+                               style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #1e40af;"/>
+                    </VBox>
+                </HBox>
+
+                <HBox spacing="12" alignment="CENTER_LEFT"
+                      style="-fx-background-color: white; -fx-background-radius: 20; -fx-padding: 16 24;">
+                    <Label text="📊" style="-fx-font-size: 24px;"/>
+                    <VBox>
+                        <Label text="Analyses"
+                               style="-fx-font-size: 11px; -fx-text-fill: #64748b;"/>
+                        <Label text="12 cette semaine"
+                               style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #1e40af;"/>
+                    </VBox>
+                </HBox>
+
+            </HBox>
+
+            <!-- ============ TITRE SECTION ============ -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Region style="-fx-background-color: #3b82f6;
+                               -fx-background-radius: 4;
+                               -fx-min-width: 4; -fx-min-height: 28;"/>
+                <Label text="Accès rapide"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+            </HBox>
+
+            <!-- ============ CARDS ============ -->
+            <FlowPane hgap="20" vgap="20" alignment="CENTER" prefWrapLength="660">
+
+                <!-- Profil -->
+                <VBox onMouseClicked="#goToProfil"
+                      prefWidth="190" prefHeight="180"
+                      alignment="CENTER" spacing="8"
+                      style="-fx-background-color: white; -fx-background-radius: 28; -fx-cursor: hand;">
+                    <StackPane>
+                        <Region style="-fx-background-color: #dbeafe;
+                                       -fx-background-radius: 20;
+                                       -fx-min-width: 64; -fx-min-height: 64;"/>
+                        <Label text="👤" style="-fx-font-size: 32px;"/>
+                    </StackPane>
+                    <Label text="Profil"
+                           style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                    <Label text="Psychologue"
+                           style="-fx-font-size: 12px; -fx-text-fill: #64748b;"/>
+                </VBox>
+
+                <!-- Analyse -->
+                <VBox onMouseClicked="#goToAnalyses"
+                      prefWidth="190" prefHeight="180"
+                      alignment="CENTER" spacing="8"
+                      style="-fx-background-color: white; -fx-background-radius: 28; -fx-cursor: hand;">
+                    <StackPane>
+                        <Region style="-fx-background-color: #fef3c7;
+                                       -fx-background-radius: 20;
+                                       -fx-min-width: 64; -fx-min-height: 64;"/>
+                        <Label text="🧠" style="-fx-font-size: 32px;"/>
+                    </StackPane>
+                    <Label text="Analyse"
+                           style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                    <Label text="Emotionnelle"
+                           style="-fx-font-size: 12px; -fx-text-fill: #64748b;"/>
+                </VBox>
+
+                <!-- RDV -->
+                <VBox onMouseClicked="#goToListeRendezVous"
+                      prefWidth="190" prefHeight="180"
+                      alignment="CENTER" spacing="8"
+                      style="-fx-background-color: white; -fx-background-radius: 28; -fx-cursor: hand;">
+                    <StackPane>
+                        <Region style="-fx-background-color: #fce7f3;
+                                       -fx-background-radius: 20;
+                                       -fx-min-width: 64; -fx-min-height: 64;"/>
+                        <Label text="📅" style="-fx-font-size: 32px;"/>
+                    </StackPane>
+                    <Label text="Mes"
+                           style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                    <Label text="RDV"
+                           style="-fx-font-size: 12px; -fx-text-fill: #64748b;"/>
+                </VBox>
+
+                <!-- Disponibilités -->
+                <VBox onMouseClicked="#goToDisponibilites"
+                      prefWidth="190" prefHeight="180"
+                      alignment="CENTER" spacing="8"
+                      style="-fx-background-color: white; -fx-background-radius: 28; -fx-cursor: hand;">
+                    <StackPane>
+                        <Region style="-fx-background-color: #e0e7ff;
+                                       -fx-background-radius: 20;
+                                       -fx-min-width: 64; -fx-min-height: 64;"/>
+                        <Label text="🕐" style="-fx-font-size: 32px;"/>
+                    </StackPane>
+                    <Label text="Mes"
+                           style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                    <Label text="Disponibilités"
+                           style="-fx-font-size: 12px; -fx-text-fill: #64748b;"/>
+                </VBox>
+
+                <!-- Types RDV -->
+                <VBox onMouseClicked="#goToTypeRdv"
+                      prefWidth="190" prefHeight="180"
+                      alignment="CENTER" spacing="8"
+                      style="-fx-background-color: white; -fx-background-radius: 28; -fx-cursor: hand;">
+                    <StackPane>
+                        <Region style="-fx-background-color: #ccfbf1;
+                                       -fx-background-radius: 20;
+                                       -fx-min-width: 64; -fx-min-height: 64;"/>
+                        <Label text="🗂" style="-fx-font-size: 32px;"/>
+                    </StackPane>
+                    <Label text="Types"
+                           style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                    <Label text="RDV"
+                           style="-fx-font-size: 12px; -fx-text-fill: #64748b;"/>
+                </VBox>
+
+                <!-- Suivi Médical -->
+                <VBox onMouseClicked="#goToMedicalManagement"
+                      prefWidth="190" prefHeight="180"
+                      alignment="CENTER" spacing="8"
+                      style="-fx-background-color: white; -fx-background-radius: 28; -fx-cursor: hand;">
+                    <StackPane>
+                        <Region style="-fx-background-color: #dcfce7;
+                                       -fx-background-radius: 20;
+                                       -fx-min-width: 64; -fx-min-height: 64;"/>
+                        <Label text="🩺" style="-fx-font-size: 32px;"/>
+                    </StackPane>
+                    <Label text="Suivi"
+                           style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                    <Label text="Médical"
+                           style="-fx-font-size: 12px; -fx-text-fill: #64748b;"/>
+                </VBox>
+
+            </FlowPane>
+
+            <!-- ============ FOOTER ============ -->
+            <Label text="© 2025 Emonado — Espace Psychologue 🧠"
+                   style="-fx-font-size: 12px; -fx-text-fill: #94a3b8; -fx-padding: 30 0 10 0;"/>
+
+        </VBox>
+    </VBox>
+</ScrollPane>

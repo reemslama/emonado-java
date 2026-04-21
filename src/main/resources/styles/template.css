@@ -1,0 +1,105 @@
+/* Background */
+.background {
+    -fx-background-image: url("../images/background.png");
+    -fx-background-size: cover;
+    -fx-background-position: center;
+}
+
+/* Navbar */
+.navbar {
+    -fx-background-color: #c5df43;
+    -fx-padding: 15;
+}
+
+/* Logo */
+.brand {
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+/* Boutons navbar */
+.nav-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+
+.nav-btn:hover {
+    -fx-underline: true;
+}
+
+/* Bouton principal */
+.btn-custom {
+    -fx-background-color: #c5df43;
+    -fx-text-fill: white;
+    -fx-padding: 10 30;
+    -fx-background-radius: 50;
+}
+
+/* Title */
+.title {
+    -fx-font-size: 28px;
+    -fx-text-fill: white;
+}
+
+/* Style pour les boites d'icones Psy */
+.icon-box {
+    -fx-background-color: white;
+    -fx-min-width: 130;
+    -fx-min-height: 130;
+    -fx-background-radius: 20;
+    -fx-alignment: center;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4);
+}
+
+.icon-box:hover {
+    -fx-background-color: #f1f5f9;
+    -fx-translate-y: -5;
+}
+
+/* Style pour les boites d'icones Patient */
+.icon-box-patient {
+    -fx-background-color: white;
+    -fx-min-width: 120;
+    -fx-min-height: 120;
+    -fx-background-radius: 20;
+    -fx-alignment: center;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 8, 0, 0, 4);
+}
+
+.icon-box-patient:hover {
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+/* Style de base des boutons de role */
+.option-btn {
+    -fx-background-color: white;
+    -fx-text-fill: #555555;
+    -fx-border-color: #c5df43;
+    -fx-border-width: 2;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-padding: 8 15;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+}
+
+.option-btn:hover {
+    -fx-background-color: #f1f1f1;
+}
+
+.option-btn:selected {
+    -fx-background-color: #c5df43;
+    -fx-text-fill: white;
+    -fx-border-color: #c5df43;
+}
+
+.option-btn:selected:hover {
+    -fx-background-color: #c5df43;
+    -fx-text-fill: white;
+    -fx-border-color: #c5df43;
+}
