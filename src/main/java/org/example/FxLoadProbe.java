@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 public class FxLoadProbe {
     public static void main(String[] args) {
         Platform.startup(() -> {
+            probe("/AjouterRendezVous.fxml");
             probe("/medical_record.fxml");
             probe("/consultations.fxml");
             Platform.exit();

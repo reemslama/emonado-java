@@ -133,6 +133,24 @@ public class JournalService {
         return journal;
     }
 
+    public List<Journal> findByUserId(int userId) throws SQLException {
+        String sql =
+                "SELECT j.id, j.contenu, j.humeur, j.date_creation, j.user_id, a.etat_emotionnel " +
+                "FROM journal j LEFT JOIN analyse_emotionnelle a ON a.journal_id = j.id " +
+                "WHERE j.user_id = ? ORDER BY j.date_creation DESC";
+        List<Journal> journals = new ArrayList<>();
+        try (Connection connection = DataSource.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, userId);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    journals.add(mapRow(resultSet));
+                }
+            }
+        }
+        return journals;
+    }
+
     private Journal mapRow(ResultSet resultSet) throws SQLException {
         Journal journal = new Journal();
         journal.setId(resultSet.getInt("id"));

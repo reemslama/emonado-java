@@ -1,36 +1,29 @@
 package org.example.controllers;
 
-import entities.Disponibilite;
-import entities.RendezVous;
 import entities.RendezVousPsy;
-import entities.TypeRendezVous;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import services.ServiceDisponibilite;
+import org.example.entities.User;
+import org.example.service.MedicalValidationService;
+import org.example.utils.UserSession;
 import services.ServiceRendezVous;
-import services.ServiceTypeRendezVous;
 
 import java.io.IOException;
-import java.util.Optional;
-import java.util.regex.Pattern;
 
 public class ListeRendezVousPsyController {
-
-    private static final Pattern ADDRESS_PATTERN = Pattern.compile("[A-Za-z0-9À-ÿ'.,\\-\\s]{5,150}");
 
     @FXML private TableView<RendezVousPsy> tableRdv;
     @FXML private TableColumn<RendezVousPsy, String> colNom;
@@ -38,33 +31,40 @@ public class ListeRendezVousPsyController {
     @FXML private TableColumn<RendezVousPsy, String> colType;
     @FXML private TableColumn<RendezVousPsy, String> colDate;
     @FXML private TableColumn<RendezVousPsy, String> colHeure;
-    @FXML private TableColumn<RendezVousPsy, String> colAge;
-    @FXML private TableColumn<RendezVousPsy, String> colAdresse;
+    @FXML private TableColumn<RendezVousPsy, String> colStatut;
     @FXML private Label errorGlobal;
-    @FXML private Button btnModifier;
-    @FXML private Button btnSupprimer;
+    @FXML private Button btnAccepter;
+    @FXML private Button btnRejeter;
+    @FXML private Button btnEnregistrerNote;
+    @FXML private ComboBox<String> filterStatutCombo;
+    @FXML private TextField searchRendezVousField;
+    @FXML private TextArea notesPatientArea;
+    @FXML private TextArea notesPsychologueArea;
 
     private final ServiceRendezVous srv = new ServiceRendezVous();
-    private final ServiceTypeRendezVous st = new ServiceTypeRendezVous();
-    private final ServiceDisponibilite sd = new ServiceDisponibilite();
+    private final ObservableList<RendezVousPsy> rendezVousItems = FXCollections.observableArrayList();
+    private final FilteredList<RendezVousPsy> filteredRendezVous = new FilteredList<>(rendezVousItems, item -> true);
 
     private RendezVousPsy selectedRdv;
+    private User currentUser;
 
     @FXML
     public void initialize() {
+        currentUser = UserSession.getInstance();
         colNom.setCellValueFactory(d -> new ReadOnlyStringWrapper(d.getValue().getNom()));
         colPrenom.setCellValueFactory(d -> new ReadOnlyStringWrapper(d.getValue().getPrenom()));
         colType.setCellValueFactory(d -> new ReadOnlyStringWrapper(d.getValue().getTypeRdv()));
         colDate.setCellValueFactory(d -> new ReadOnlyStringWrapper(d.getValue().getDate()));
         colHeure.setCellValueFactory(d -> new ReadOnlyStringWrapper(d.getValue().getHeureDebut() + " - " + d.getValue().getHeureFin()));
-        colAge.setCellValueFactory(d -> new ReadOnlyStringWrapper(String.valueOf(d.getValue().getAge())));
-        colAdresse.setCellValueFactory(d -> new ReadOnlyStringWrapper(d.getValue().getAdresse()));
+        colStatut.setCellValueFactory(d -> new ReadOnlyStringWrapper(d.getValue().getStatut()));
+        configureFilters();
 
         refreshTable();
 
         tableRdv.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             selectedRdv = newValue;
             errorGlobal.setText("");
+            populateNotes(newValue);
             updateButtons();
         });
 
@@ -87,158 +87,155 @@ public class ListeRendezVousPsyController {
     }
 
     @FXML
-    public void modifierRendezVous() {
+    public void accepterRendezVous() {
         if (selectedRdv == null) {
             showMessage("Selectionnez un rendez-vous", "red");
             return;
         }
-
-        Optional<RendezVous> updated = showEditDialog(selectedRdv);
-        if (updated.isEmpty()) {
+        if (!"en attente".equalsIgnoreCase(selectedRdv.getStatut())) {
+            showMessage("Seuls les rendez-vous en attente peuvent etre traites", "red");
             return;
         }
 
-        int ancienneDispoId = selectedRdv.getDispoId();
-        RendezVous rendezVous = updated.get();
-        rendezVous.setId(selectedRdv.getId());
-        rendezVous.setUserId(selectedRdv.getUserId());
-
-        if (srv.modifier(rendezVous)) {
-            if (ancienneDispoId != rendezVous.getDispoId()) {
-                sd.rendreDisponible(ancienneDispoId);
-                sd.rendreIndisponible(rendezVous.getDispoId());
-            }
-            showMessage("Rendez-vous modifie", "green");
+        if (srv.validerRendezVous(selectedRdv.getId(), getCurrentPsychologueId())) {
+            showMessage("Rendez-vous acceptee", "green");
             refreshTable();
         } else {
-            showMessage("Modification impossible", "red");
+            showMessage(resolveBusinessError("Acceptation impossible"), "red");
         }
     }
 
     @FXML
-    public void supprimerRendezVous() {
+    public void rejeterRendezVous() {
         if (selectedRdv == null) {
             showMessage("Selectionnez un rendez-vous", "red");
             return;
         }
+        if (!"en attente".equalsIgnoreCase(selectedRdv.getStatut())) {
+            showMessage("Seuls les rendez-vous en attente peuvent etre traites", "red");
+            return;
+        }
 
-        if (srv.supprimer(selectedRdv.getId())) {
-            sd.rendreDisponible(selectedRdv.getDispoId());
-            showMessage("Rendez-vous supprime", "green");
+        if (srv.rejeterRendezVous(selectedRdv.getId(), getCurrentPsychologueId())) {
+            showMessage("Rendez-vous rejetee", "green");
             refreshTable();
         } else {
-            showMessage("Suppression impossible", "red");
+            showMessage(resolveBusinessError("Rejet impossible"), "red");
         }
     }
 
     @FXML
-    public void resetForm() {
-        selectedRdv = null;
-        tableRdv.getSelectionModel().clearSelection();
-        errorGlobal.setText("");
-        updateButtons();
+    public void enregistrerNotePsychologue() {
+        if (selectedRdv == null) {
+            showMessage("Selectionnez un rendez-vous", "red");
+            return;
+        }
+        if (!"acceptee".equalsIgnoreCase(selectedRdv.getStatut())) {
+            showMessage("La note psychologue est reservee aux rendez-vous acceptes", "red");
+            return;
+        }
+
+        if (srv.updatePsychologueNote(
+                selectedRdv.getId(),
+                getCurrentPsychologueId(),
+                MedicalValidationService.normalize(notesPsychologueArea.getText()))) {
+            showMessage("Note psychologue enregistree", "green");
+            refreshTable();
+        } else {
+            showMessage(resolveBusinessError("Enregistrement impossible"), "red");
+        }
     }
 
     private void refreshTable() {
-        tableRdv.setItems(FXCollections.observableArrayList(srv.getRendezVousForPsy()));
-    }
-
-    private Optional<RendezVous> showEditDialog(RendezVousPsy source) {
-        Dialog<RendezVous> dialog = new Dialog<>();
-        dialog.setTitle("Modifier rendez-vous");
-
-        ButtonType saveButtonType = new ButtonType("Enregistrer", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
-
-        TextField ageField = new TextField(String.valueOf(source.getAge()));
-        TextField adresseField = new TextField(source.getAdresse());
-        ComboBox<TypeRendezVous> typeCombo = new ComboBox<>(FXCollections.observableArrayList(st.afficherTout()));
-        ComboBox<Disponibilite> dispoCombo = new ComboBox<>(FXCollections.observableArrayList(sd.getDisposLibresIncluding(source.getDispoId())));
-        Label errorLabel = new Label();
-
-        typeCombo.getSelectionModel().select(
-                typeCombo.getItems().stream().filter(type -> type.getId() == source.getTypeId()).findFirst().orElse(null)
-        );
-        dispoCombo.getSelectionModel().select(
-                dispoCombo.getItems().stream().filter(dispo -> dispo.getId() == source.getDispoId()).findFirst().orElse(null)
-        );
-
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.add(new Label("Age"), 0, 0);
-        grid.add(ageField, 1, 0);
-        grid.add(new Label("Adresse"), 0, 1);
-        grid.add(adresseField, 1, 1);
-        grid.add(new Label("Type"), 0, 2);
-        grid.add(typeCombo, 1, 2);
-        grid.add(new Label("Creneau"), 0, 3);
-        grid.add(dispoCombo, 1, 3);
-        grid.add(errorLabel, 1, 4);
-
-        dialog.getDialogPane().setContent(grid);
-
-        Button saveButton = (Button) dialog.getDialogPane().lookupButton(saveButtonType);
-        saveButton.addEventFilter(javafx.event.ActionEvent.ACTION, event -> {
-            String validationError = validateFields(ageField.getText(), adresseField.getText(), typeCombo.getValue(), dispoCombo.getValue());
-            if (validationError != null) {
-                errorLabel.setText(validationError);
-                errorLabel.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
-                event.consume();
-            }
-        });
-
-        dialog.setResultConverter(buttonType -> {
-            if (buttonType != saveButtonType) {
-                return null;
-            }
-            RendezVous rendezVous = new RendezVous();
-            rendezVous.setAge(Integer.parseInt(ageField.getText().trim()));
-            rendezVous.setAdresse(adresseField.getText().trim());
-            rendezVous.setTypeId(typeCombo.getValue().getId());
-            rendezVous.setDispoId(dispoCombo.getValue().getId());
-            return rendezVous;
-        });
-
-        return dialog.showAndWait();
-    }
-
-    private String validateFields(String ageText, String adresse, TypeRendezVous type, Disponibilite dispo) {
-        if (ageText == null || ageText.isBlank() || adresse == null || adresse.isBlank()) {
-            return "Champs obligatoires";
-        }
-
-        try {
-            int age = Integer.parseInt(ageText.trim());
-            if (age < 5 || age > 120) {
-                return "Age doit etre entre 5 et 120";
-            }
-        } catch (Exception e) {
-            return "Age invalide";
-        }
-
-        if (!ADDRESS_PATTERN.matcher(adresse.trim()).matches()) {
-            return "Adresse invalide ou trop courte";
-        }
-
-        if (type == null || dispo == null) {
-            return "Selection obligatoire";
-        }
-
-        return null;
+        rendezVousItems.setAll(srv.getRendezVousForPsy(getCurrentPsychologueId()));
+        applyFilters();
     }
 
     private void updateButtons() {
-        if (btnModifier != null) {
-            btnModifier.setDisable(false);
+        boolean disabled = selectedRdv == null;
+        if (btnAccepter != null) {
+            btnAccepter.setDisable(disabled);
         }
-        if (btnSupprimer != null) {
-            btnSupprimer.setDisable(false);
+        if (btnRejeter != null) {
+            btnRejeter.setDisable(disabled);
+        }
+        if (btnEnregistrerNote != null) {
+            btnEnregistrerNote.setDisable(selectedRdv == null || !"acceptee".equalsIgnoreCase(selectedRdv.getStatut()));
         }
     }
 
     private void showMessage(String msg, String color) {
         errorGlobal.setText(msg);
         errorGlobal.setStyle("-fx-text-fill: " + color + "; -fx-font-weight: bold;");
+    }
+
+    private int getCurrentPsychologueId() {
+        if (currentUser == null) {
+            currentUser = UserSession.getInstance();
+        }
+        return currentUser.getId();
+    }
+
+    private void populateNotes(RendezVousPsy rendezVous) {
+        if (notesPatientArea == null || notesPsychologueArea == null) {
+            return;
+        }
+        if (rendezVous == null) {
+            notesPatientArea.clear();
+            notesPsychologueArea.clear();
+            return;
+        }
+        notesPatientArea.setText(MedicalValidationService.normalize(rendezVous.getNotesPatient()));
+        notesPsychologueArea.setText(MedicalValidationService.normalize(rendezVous.getNotesPsychologue()));
+    }
+
+    private void configureFilters() {
+        tableRdv.setItems(filteredRendezVous);
+        if (filterStatutCombo != null) {
+            filterStatutCombo.setItems(FXCollections.observableArrayList("Tous", "en attente", "acceptee"));
+            filterStatutCombo.getSelectionModel().selectFirst();
+            filterStatutCombo.valueProperty().addListener((obs, oldValue, newValue) -> applyFilters());
+        }
+        if (searchRendezVousField != null) {
+            searchRendezVousField.textProperty().addListener((obs, oldValue, newValue) -> applyFilters());
+        }
+    }
+
+    private void applyFilters() {
+        String search = searchRendezVousField == null ? "" : searchRendezVousField.getText();
+        String normalizedSearch = search == null ? "" : search.trim().toLowerCase();
+        String statut = filterStatutCombo == null || filterStatutCombo.getValue() == null
+                ? "Tous"
+                : filterStatutCombo.getValue().trim().toLowerCase();
+
+        filteredRendezVous.setPredicate(rendezVous -> {
+            boolean matchesStatut = "tous".equals(statut)
+                    || MedicalValidationService.normalize(rendezVous.getStatut()).equalsIgnoreCase(statut);
+
+            if (!matchesStatut) {
+                return false;
+            }
+
+            if (normalizedSearch.isBlank()) {
+                return true;
+            }
+
+            return contains(rendezVous.getNom(), normalizedSearch)
+                    || contains(rendezVous.getPrenom(), normalizedSearch)
+                    || contains(rendezVous.getTypeRdv(), normalizedSearch)
+                    || contains(rendezVous.getDate(), normalizedSearch)
+                    || contains(rendezVous.getHeureDebut(), normalizedSearch)
+                    || contains(rendezVous.getHeureFin(), normalizedSearch)
+                    || contains(rendezVous.getStatut(), normalizedSearch);
+        });
+    }
+
+    private boolean contains(String value, String search) {
+        return value != null && value.toLowerCase().contains(search);
+    }
+
+    private String resolveBusinessError(String defaultMessage) {
+        String serviceMessage = srv.getLastValidationError();
+        return serviceMessage == null || serviceMessage.isBlank() ? defaultMessage : serviceMessage;
     }
 }

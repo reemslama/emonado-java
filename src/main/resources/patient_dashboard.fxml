@@ -16,45 +16,36 @@
         <VBox styleClass="icon-box-patient" onMouseClicked="#goToProfil"
               prefWidth="150" prefHeight="150" alignment="CENTER"
               style="-fx-background-color: white; -fx-background-radius: 25; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
-            <Label text="👤" style="-fx-font-size: 40px;"/>
+            <Label text="Profil" style="-fx-font-size: 20px;"/>
             <Label text="Mon Profil" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
         </VBox>
 
         <VBox styleClass="icon-box-patient" onMouseClicked="#goToTest"
               prefWidth="150" prefHeight="150" alignment="CENTER"
               style="-fx-background-color: white; -fx-background-radius: 25; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
-            <Label text="📝" style="-fx-font-size: 40px;"/>
+            <Label text="Test" style="-fx-font-size: 20px;"/>
             <Label text="Questionnaire" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
         </VBox>
 
         <VBox styleClass="icon-box-patient" onMouseClicked="#goToJournaux"
               prefWidth="150" prefHeight="150" alignment="CENTER"
               style="-fx-background-color: white; -fx-background-radius: 25; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
-            <Label text="📖" style="-fx-font-size: 40px;"/>
+            <Label text="Journaux" style="-fx-font-size: 20px;"/>
             <Label text="Mes Journaux" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
         </VBox>
 
         <VBox styleClass="icon-box-patient" onMouseClicked="#goToRendezVous"
               prefWidth="150" prefHeight="150" alignment="CENTER"
               style="-fx-background-color: white; -fx-background-radius: 25; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
-            <Label text="📅" style="-fx-font-size: 40px;"/>
+            <Label text="RDV" style="-fx-font-size: 20px;"/>
             <Label text="Rendez-vous" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
         </VBox>
 
-        <!-- ✅ Dossier Médical — style unifié -->
         <VBox styleClass="icon-box-patient" onMouseClicked="#goToMedicalRecord"
               prefWidth="150" prefHeight="150" alignment="CENTER"
               style="-fx-background-color: white; -fx-background-radius: 25; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
-            <Label text="🗂️" style="-fx-font-size: 40px;"/>
-            <Label text="Dossier Médical" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
-        </VBox>
-
-        <!-- ✅ Consultations — style unifié -->
-        <VBox styleClass="icon-box-patient" onMouseClicked="#goToConsultations"
-              prefWidth="150" prefHeight="150" alignment="CENTER"
-              style="-fx-background-color: white; -fx-background-radius: 25; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
-            <Label text="🩺" style="-fx-font-size: 40px;"/>
-            <Label text="Consultations" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+            <Label text="Dossier" style="-fx-font-size: 20px;"/>
+            <Label text="Dossier Medical" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
         </VBox>
 
     </FlowPane>

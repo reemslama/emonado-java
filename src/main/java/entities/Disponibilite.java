@@ -6,6 +6,8 @@ import java.time.LocalTime;
 public class Disponibilite {
 
     private int id;
+    private int psychologueId;
+    private String psychologueNomComplet;
     private LocalDate date;
     private LocalTime heureDebut;
     private LocalTime heureFin;
@@ -27,6 +29,22 @@ public class Disponibilite {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getPsychologueId() {
+        return psychologueId;
+    }
+
+    public void setPsychologueId(int psychologueId) {
+        this.psychologueId = psychologueId;
+    }
+
+    public String getPsychologueNomComplet() {
+        return psychologueNomComplet;
+    }
+
+    public void setPsychologueNomComplet(String psychologueNomComplet) {
+        this.psychologueNomComplet = psychologueNomComplet;
     }
 
     public LocalDate getDate() {
@@ -63,6 +81,9 @@ public class Disponibilite {
 
     @Override
     public String toString() {
-        return date + " | " + heureDebut + " - " + heureFin;
+        if (psychologueNomComplet == null || psychologueNomComplet.isBlank()) {
+            return date + " | " + heureDebut + " - " + heureFin;
+        }
+        return psychologueNomComplet + " | " + date + " | " + heureDebut + " - " + heureFin;
     }
 }

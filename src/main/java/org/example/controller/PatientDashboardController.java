@@ -8,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import org.example.entities.User;
+import org.example.controllers.RendezVousController;
 import org.example.utils.UserSession;
 
 public class PatientDashboardController {
@@ -106,6 +107,8 @@ public class PatientDashboardController {
             medicalRecordController.setUserData(currentUser);
         } else if (controller instanceof ConsultationController consultationController) {
             consultationController.setUserData(currentUser);
+        } else if (controller instanceof RendezVousController rendezVousController) {
+            rendezVousController.setUserData(currentUser);
         }
     }
 }

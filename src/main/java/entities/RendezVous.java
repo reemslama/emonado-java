@@ -12,6 +12,11 @@ public class RendezVous {
     private String dateDisponibilite;
     private String heureDebut;
     private String heureFin;
+    private String statut;
+    private String notesPatient;
+    private String notesPsychologue;
+    private int psychologueId;
+    private String psychologueNomComplet;
 
     public RendezVous() {
     }
@@ -102,5 +107,45 @@ public class RendezVous {
 
     public void setHeureFin(String heureFin) {
         this.heureFin = heureFin;
+    }
+
+    public String getStatut() {
+        return statut;
+    }
+
+    public void setStatut(String statut) {
+        this.statut = statut;
+    }
+
+    public String getNotesPatient() {
+        return notesPatient;
+    }
+
+    public void setNotesPatient(String notesPatient) {
+        this.notesPatient = notesPatient;
+    }
+
+    public String getNotesPsychologue() {
+        return notesPsychologue;
+    }
+
+    public void setNotesPsychologue(String notesPsychologue) {
+        this.notesPsychologue = notesPsychologue;
+    }
+
+    public int getPsychologueId() {
+        return psychologueId;
+    }
+
+    public void setPsychologueId(int psychologueId) {
+        this.psychologueId = psychologueId;
+    }
+
+    public String getPsychologueNomComplet() {
+        return psychologueNomComplet;
+    }
+
+    public void setPsychologueNomComplet(String psychologueNomComplet) {
+        this.psychologueNomComplet = psychologueNomComplet;
     }
 }

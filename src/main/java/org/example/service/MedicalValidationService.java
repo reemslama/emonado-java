@@ -107,6 +107,12 @@ public final class MedicalValidationService {
         if (INVALID_TEXT_PATTERN.matcher(type).matches()) {
             return "Le type de l'antecedent doit contenir des lettres ou des chiffres.";
         }
+        if (dateDiagnostic == null) {
+            return "Veuillez choisir une date pour l'antecedent medical.";
+        }
+        if (!dateDiagnostic.isBefore(LocalDate.now())) {
+            return "La date de l'antecedent doit etre dans le passe.";
+        }
         if (description.length() < 5) {
             return "Veuillez saisir une description plus precise pour l'antecedent.";
         }
@@ -115,9 +121,6 @@ public final class MedicalValidationService {
         }
         if (INVALID_TEXT_PATTERN.matcher(description).matches()) {
             return "La description de l'antecedent doit contenir du texte explicite.";
-        }
-        if (dateDiagnostic != null && dateDiagnostic.isAfter(LocalDate.now())) {
-            return "La date du diagnostic ne peut pas etre dans le futur.";
         }
         return null;
     }
@@ -157,6 +160,23 @@ public final class MedicalValidationService {
         }
         if (INVALID_TEXT_PATTERN.matcher(normalizedNote).matches()) {
             return "La note psychologue doit contenir du texte explicite.";
+        }
+        return null;
+    }
+
+    public static String validatePatientRendezVousNote(String patientNote) {
+        String normalizedNote = normalize(patientNote);
+        if (normalizedNote.isBlank()) {
+            return "La note du patient est obligatoire.";
+        }
+        if (normalizedNote.length() < 10) {
+            return "La note du patient doit contenir au moins 10 caracteres.";
+        }
+        if (normalizedNote.length() > CONSULTATION_NOTES_MAX_LENGTH) {
+            return "La note du patient ne doit pas depasser 2000 caracteres.";
+        }
+        if (INVALID_TEXT_PATTERN.matcher(normalizedNote).matches()) {
+            return "La note du patient doit contenir des mots et des phrases claires.";
         }
         return null;
     }

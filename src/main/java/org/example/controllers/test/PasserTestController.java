@@ -12,7 +12,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.example.entities.Question;
 import org.example.entities.Reponse;
+import org.example.entities.TestResultMedical;
+import org.example.entities.User;
+import org.example.service.MedicalDataService;
 import org.example.service.QuestionService;
+import org.example.utils.UserSession;
 
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +43,7 @@ public class PasserTestController {
     private ToggleGroup toggleGroup;
 
     private final QuestionService questionService = new QuestionService();
+    private final MedicalDataService medicalDataService = new MedicalDataService();
 
     private final Map<Integer, String> imageMap = new HashMap<>() {{
         put(10, "/images/depression/image1.jpg");
@@ -178,6 +183,7 @@ public class PasserTestController {
 
             ResultatController controller = loader.getController();
             int score = reponses.values().stream().mapToInt(Integer::intValue).sum();
+            saveTestResult(score);
             controller.setResultat(score, categorie, questions.size());
 
             Stage stage = (Stage) btnSuivant.getScene().getWindow();
@@ -189,6 +195,24 @@ public class PasserTestController {
 
         } catch (Exception e) {
             System.out.println("Erreur navigation : " + e.getMessage());
+        }
+    }
+
+    private void saveTestResult(int score) {
+        User currentUser = UserSession.getInstance();
+        if (currentUser == null) {
+            return;
+        }
+        try {
+            medicalDataService.ensureSchema();
+            TestResultMedical testResult = new TestResultMedical();
+            testResult.setPatientId(currentUser.getId());
+            testResult.setCategorie(categorie);
+            testResult.setScore(score);
+            testResult.setScoreMax(questions.size() * 3);
+            medicalDataService.saveTestResult(testResult);
+        } catch (Exception e) {
+            System.out.println("Erreur sauvegarde resultat test : " + e.getMessage());
         }
     }
 }

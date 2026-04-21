@@ -14,6 +14,10 @@ public class ServiceTypeRendezVous {
 
     private final Connection cnx = DataSource.getInstance().getConnection();
 
+    public ServiceTypeRendezVous() {
+        ensureDefaultTypes();
+    }
+
     public boolean ajouter(TypeRendezVous t) {
         String sql = "INSERT INTO type_rendez_vous(libelle) VALUES (?)";
         try {
@@ -86,6 +90,24 @@ public class ServiceTypeRendezVous {
         } catch (Exception e) {
             System.out.println("Erreur verification type: " + e.getMessage());
             return false;
+        }
+    }
+
+    private void ensureDefaultTypes() {
+        ensureTypeExists("consultation");
+        ensureTypeExists("suivi");
+    }
+
+    private void ensureTypeExists(String libelle) {
+        if (existeLibelle(libelle, null)) {
+            return;
+        }
+
+        try (PreparedStatement ps = cnx.prepareStatement("INSERT INTO type_rendez_vous(libelle) VALUES (?)")) {
+            ps.setString(1, libelle);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            System.out.println("Erreur initialisation type " + libelle + ": " + e.getMessage());
         }
     }
 }

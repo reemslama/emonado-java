@@ -25,13 +25,6 @@
                 <Label fx:id="titleLabel" text="Mon Dossier Medical"
                        style="-fx-font-size: 34px; -fx-font-weight: bold; -fx-text-fill: #16324f;"/>
 
-                <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15;">
-                    <Label text="Rappel et preparation de ma prochaine consultation"
-                           style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #0d6efd;"/>
-                    <TextArea fx:id="reminderArea" wrapText="true" prefRowCount="4"
-                              promptText="Notez les sujets ou questions a aborder lors de votre prochaine consultation..."/>
-                </VBox>
-
                 <HBox spacing="12">
                     <VBox spacing="8" HBox.hgrow="ALWAYS"
                           style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15;">
@@ -56,8 +49,9 @@
                             <Label text="Date de naissance" GridPane.rowIndex="2" GridPane.columnIndex="2"/>
                             <DatePicker fx:id="birthDatePicker" GridPane.rowIndex="2" GridPane.columnIndex="3"/>
                         </GridPane>
-                        <Button text="Modifier mes informations" onAction="#handleSavePersonalInfo"
-                                style="-fx-background-color: #198754; -fx-text-fill: white; -fx-background-radius: 6;"/>
+                        <Label text="Les informations personnelles sont consultables ici, mais ne peuvent pas etre modifiees depuis le dossier medical."
+                               wrapText="true"
+                               style="-fx-text-fill: #64748b; -fx-font-size: 13px;"/>
                     </VBox>
 
                     <VBox spacing="8" prefWidth="290"
@@ -75,23 +69,13 @@
                 </HBox>
 
                 <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15;">
-                    <Label text="Historique Medical" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #f0ad00;"/>
-                    <TextArea fx:id="medicalHistoryArea" wrapText="true" prefRowCount="4"
-                              promptText="Ajoutez vos allergies, traitements ou autres informations medicales..."/>
-                    <HBox spacing="10">
-                        <Button text="Enregistrer le dossier medical" onAction="#handleSaveMedicalRecord"
-                                style="-fx-background-color: #f0ad00; -fx-text-fill: #1b1b1b; -fx-background-radius: 6;"/>
-                        <Button fx:id="deleteMedicalRecordButton" text="Supprimer le dossier medical" onAction="#handleDeleteMedicalRecord"
-                                style="-fx-background-color: #dc3545; -fx-text-fill: white; -fx-background-radius: 6;"/>
-                    </HBox>
-                </VBox>
-
-                <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15;">
                     <Label text="Antecedents Medicaux" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #dc3545;"/>
-                    <TextField fx:id="antecedentTypeField" promptText="Type d'antecedent (ex: Allergie, Operation, Diabete)"/>
+                    <ComboBox fx:id="antecedentTypeCombo" promptText="Choisir le type d'antecedent"/>
                     <TextArea fx:id="antecedentDescriptionArea" wrapText="true" prefRowCount="3"
-                              promptText="Description de l'antecedent medical..."/>
+                              promptText="Decrivez l'antecedent avec des mots et des phrases correctes..."/>
                     <DatePicker fx:id="antecedentDatePicker"/>
+                    <Label text="La date de l'antecedent doit etre dans le passe."
+                           style="-fx-font-size: 13px; -fx-text-fill: #64748b;"/>
                     <HBox spacing="10">
                         <Button fx:id="saveAntecedentButton" text="Ajouter l'antecedent medical" onAction="#handleSaveAntecedent"
                                 style="-fx-background-color: #dc3545; -fx-text-fill: white; -fx-background-radius: 6;"/>
@@ -107,12 +91,13 @@
                 </VBox>
 
                 <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15;">
-                    <Label text="Mes Consultations" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #198754;"/>
-                    <Label text="Accedez a l'interface dediee pour ajouter une consultation avec l'historique detaille et les filtres."
-                           wrapText="true"
-                           style="-fx-font-size: 14px; -fx-text-fill: #5f6c7b;"/>
-                    <Button text="Ouvrir l'espace consultations" onAction="#goToConsultations"
-                            style="-fx-background-color: #198754; -fx-text-fill: white; -fx-background-radius: 6;"/>
+                    <Label text="Mes Journaux" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #198754;"/>
+                    <VBox fx:id="journalsContainer" spacing="10"/>
+                </VBox>
+
+                <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15;">
+                    <Label text="Mes Resultats de Tests" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #6f42c1;"/>
+                    <VBox fx:id="testResultsContainer" spacing="10"/>
                 </VBox>
             </VBox>
         </ScrollPane>

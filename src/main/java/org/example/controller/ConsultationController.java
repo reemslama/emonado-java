@@ -90,7 +90,12 @@ public class ConsultationController {
             return;
         }
 
-        Consultation consultation = selectedConsultation == null ? new Consultation() : selectedConsultation;
+        if (selectedConsultation == null) {
+            showError("Une consultation est creee automatiquement a partir d'un rendez-vous accepte. Selectionnez ensuite la consultation pour completer vos notes.");
+            return;
+        }
+
+        Consultation consultation = selectedConsultation;
         consultation.setPatientId(currentUser.getId());
         consultation.setConsultationDate(consultationDatePicker.getValue());
         consultation.setNotesPatient(MedicalValidationService.normalize(consultationNotesArea.getText()));
@@ -103,9 +108,7 @@ public class ConsultationController {
 
         try {
             medicalDataService.saveConsultation(consultation);
-            showInfo(selectedConsultation == null
-                    ? "Consultation ajoutee avec succes."
-                    : "Consultation modifiee avec succes.");
+            showInfo("Consultation modifiee avec succes.");
             resetForm();
             loadConsultations();
         } catch (SQLException e) {
@@ -267,7 +270,12 @@ public class ConsultationController {
         Label createdAtLabel = new Label("Creee le " + createdAtText + " | Derniere modification le " + updatedAtText);
         createdAtLabel.setStyle("-fx-text-fill: #64748b; -fx-font-size: 13px;");
 
-        Button editButton = new Button("Modifier");
+        Label rendezVousLabel = new Label(consultation.getRendezVousId() == null
+                ? "Consultation non liee a un rendez-vous."
+                : "Liee au rendez-vous #" + consultation.getRendezVousId());
+        rendezVousLabel.setStyle("-fx-text-fill: #475569; -fx-font-size: 13px; -fx-font-weight: bold;");
+
+        Button editButton = new Button("Completer");
         editButton.setStyle("-fx-background-color: #0d6efd; -fx-text-fill: white; -fx-background-radius: 8;");
         editButton.setOnAction(event -> populateConsultationForm(consultation));
 
@@ -277,7 +285,7 @@ public class ConsultationController {
 
         HBox actions = new HBox(10, editButton, deleteButton);
 
-        card.getChildren().addAll(titleRow, notesTitle, notesLabel, psyTitle, psyLabel, createdAtLabel, actions);
+        card.getChildren().addAll(titleRow, rendezVousLabel, notesTitle, notesLabel, psyTitle, psyLabel, createdAtLabel, actions);
         return card;
     }
 
@@ -293,6 +301,7 @@ public class ConsultationController {
     private void populateConsultationForm(Consultation consultation) {
         selectedConsultation = consultation;
         consultationDatePicker.setValue(consultation.getConsultationDate());
+        consultationDatePicker.setDisable(true);
         consultationNotesArea.setText(consultation.getNotesPatient());
         psychologueNotesArea.setText(MedicalValidationService.normalize(consultation.getNotesPsychologue()));
         saveConsultationButton.setText("Mettre a jour la consultation");
@@ -316,9 +325,10 @@ public class ConsultationController {
     private void resetForm() {
         selectedConsultation = null;
         consultationDatePicker.setValue(LocalDate.now());
+        consultationDatePicker.setDisable(true);
         consultationNotesArea.clear();
         psychologueNotesArea.clear();
-        saveConsultationButton.setText("Enregistrer la consultation");
+        saveConsultationButton.setText("Mettre a jour la consultation");
         cancelEditButton.setVisible(false);
         cancelEditButton.setManaged(false);
     }

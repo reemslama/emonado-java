@@ -16,6 +16,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.DateCell;
 import javafx.scene.layout.BorderPane;
 import javafx.util.StringConverter;
+import org.example.entities.User;
+import org.example.utils.UserSession;
 import services.ServiceDisponibilite;
 
 import java.io.IOException;
@@ -46,9 +48,11 @@ public class DisponibiliteController {
 
     private final ServiceDisponibilite sd = new ServiceDisponibilite();
     private Disponibilite selectedDisponibilite;
+    private User currentUser;
 
     @FXML
     public void initialize() {
+        currentUser = UserSession.getInstance();
         var heures = FXCollections.<String>observableArrayList();
         for (int i = 8; i <= 19; i++) {
             heures.add(String.format("%02d:00", i));
@@ -140,6 +144,10 @@ public class DisponibiliteController {
             setError(errorGlobal, "Selectionnez une disponibilite");
             return;
         }
+        if (!selectedDisponibilite.isLibre()) {
+            setError(errorGlobal, "Impossible de modifier un creneau deja reserve");
+            return;
+        }
 
         Disponibilite d = validateForm();
         if (d == null) {
@@ -160,6 +168,10 @@ public class DisponibiliteController {
     void supprimer() {
         if (selectedDisponibilite == null) {
             setError(errorGlobal, "Selectionnez une disponibilite");
+            return;
+        }
+        if (!selectedDisponibilite.isLibre()) {
+            setError(errorGlobal, "Impossible de supprimer un creneau deja reserve");
             return;
         }
 
@@ -223,6 +235,7 @@ public class DisponibiliteController {
             }
 
             Disponibilite d = new Disponibilite();
+            d.setPsychologueId(getCurrentPsychologueId());
             d.setDate(datePicker.getValue());
             d.setHeureDebut(debut);
             d.setHeureFin(fin);
@@ -253,7 +266,7 @@ public class DisponibiliteController {
     }
 
     private void refreshTable() {
-        tableDisponibilites.setItems(FXCollections.observableArrayList(sd.afficherTout()));
+        tableDisponibilites.setItems(FXCollections.observableArrayList(sd.afficherToutByPsychologue(getCurrentPsychologueId())));
     }
 
     private void updateButtons() {
@@ -276,5 +289,12 @@ public class DisponibiliteController {
     private void showSuccess(String msg) {
         msgSuccess.setText(msg);
         msgSuccess.setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
+    }
+
+    private int getCurrentPsychologueId() {
+        if (currentUser == null) {
+            currentUser = UserSession.getInstance();
+        }
+        return currentUser.getId();
     }
 }

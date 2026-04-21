@@ -3,6 +3,7 @@ package org.example.service;
 import org.example.entities.AntecedentMedical;
 import org.example.entities.Consultation;
 import org.example.entities.DossierMedical;
+import org.example.entities.TestResultMedical;
 import org.example.entities.User;
 import org.example.utils.DataSource;
 
@@ -67,10 +68,22 @@ public class MedicalDataService {
                     + "CONSTRAINT fk_antecedent_medical_record FOREIGN KEY (dossier_medical_id) REFERENCES dossier_medical(id) ON DELETE CASCADE"
                     + ")");
 
+            execute(conn, "CREATE TABLE IF NOT EXISTS patient_test_result ("
+                    + "id INT PRIMARY KEY AUTO_INCREMENT, "
+                    + "patient_id INT NOT NULL, "
+                    + "categorie VARCHAR(100) NOT NULL, "
+                    + "score INT NOT NULL, "
+                    + "score_max INT NOT NULL, "
+                    + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
+                    + "CONSTRAINT fk_patient_test_result_user FOREIGN KEY (patient_id) REFERENCES user(id) ON DELETE CASCADE"
+                    + ")");
+
             addColumnIfMissing(conn, "patient_consultation", "notes_psychologue", "TEXT NULL");
             addColumnIfMissing(conn, "patient_consultation", "psychologue_id", "INT NULL");
+            addColumnIfMissing(conn, "patient_consultation", "rendez_vous_id", "INT NULL");
             addColumnIfMissing(conn, "patient_consultation", "updated_at",
                     "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
+            addUniqueIndexIfMissing(conn, "patient_consultation", "uk_patient_consultation_rendez_vous", "rendez_vous_id");
 
             syncMedicalRecordTables(conn);
         }
@@ -222,11 +235,56 @@ public class MedicalDataService {
         return antecedents;
     }
 
+    public TestResultMedical saveTestResult(TestResultMedical testResult) throws SQLException {
+        try (Connection conn = DataSource.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(
+                     "INSERT INTO patient_test_result (patient_id, categorie, score, score_max) VALUES (?, ?, ?, ?)",
+                     Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setInt(1, testResult.getPatientId());
+            pstmt.setString(2, testResult.getCategorie());
+            pstmt.setInt(3, testResult.getScore());
+            pstmt.setInt(4, testResult.getScoreMax());
+            pstmt.executeUpdate();
+            try (ResultSet keys = pstmt.getGeneratedKeys()) {
+                if (keys.next()) {
+                    testResult.setId(keys.getInt(1));
+                }
+            }
+        }
+        return testResult;
+    }
+
+    public List<TestResultMedical> getTestResultsByPatient(int patientId) throws SQLException {
+        List<TestResultMedical> results = new ArrayList<>();
+        try (Connection conn = DataSource.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(
+                     "SELECT id, patient_id, categorie, score, score_max, created_at " +
+                             "FROM patient_test_result WHERE patient_id = ? ORDER BY created_at DESC, id DESC")) {
+            pstmt.setInt(1, patientId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    TestResultMedical result = new TestResultMedical();
+                    result.setId(rs.getInt("id"));
+                    result.setPatientId(rs.getInt("patient_id"));
+                    result.setCategorie(rs.getString("categorie"));
+                    result.setScore(rs.getInt("score"));
+                    result.setScoreMax(rs.getInt("score_max"));
+                    Timestamp createdAt = rs.getTimestamp("created_at");
+                    if (createdAt != null) {
+                        result.setCreatedAt(createdAt.toLocalDateTime());
+                    }
+                    results.add(result);
+                }
+            }
+        }
+        return results;
+    }
+
     public Consultation saveConsultation(Consultation consultation) throws SQLException {
         if (consultation.getId() > 0) {
             try (Connection conn = DataSource.getInstance().getConnection();
                  PreparedStatement pstmt = conn.prepareStatement(
-                         "UPDATE patient_consultation SET consultation_date = ?, notes = ?, notes_psychologue = ?, psychologue_id = ?, "
+                         "UPDATE patient_consultation SET consultation_date = ?, notes = ?, notes_psychologue = ?, psychologue_id = ?, rendez_vous_id = ?, "
                                  + "updated_at = CURRENT_TIMESTAMP WHERE id = ?")) {
                 pstmt.setDate(1, Date.valueOf(consultation.getConsultationDate()));
                 pstmt.setString(2, consultation.getNotesPatient());
@@ -236,14 +294,19 @@ public class MedicalDataService {
                 } else {
                     pstmt.setInt(4, consultation.getPsychologueId());
                 }
-                pstmt.setInt(5, consultation.getId());
+                if (consultation.getRendezVousId() == null) {
+                    pstmt.setNull(5, java.sql.Types.INTEGER);
+                } else {
+                    pstmt.setInt(5, consultation.getRendezVousId());
+                }
+                pstmt.setInt(6, consultation.getId());
                 pstmt.executeUpdate();
             }
         } else {
             try (Connection conn = DataSource.getInstance().getConnection();
                  PreparedStatement pstmt = conn.prepareStatement(
-                         "INSERT INTO patient_consultation (patient_id, consultation_date, notes, notes_psychologue, psychologue_id) "
-                                 + "VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+                         "INSERT INTO patient_consultation (patient_id, consultation_date, notes, notes_psychologue, psychologue_id, rendez_vous_id) "
+                                 + "VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
                 pstmt.setInt(1, consultation.getPatientId());
                 pstmt.setDate(2, Date.valueOf(consultation.getConsultationDate()));
                 pstmt.setString(3, consultation.getNotesPatient());
@@ -252,6 +315,11 @@ public class MedicalDataService {
                     pstmt.setNull(5, java.sql.Types.INTEGER);
                 } else {
                     pstmt.setInt(5, consultation.getPsychologueId());
+                }
+                if (consultation.getRendezVousId() == null) {
+                    pstmt.setNull(6, java.sql.Types.INTEGER);
+                } else {
+                    pstmt.setInt(6, consultation.getRendezVousId());
                 }
                 pstmt.executeUpdate();
                 try (ResultSet keys = pstmt.getGeneratedKeys()) {
@@ -279,6 +347,40 @@ public class MedicalDataService {
         }
     }
 
+    public Consultation createConsultationFromAcceptedRendezVous(int rendezVousId) throws SQLException {
+        Consultation existing = getConsultationByRendezVousId(rendezVousId);
+        if (existing != null) {
+            return existing;
+        }
+
+        String sql = "SELECT r.id AS rendez_vous_id, r.user_id AS patient_id, d.date AS consultation_date, d.psychologue_id " +
+                "FROM rendez_vous r " +
+                "JOIN disponibilite d ON d.id = r.dispo_id " +
+                "WHERE r.id = ? AND r.statut = 'acceptee'";
+
+        try (Connection conn = DataSource.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, rendezVousId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (!rs.next()) {
+                    return null;
+                }
+
+                Consultation consultation = new Consultation();
+                consultation.setPatientId(rs.getInt("patient_id"));
+                consultation.setRendezVousId(rs.getInt("rendez_vous_id"));
+                consultation.setConsultationDate(rs.getDate("consultation_date").toLocalDate());
+                consultation.setNotesPatient("");
+                consultation.setNotesPsychologue("");
+                int psychologueId = rs.getInt("psychologue_id");
+                if (!rs.wasNull()) {
+                    consultation.setPsychologueId(psychologueId);
+                }
+                return saveConsultation(consultation);
+            }
+        }
+    }
+
     public void deleteConsultation(int consultationId) throws SQLException {
         try (Connection conn = DataSource.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement("DELETE FROM patient_consultation WHERE id = ?")) {
@@ -290,9 +392,24 @@ public class MedicalDataService {
     public Consultation getConsultationById(int consultationId) throws SQLException {
         try (Connection conn = DataSource.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(
-                     "SELECT id, patient_id, consultation_date, notes, notes_psychologue, psychologue_id, created_at, updated_at "
+                     "SELECT id, patient_id, consultation_date, notes, notes_psychologue, psychologue_id, rendez_vous_id, created_at, updated_at "
                              + "FROM patient_consultation WHERE id = ?")) {
             pstmt.setInt(1, consultationId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapConsultation(rs);
+                }
+            }
+        }
+        return null;
+    }
+
+    public Consultation getConsultationByRendezVousId(int rendezVousId) throws SQLException {
+        try (Connection conn = DataSource.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(
+                     "SELECT id, patient_id, consultation_date, notes, notes_psychologue, psychologue_id, rendez_vous_id, created_at, updated_at "
+                             + "FROM patient_consultation WHERE rendez_vous_id = ?")) {
+            pstmt.setInt(1, rendezVousId);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     return mapConsultation(rs);
@@ -306,9 +423,25 @@ public class MedicalDataService {
         List<Consultation> consultations = new ArrayList<>();
         try (Connection conn = DataSource.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(
-                     "SELECT id, patient_id, consultation_date, notes, notes_psychologue, psychologue_id, created_at, updated_at "
+                     "SELECT id, patient_id, consultation_date, notes, notes_psychologue, psychologue_id, rendez_vous_id, created_at, updated_at "
                              + "FROM patient_consultation WHERE patient_id = ? ORDER BY consultation_date DESC, id DESC")) {
             pstmt.setInt(1, patientId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    consultations.add(mapConsultation(rs));
+                }
+            }
+        }
+        return consultations;
+    }
+
+    public List<Consultation> getConsultationsByPsychologue(int psychologueId) throws SQLException {
+        List<Consultation> consultations = new ArrayList<>();
+        try (Connection conn = DataSource.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(
+                     "SELECT id, patient_id, consultation_date, notes, notes_psychologue, psychologue_id, rendez_vous_id, created_at, updated_at "
+                             + "FROM patient_consultation WHERE psychologue_id = ? ORDER BY consultation_date DESC, id DESC")) {
+            pstmt.setInt(1, psychologueId);
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     consultations.add(mapConsultation(rs));
@@ -389,6 +522,10 @@ public class MedicalDataService {
         int psychologueId = rs.getInt("psychologue_id");
         if (!rs.wasNull()) {
             consultation.setPsychologueId(psychologueId);
+        }
+        int rendezVousId = rs.getInt("rendez_vous_id");
+        if (!rs.wasNull()) {
+            consultation.setRendezVousId(rendezVousId);
         }
         Timestamp createdAt = rs.getTimestamp("created_at");
         if (createdAt != null) {
@@ -489,5 +626,18 @@ public class MedicalDataService {
         try (ResultSet rs = metaData.getColumns(conn.getCatalog(), null, tableName, columnName)) {
             return rs.next();
         }
+    }
+
+    private void addUniqueIndexIfMissing(Connection conn, String tableName, String indexName, String columnName) throws SQLException {
+        DatabaseMetaData metaData = conn.getMetaData();
+        try (ResultSet rs = metaData.getIndexInfo(conn.getCatalog(), null, tableName, true, false)) {
+            while (rs.next()) {
+                String existingIndex = rs.getString("INDEX_NAME");
+                if (existingIndex != null && existingIndex.equalsIgnoreCase(indexName)) {
+                    return;
+                }
+            }
+        }
+        execute(conn, "ALTER TABLE " + tableName + " ADD UNIQUE INDEX " + indexName + " (" + columnName + ")");
     }
 }

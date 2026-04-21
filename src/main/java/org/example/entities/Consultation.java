@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 public class Consultation {
     private int id;
     private int patientId;
+    private Integer rendezVousId;
     private LocalDate consultationDate;
     private String notesPatient;
     private String notesPsychologue;
@@ -27,6 +28,14 @@ public class Consultation {
 
     public void setPatientId(int patientId) {
         this.patientId = patientId;
+    }
+
+    public Integer getRendezVousId() {
+        return rendezVousId;
+    }
+
+    public void setRendezVousId(Integer rendezVousId) {
+        this.rendezVousId = rendezVousId;
     }
 
     public LocalDate getConsultationDate() {

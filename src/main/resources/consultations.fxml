@@ -43,14 +43,14 @@
                 </HBox>
 
                 <VBox spacing="16" style="-fx-background-color: white; -fx-background-radius: 16; -fx-padding: 0 0 18 0; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 16, 0, 0, 5);">
-                    <Label text="Ajouter une nouvelle consultation"
+                    <Label text="Completer une consultation issue d'un rendez-vous accepte"
                            style="-fx-background-color: #198754; -fx-background-radius: 16 16 0 0; -fx-text-fill: white; -fx-font-size: 26px; -fx-font-weight: bold; -fx-padding: 14 18;"/>
 
                     <HBox spacing="18" alignment="TOP_LEFT" style="-fx-padding: 0 18;">
                         <VBox spacing="8" HBox.hgrow="ALWAYS" maxWidth="320">
                             <Label text="Date de consultation *" style="-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #334155;"/>
                             <DatePicker fx:id="consultationDatePicker" maxWidth="1.7976931348623157E308"/>
-                            <Label text="La date doit etre aujourd'hui ou dans le futur"
+                            <Label text="La date est reprise automatiquement du rendez-vous accepte"
                                    style="-fx-text-fill: #6b7280; -fx-font-size: 13px;"/>
                         </VBox>
 
@@ -84,7 +84,7 @@
                     </HBox>
 
                     <HBox style="-fx-padding: 0 18 0 18;">
-                        <Label text="Information : Cette consultation sera ajoutee a votre dossier medical. Un psychologue pourra la consulter et y ajouter ses notes professionnelles."
+                        <Label text="Information : une consultation est creee automatiquement quand le psychiatre accepte le rendez-vous. Le patient et le psychiatre completent ensuite le meme dossier de consultation."
                                wrapText="true"
                                style="-fx-background-color: #dff3ff; -fx-background-radius: 10; -fx-text-fill: #14526b; -fx-font-size: 15px; -fx-padding: 14 18;"/>
                     </HBox>

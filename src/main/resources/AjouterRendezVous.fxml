@@ -4,54 +4,104 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="TOP_CENTER" spacing="15.0"
+<VBox alignment="TOP_CENTER" spacing="22.0"
       xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="org.example.controllers.RendezVousController"
+      style="-fx-background-color: linear-gradient(to bottom, #f6f3e7, #dfeecf);"
       stylesheets="@/styles/style.css">
 
     <padding>
-        <Insets top="20" bottom="20" left="20" right="20"/>
+        <Insets top="24" bottom="24" left="28" right="28"/>
     </padding>
 
-    <HBox alignment="CENTER_LEFT" spacing="10">
-        <Button text="Retour" onAction="#returnToDashboard"/>
-        <Label fx:id="welcomeLabel" text="Bienvenue" style="-fx-font-size:14px; -fx-font-weight:bold;"/>
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <Button text="Retour" onAction="#returnToDashboard"
+                style="-fx-background-color: #285943; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 14; -fx-padding: 10 18;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="welcomeLabel" text="Reserver un rendez-vous"
+               style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #285943;"/>
     </HBox>
 
-    <HBox alignment="CENTER" spacing="20">
-        <Label fx:id="patientNomLabel" text="Nom :"/>
-        <Label fx:id="patientPrenomLabel" text="Prenom :"/>
-    </HBox>
+    <VBox maxWidth="900" spacing="18"
+          style="-fx-background-color: rgba(255,255,255,0.82); -fx-background-radius: 28; -fx-padding: 26; -fx-effect: dropshadow(gaussian, rgba(40,89,67,0.14), 28, 0.1, 0, 8);">
+        <HBox alignment="CENTER_LEFT" spacing="20">
+            <VBox spacing="4">
+                <Label text="Reservation" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #1d3557;"/>
+                <Label text="Choisissez un psychologue, un type de suivi puis un creneau libre."
+                       style="-fx-text-fill: #4d6658; -fx-font-size: 13px;"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <VBox alignment="CENTER_RIGHT" spacing="4">
+                <Label text="Patient" style="-fx-text-fill: #6b7a6f; -fx-font-size: 12px;"/>
+                <Label fx:id="patientNomLabel" text="Nom" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #264653;"/>
+                <Label fx:id="patientPrenomLabel" text="Prenom" style="-fx-text-fill: #264653;"/>
+            </VBox>
+        </HBox>
 
-    <Label text="Gestion des Rendez-vous" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+        <Separator/>
 
-    <TextField fx:id="txtAge" promptText="Age"/>
-    <TextField fx:id="txtAdresse" promptText="Adresse"/>
-    <ComboBox fx:id="comboTypes" promptText="Type de rendez-vous"/>
-    <ComboBox fx:id="comboDispos" promptText="Creneau disponible"/>
+        <HBox spacing="18" alignment="CENTER_LEFT">
+            <VBox spacing="7" HBox.hgrow="ALWAYS">
+                <Label text="Psychiatre" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #35524a;"/>
+                <ComboBox fx:id="comboPsychiatres" promptText="Choisir le psychiatre" onAction="#onPsychiatreSelected" maxWidth="1.7976931348623157E308"
+                          style="-fx-background-radius: 16; -fx-font-size: 14px;"/>
+            </VBox>
+            <VBox spacing="7" HBox.hgrow="ALWAYS">
+                <Label text="Type" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #35524a;"/>
+                <ComboBox fx:id="comboTypes" promptText="Choisir le type" onAction="#onTypeSelected" maxWidth="1.7976931348623157E308"
+                          style="-fx-background-radius: 16; -fx-font-size: 14px;"/>
+            </VBox>
+        </HBox>
 
-    <Label fx:id="errorGlobal"/>
+        <VBox spacing="7">
+            <Label text="Disponibilite du psychologue" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #35524a;"/>
+            <ComboBox fx:id="comboDispos" promptText="Choisir une disponibilite" maxWidth="1.7976931348623157E308"
+                      style="-fx-background-radius: 16; -fx-font-size: 14px;"/>
+        </VBox>
 
-    <HBox spacing="10" alignment="CENTER">
-        <Button fx:id="btnValider" text="Ajouter" onAction="#validerRendezVous"/>
-        <Button fx:id="btnModifier" text="Modifier" onAction="#modifierRendezVous"/>
-        <Button fx:id="btnSupprimer" text="Supprimer" onAction="#supprimerRendezVous"/>
-    </HBox>
+        <VBox spacing="7">
+            <Label text="Notes du patient" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #35524a;"/>
+            <TextArea fx:id="notesPatientArea" wrapText="true" prefRowCount="4"
+                      promptText="Expliquez clairement votre demande, vos symptomes ou les points a aborder pendant le rendez-vous."/>
+        </VBox>
 
-    <TableView fx:id="tableRendezVous" prefHeight="320" prefWidth="760">
-        <columns>
-            <TableColumn fx:id="colAge" text="Age" prefWidth="80"/>
-            <TableColumn fx:id="colAdresse" text="Adresse" prefWidth="180"/>
-            <TableColumn fx:id="colType" text="Type" prefWidth="150"/>
-            <TableColumn fx:id="colDate" text="Date" prefWidth="140"/>
-            <TableColumn fx:id="colHeure" text="Horaire" prefWidth="180"/>
-        </columns>
-    </TableView>
+        <Label fx:id="errorGlobal" style="-fx-font-size: 13px;"/>
+
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <Button fx:id="btnValider" text="Reserver" onAction="#validerRendezVous"
+                    style="-fx-background-color: #2a9d8f; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 16; -fx-padding: 12 24;"/>
+            <Button fx:id="btnModifier" text="Changer le creneau" onAction="#modifierRendezVous"
+                    style="-fx-background-color: #e9c46a; -fx-text-fill: #1d3557; -fx-font-weight: bold; -fx-background-radius: 16; -fx-padding: 12 20;"/>
+            <Button fx:id="btnSupprimer" text="Annuler" onAction="#supprimerRendezVous"
+                    style="-fx-background-color: #e76f51; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 16; -fx-padding: 12 20;"/>
+        </HBox>
+    </VBox>
+
+    <VBox maxWidth="900" spacing="10"
+          style="-fx-background-color: rgba(255,255,255,0.9); -fx-background-radius: 24; -fx-padding: 18;">
+        <Label text="Mes demandes de rendez-vous" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1d3557;"/>
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <TextField fx:id="searchRendezVousField" promptText="Rechercher par psychiatre, type, date ou statut" HBox.hgrow="ALWAYS"/>
+            <ComboBox fx:id="filterStatutCombo" promptText="Filtrer par statut" prefWidth="180"/>
+        </HBox>
+        <TableView fx:id="tableRendezVous" prefHeight="320" prefWidth="900">
+            <columns>
+                <TableColumn fx:id="colType" text="Type" prefWidth="170"/>
+                <TableColumn fx:id="colPsychologue" text="Psychiatre" prefWidth="230"/>
+                <TableColumn fx:id="colDate" text="Date" prefWidth="140"/>
+                <TableColumn fx:id="colHeure" text="Horaire" prefWidth="200"/>
+                <TableColumn fx:id="colStatut" text="Statut" prefWidth="150"/>
+            </columns>
+        </TableView>
+    </VBox>
 </VBox>
