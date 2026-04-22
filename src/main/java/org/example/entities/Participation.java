@@ -8,8 +8,13 @@ public class Participation {
     private int jeuId;
     private String jeuTitre;
     private int imageChoisieId;
-    private String imagePath;       // chargé par JOIN pour l'affichage
-    private String resultatPsy;  // copié depuis image_carte.interpretation_psy
+    private String imagePath;
+    private String choixImage;
+    private String resultatPsy;
+    private String comportementTag;
+    private String sessionCode;
+    private int scoreImpact;
+    private long tempsReponseMs;
     private LocalDateTime dateParticipation;
 
     public int getId() {
@@ -66,6 +71,16 @@ public class Participation {
 
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
+        this.choixImage = imagePath;
+    }
+
+    public String getChoixImage() {
+        return choixImage;
+    }
+
+    public void setChoixImage(String choixImage) {
+        this.choixImage = choixImage;
+        this.imagePath = choixImage;
     }
 
     public String getResultatPsy() {
@@ -74,6 +89,46 @@ public class Participation {
 
     public void setResultatPsy(String resultatPsy) {
         this.resultatPsy = resultatPsy;
+    }
+
+    public String getComportementTag() {
+        return comportementTag;
+    }
+
+    public void setComportementTag(String comportementTag) {
+        this.comportementTag = comportementTag;
+    }
+
+    public String getChoixTag() {
+        return comportementTag;
+    }
+
+    public void setChoixTag(String choixTag) {
+        this.comportementTag = choixTag;
+    }
+
+    public String getSessionCode() {
+        return sessionCode;
+    }
+
+    public void setSessionCode(String sessionCode) {
+        this.sessionCode = sessionCode;
+    }
+
+    public int getScoreImpact() {
+        return scoreImpact;
+    }
+
+    public void setScoreImpact(int scoreImpact) {
+        this.scoreImpact = scoreImpact;
+    }
+
+    public long getTempsReponseMs() {
+        return tempsReponseMs;
+    }
+
+    public void setTempsReponseMs(long tempsReponseMs) {
+        this.tempsReponseMs = tempsReponseMs;
     }
 
     public String getInterpretation() {
@@ -90,5 +145,13 @@ public class Participation {
 
     public void setDateParticipation(LocalDateTime dateParticipation) {
         this.dateParticipation = dateParticipation;
+    }
+
+    public boolean isDecisionRapide() {
+        return tempsReponseMs > 0 && tempsReponseMs < 2000;
+    }
+
+    public boolean isDecisionLente() {
+        return tempsReponseMs >= 7000;
     }
 }

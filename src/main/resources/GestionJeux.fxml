@@ -29,11 +29,17 @@
     <TextArea fx:id="txtDescription" promptText="Description du jeu" prefRowCount="2" wrapText="true"/>
     <Label fx:id="errorDescription" style="-fx-font-size: 11px;"/>
 
-    <TextArea fx:id="txtImagesAuto" promptText="Images statiques generees automatiquement selon le titre" prefRowCount="4" wrapText="true"/>
+    <TextField fx:id="txtSceneImagePath" promptText="Image principale de scene"/>
+    <Label fx:id="errorScene" style="-fx-font-size: 11px;"/>
+
+    <TextArea fx:id="txtCheminsImages" promptText="Chemins des images (un par ligne, ex: /images/animaux/lion.png)" prefRowCount="4" wrapText="true"/>
     <Label fx:id="errorImages" style="-fx-font-size: 11px;"/>
 
     <TextArea fx:id="txtInterpretationBase" promptText="Interpretations (1 ligne par image, meme ordre)" prefRowCount="3" wrapText="true"/>
     <Label fx:id="errorInterpretation" style="-fx-font-size: 11px;"/>
+
+    <TextArea fx:id="txtTagsComportement" promptText="Tags comportementaux (1 ligne par image : jouer, rester_seul, peur...)" prefRowCount="3" wrapText="true"/>
+    <Label fx:id="errorTags" style="-fx-font-size: 11px;"/>
 
     <HBox spacing="15.0" alignment="CENTER">
         <TextField fx:id="txtMaxParticipants" promptText="Max participants" prefWidth="180.0"/>

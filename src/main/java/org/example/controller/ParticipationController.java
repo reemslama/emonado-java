@@ -1,383 +1,254 @@
 package org.example.controller;
 
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.TilePane;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.example.entities.ImageCarte;
 import org.example.entities.Jeu;
 import org.example.entities.Participation;
+import org.example.entities.RapportSessionJeu;
 import org.example.entities.User;
 import org.example.service.ServiceImageCarte;
 import org.example.service.ServiceJeu;
 import org.example.service.ServiceParticipation;
+import org.example.service.SessionJeuService;
 import org.example.utils.UserSession;
 
 import java.io.FileInputStream;
+import java.awt.Toolkit;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ParticipationController {
-    @FXML private ComboBox<Jeu> comboJeux;
-    @FXML private TilePane imageChoicesPane;
-    @FXML private Label labelUserNom;
-    @FXML private Label labelInterpretation;
-    @FXML private Label labelDisponibilite;
-    @FXML private Label selectedImageLabel;
-    @FXML private Label errorJeu;
-    @FXML private Label errorChoix;
-    @FXML private Label errorGlobal;
-    @FXML private Label msgSuccess;
+    @FXML private ImageView sceneImageView;
+    @FXML private FlowPane imageChoicesPane;
+    @FXML private FlowPane progressPane;
+    @FXML private StackPane completionPane;
+    @FXML private Region endSignal;
+    @FXML private Label completionTitle;
+    @FXML private Label completionSummary;
 
     private final ServiceJeu serviceJeu = new ServiceJeu();
     private final ServiceImageCarte serviceImageCarte = new ServiceImageCarte();
     private final ServiceParticipation serviceParticipation = new ServiceParticipation();
-    private ImageCarte selectedImage;
-    private boolean aDejaParticipeCeJeu = false;
+    private final SessionJeuService sessionJeuService = new SessionJeuService();
+
+    private List<Jeu> jeuxActifs = new ArrayList<>();
+    private int currentIndex = -1;
+    private long gameDisplayedAt = 0L;
+    private boolean rapportEnvoye = false;
 
     @FXML
     public void initialize() {
-        comboJeux.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
-            aDejaParticipeCeJeu = false;
-            updateChoixImages(newValue);
-            updateDisponibiliteLabel(newValue);
-            errorJeu.setText("");
-            clearMessages();
-            verifierDejaParticipe(newValue);
-        });
-        updateUserLabel();
-        refreshJeux();
-        if (!comboJeux.getItems().isEmpty()) {
-            comboJeux.getSelectionModel().selectFirst();
-        }
+        chargerJeuxSession();
+        avancerVersJeuSuivant();
     }
 
-    @FXML
-    private void ajouterParticipation() {
-        Participation participation = validateForm();
-        if (participation == null) {
-            return;
-        }
-
-        participation.setDateParticipation(LocalDateTime.now());
-        if (serviceParticipation.ajouter(participation)) {
-            aDejaParticipeCeJeu = true;
-            String resultat = participation.getResultatPsy();
-            labelInterpretation.setText(resultat);
-            showSuccess("Choix enregistre !");
-            lockCards();
-            refreshJeux();
-            Jeu jeuActuel = comboJeux.getValue();
-            if (jeuActuel != null) {
-                updateDisponibiliteLabel(serviceJeu.findById(jeuActuel.getId()));
-            }
-        } else {
-            String details = serviceParticipation.getLastError();
-            showError(errorGlobal, "Erreur enregistrement DB: " + (details == null || details.isBlank() ? "verifiez la table participation." : details));
-        }
-    }
-
-    private void resetForm() {
-        comboJeux.getSelectionModel().clearSelection();
-        imageChoicesPane.getChildren().clear();
-        selectedImage = null;
-        labelInterpretation.setText("");
-        labelDisponibilite.setText("");
-        selectedImageLabel.setText("");
-        clearMessages();
-    }
-
-    private Participation validateForm() {
-        clearMessages();
-        Jeu jeu = comboJeux.getValue();
-        if (jeu == null && !comboJeux.getItems().isEmpty()) {
-            jeu = comboJeux.getItems().get(0);
-            comboJeux.getSelectionModel().select(jeu);
-        }
-        User currentUser = UserSession.getInstance();
-        boolean valid = true;
-
-        if (jeu == null) {
-            showError(errorJeu, "Selectionnez un jeu.");
-            valid = false;
-        }
-        if (selectedImage == null) {
-            showError(errorChoix, "Selectionnez une image.");
-            valid = false;
-        }
-        if (aDejaParticipeCeJeu) {
-            showError(errorGlobal, "Vous avez deja participe a ce jeu. Choisissez un autre jeu.");
-            valid = false;
-        }
-        if (jeu != null && !serviceJeu.aPlacesDisponibles(jeu.getId(), null)) {
-            showError(errorGlobal, "Ce jeu est complet (3/3). Choisissez un autre jeu.");
-            valid = false;
-        }
-        if (jeu != null && currentUser != null && currentUser.getId() > 0
-                && serviceParticipation.dejaParticipe(jeu.getId(), currentUser.getId())) {
-            showError(errorGlobal, "Vous avez deja participe a ce jeu. Choisissez un autre jeu.");
-            aDejaParticipeCeJeu = true;
-            valid = false;
-        }
-        if (jeu != null && selectedImage != null && selectedImage.getJeuId() != jeu.getId()) {
-            showError(errorChoix, "Le choix doit appartenir au jeu selectionne.");
-            valid = false;
-        }
-        if (!valid) {
-            return null;
-        }
-
-        String interpretation = selectedImage.getInterpretationPsy();
-        labelInterpretation.setText(interpretation.isBlank() ? "Resultat non defini." : interpretation);
-
-        Participation participation = new Participation();
-        participation.setUserId(currentUser == null ? 0 : currentUser.getId());
-        participation.setJeuId(jeu.getId());
-        participation.setJeuTitre(jeu.getTitre());
-        participation.setImageChoisieId(selectedImage.getId());
-        participation.setImagePath(selectedImage.getImagePath());
-        participation.setResultatPsy(interpretation);
-        return participation;
-    }
-
-    private void refreshJeux() {
+    private void chargerJeuxSession() {
         List<Jeu> jeux = serviceJeu.afficherTout().stream().filter(Jeu::isActif).toList();
-        comboJeux.setItems(FXCollections.observableArrayList(jeux));
+        List<Jeu> scenarioGames = jeux.stream()
+                .filter(jeu -> jeu.getTitre() != null && jeu.getTitre().startsWith("TEST "))
+                .toList();
+        List<Jeu> sourceGames = scenarioGames.isEmpty() ? jeux : scenarioGames;
+        jeuxActifs = new ArrayList<>();
+        for (Jeu jeu : sourceGames) {
+            jeu.setImages(serviceImageCarte.findByJeuId(jeu.getId()));
+            if (jeu.getImages().size() >= 2 && jeu.getImages().size() <= 3) {
+                jeuxActifs.add(jeu);
+            }
+        }
     }
 
-    private void updateChoixImages(Jeu jeu) {
-        List<ImageCarte> images = jeu == null ? List.of() : serviceImageCarte.findByJeuId(jeu.getId());
-        imageChoicesPane.getChildren().clear();
-        if (jeu == null) {
-            selectedImage = null;
-            selectedImageLabel.setText("");
-            labelInterpretation.setText("");
-        }
-        for (ImageCarte image : images) {
-            imageChoicesPane.getChildren().add(buildImageCard(image));
-        }
-        highlightSelectedImage();
-    }
-
-    private void updateDisponibiliteLabel(Jeu jeu) {
-        if (jeu == null) {
-            labelDisponibilite.setText("");
+    private void avancerVersJeuSuivant() {
+        currentIndex++;
+        if (currentIndex >= jeuxActifs.size()) {
+            afficherFinSession();
             return;
         }
-        String message = "Participants: " + jeu.getNombreParticipations() + "/" + jeu.getMaxParticipants();
-        if (!jeu.isDisponible()) {
-            message += " - complet, choisissez un autre jeu";
-        }
-        labelDisponibilite.setText(message);
+        afficherJeu(jeuxActifs.get(currentIndex));
     }
 
-    private VBox buildImageCard(ImageCarte imageCarte) {
-        ImageView imageView = new ImageView();
-        imageView.setFitWidth(120);
-        imageView.setFitHeight(90);
-        imageView.setPreserveRatio(true);
-        boolean imageLoaded = false;
+    private void afficherJeu(Jeu jeu) {
+        completionPane.setVisible(false);
+        completionPane.setManaged(false);
+        sceneImageView.setImage(loadImage(jeu.getSceneImagePath()));
+        imageChoicesPane.getChildren().clear();
+        progressPane.getChildren().clear();
+        gameDisplayedAt = System.currentTimeMillis();
+        playScenarioCue(jeu);
 
-        try {
-            Image image = loadImage(imageCarte.getImagePath());
-            imageView.setImage(image);
-            imageLoaded = image != null;
-        } catch (Exception e) {
-            imageView.setImage(null);
+        for (int i = 0; i < jeuxActifs.size(); i++) {
+            Region dot = new Region();
+            dot.setPrefSize(18, 18);
+            dot.setStyle("-fx-background-color: " + (i <= currentIndex ? "#ff9f1c" : "#d7dce2") + "; -fx-background-radius: 99;");
+            progressPane.getChildren().add(dot);
         }
 
-        Label label = new Label(simplifyImageLabel(imageCarte.getImagePath()));
-        label.setWrapText(true);
-        label.setMaxWidth(120);
-        Label missingLabel = new Label(imageLoaded ? "" : "fichier introuvable");
-        missingLabel.setStyle("-fx-text-fill: #c62828; -fx-font-size: 10px;");
-        missingLabel.setWrapText(true);
-        missingLabel.setMaxWidth(120);
+        for (ImageCarte imageCarte : jeu.getImages()) {
+            imageChoicesPane.getChildren().add(buildImageChoice(imageCarte, jeu));
+        }
+    }
 
-        Button button = new Button();
-        button.setGraphic(new VBox(4, imageView, label, missingLabel));
-        button.setUserData(imageCarte.getId());
-        button.setStyle("-fx-background-color: white; -fx-border-color: #d9d9d9; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 10;");
-        button.setOnAction(event -> {
-            selectedImage = imageCarte;
-            selectedImageLabel.setText("Image choisie : " + simplifyImageLabel(imageCarte.getImagePath()));
-            labelInterpretation.setText(imageCarte.getInterpretationPsy());
-            highlightSelectedImage();
-            ajouterParticipation();
-        });
+    private VBox buildImageChoice(ImageCarte imageCarte, Jeu jeu) {
+        ImageView imageView = new ImageView();
+        imageView.setFitWidth(180);
+        imageView.setFitHeight(140);
+        imageView.setPreserveRatio(true);
+        imageView.setImage(loadImage(imageCarte.getImagePath()));
+
+        StackPane button = new StackPane(imageView);
+        button.setPrefSize(190, 150);
+        button.setStyle("-fx-background-color: white; -fx-background-radius: 28; -fx-border-radius: 28; -fx-border-color: #ffd9a0; -fx-border-width: 3; -fx-padding: 12;");
+        button.setOnMouseClicked(event -> enregistrerChoix(jeu, imageCarte));
+        button.setOnMouseEntered(event -> button.setStyle("-fx-background-color: white; -fx-background-radius: 28; -fx-border-radius: 28; -fx-border-color: #ffb347; -fx-border-width: 5; -fx-padding: 10;"));
+        button.setOnMouseExited(event -> button.setStyle("-fx-background-color: white; -fx-background-radius: 28; -fx-border-radius: 28; -fx-border-color: #ffd9a0; -fx-border-width: 3; -fx-padding: 12;"));
 
         VBox wrapper = new VBox(button);
         wrapper.setAlignment(Pos.CENTER);
         return wrapper;
     }
 
-    private void lockCards() {
-        for (Node node : imageChoicesPane.getChildren()) {
-            if (node instanceof VBox wrapper && !wrapper.getChildren().isEmpty()
-                    && wrapper.getChildren().get(0) instanceof Button button) {
-                button.setDisable(true);
-                button.setOpacity(0.5);
-            }
-        }
-    }
-
-    private void verifierDejaParticipe(Jeu jeu) {
-        if (jeu == null) return;
+    private void enregistrerChoix(Jeu jeu, ImageCarte imageCarte) {
         User currentUser = UserSession.getInstance();
-        if (currentUser != null && currentUser.getId() > 0
-                && serviceParticipation.dejaParticipe(jeu.getId(), currentUser.getId())) {
-            aDejaParticipeCeJeu = true;
-            showError(errorGlobal, "Vous avez deja participe a ce jeu. Choisissez un autre jeu.");
-            lockCards();
+        Participation participation = new Participation();
+        participation.setUserId(currentUser == null ? 0 : currentUser.getId());
+        participation.setJeuId(jeu.getId());
+        participation.setJeuTitre(jeu.getTitre());
+        participation.setImageChoisieId(imageCarte.getId());
+        participation.setChoixImage(imageCarte.getImagePath());
+        participation.setResultatPsy(imageCarte.getInterpretationPsy());
+        participation.setChoixTag(imageCarte.getComportementTag());
+        participation.setSessionCode("SESSION-" + participation.getUserId() + "-" + System.currentTimeMillis());
+        participation.setTempsReponseMs(Math.max(0L, System.currentTimeMillis() - gameDisplayedAt));
+        participation.setDateParticipation(LocalDateTime.now());
+
+        if (!serviceParticipation.ajouter(participation)) {
+            return;
         }
+
+        avancerVersJeuSuivant();
     }
 
-    private void highlightSelectedImage() {
-        for (Node node : imageChoicesPane.getChildren()) {
-            if (node instanceof VBox wrapper && !wrapper.getChildren().isEmpty() && wrapper.getChildren().get(0) instanceof Button button) {
-                int imageId = (int) button.getUserData();
-                boolean selected = selectedImage != null && imageId == selectedImage.getId();
-                button.setStyle(selected
-                        ? "-fx-background-color: #fff4d6; -fx-border-color: #e7a83c; -fx-border-width: 2; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 10;"
-                        : "-fx-background-color: white; -fx-border-color: #d9d9d9; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 10;");
-            }
-        }
-    }
+    private void afficherFinSession() {
+        imageChoicesPane.getChildren().clear();
+        progressPane.getChildren().clear();
+        sceneImageView.setImage(null);
+        completionPane.setVisible(true);
+        completionPane.setManaged(true);
+        endSignal.setStyle("-fx-background-color: #77dd77; -fx-background-radius: 999;");
 
-    private String simplifyImageLabel(String imagePath) {
-        if (imagePath == null || imagePath.isBlank()) {
-            return "(image)";
-        }
-        int slashIndex = Math.max(imagePath.lastIndexOf('/'), imagePath.lastIndexOf('\\'));
-        String fileName = slashIndex >= 0 ? imagePath.substring(slashIndex + 1) : imagePath;
-        // Remove extension and replace underscores/hyphens with spaces, capitalize
-        int dotIndex = fileName.lastIndexOf('.');
-        if (dotIndex > 0) {
-            fileName = fileName.substring(0, dotIndex);
-        }
-        fileName = fileName.replace('_', ' ').replace('-', ' ');
-        if (!fileName.isEmpty()) {
-            fileName = Character.toUpperCase(fileName.charAt(0)) + fileName.substring(1);
-        }
-        return fileName;
-    }
-
-    private void updateUserLabel() {
         User currentUser = UserSession.getInstance();
-        labelUserNom.setText("Participant (Enfant) : " + (currentUser == null ? "Invite" : currentUser.getNom() + " " + currentUser.getPrenom()));
+        if (currentUser != null && currentUser.getId() > 0 && !rapportEnvoye) {
+            RapportSessionJeu rapport = sessionJeuService.genererRapportSession(currentUser.getId());
+            sessionJeuService.envoyerRapportParent(currentUser, rapport);
+            rapportEnvoye = true;
+            completionTitle.setText("Resultat du test");
+            completionSummary.setText(
+                    rapport.getProfilPsychologique().getProfil()
+                            + " | Score emotionnel: "
+                            + rapport.getProfilPsychologique().getScoreEmotionnel()
+                            + "/100"
+            );
+        } else {
+            completionTitle.setText("Test termine");
+            completionSummary.setText("La session est complete.");
+        }
     }
 
-    private Image loadImage(String imagePath) throws Exception {
-        if (imagePath == null || imagePath.isBlank()) {
-            return loadPlaceholderImage();
-        }
-        imagePath = imagePath.trim();
-        if (imagePath.startsWith("file:") || imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
-            return new Image(imagePath);
+    private void playScenarioCue(Jeu jeu) {
+        String description = jeu.getDescription() == null ? "" : jeu.getDescription();
+        if (!description.startsWith("SCENARIO:AUDIO_")) {
+            return;
         }
 
-        String normalized = imagePath.replace("\\", "/");
-        String fromResourcesRoot = normalized;
-        int resourcesPrefixIndex = normalized.indexOf("src/main/resources/");
-        if (resourcesPrefixIndex >= 0) {
-            fromResourcesRoot = normalized.substring(resourcesPrefixIndex + "src/main/resources/".length());
-        }
-        String fileName = simplifyImageLabel(normalized);
-
-        String[] candidates = new String[] {
-                normalized,
-                fromResourcesRoot,
-                normalized.startsWith("/") ? normalized : "/" + normalized,
-                fromResourcesRoot.startsWith("/") ? fromResourcesRoot : "/" + fromResourcesRoot,
-                normalized.startsWith("/images/") ? normalized : "/images/" + fileName,
-                "/images/animaux/" + fileName,
-                "/images/depression/" + fileName,
-                "/images/nature/" + fileName
+        int beeps = switch (description) {
+            case "SCENARIO:AUDIO_CHIEN" -> 1;
+            case "SCENARIO:AUDIO_CHAT" -> 2;
+            case "SCENARIO:AUDIO_LION" -> 3;
+            default -> 1;
         };
 
-        for (String candidate : candidates) {
-            var classpathStream = getClass().getResourceAsStream(candidate);
-            if (classpathStream == null && candidate.startsWith("/")) {
-                classpathStream = getClass().getResourceAsStream(candidate.substring(1));
+        Thread cueThread = new Thread(() -> {
+            for (int i = 0; i < beeps; i++) {
+                Toolkit.getDefaultToolkit().beep();
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException ignored) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
             }
-            if (classpathStream != null) {
-                return new Image(classpathStream);
+        });
+        cueThread.setDaemon(true);
+        cueThread.start();
+    }
+
+    private Image loadImage(String imagePath) {
+        if (imagePath == null || imagePath.isBlank()) {
+            return null;
+        }
+        String path = imagePath.trim().replace("\\", "/");
+
+        try {
+            if (path.startsWith("/")) {
+                Image img = new Image(path);
+                if (!img.isError()) {
+                    return img;
+                }
+            }
+            Image img = new Image("/" + path);
+            if (!img.isError()) {
+                return img;
+            }
+        } catch (Exception ignored) {
+        }
+
+        String[] candidates = new String[] { path, path.startsWith("/") ? path : "/" + path };
+        for (String candidate : candidates) {
+            var stream = getClass().getResourceAsStream(candidate);
+            if (stream == null && candidate.startsWith("/")) {
+                stream = getClass().getResourceAsStream(candidate.substring(1));
+            }
+            if (stream != null) {
+                try {
+                    Image img = new Image(stream);
+                    if (!img.isError()) {
+                        return img;
+                    }
+                } catch (Exception ignored) {
+                }
             }
         }
 
         try {
-            Path directPath = resolvePathFromRuntime(normalized);
-            if (directPath != null && Files.exists(directPath)) {
-                return new Image(new FileInputStream(directPath.toFile()));
-            }
-        } catch (Exception ignored) {}
-
-        for (String candidate : candidates) {
-            try {
-                String localPath = "src/main/resources/" + (candidate.startsWith("/") ? candidate.substring(1) : candidate);
-                Path candidatePath = resolvePathFromRuntime(localPath);
-                if (Files.exists(candidatePath)) {
-                    return new Image(new FileInputStream(candidatePath.toFile()));
+            String[] fsPaths = new String[] {
+                    "src/main/resources" + (path.startsWith("/") ? path : "/" + path),
+                    "target/classes" + (path.startsWith("/") ? path : "/" + path),
+                    path.startsWith("/") ? "." + path : "./" + path,
+            };
+            for (String fsPath : fsPaths) {
+                Path p = Paths.get(fsPath).normalize();
+                if (Files.exists(p)) {
+                    try (FileInputStream fis = new FileInputStream(p.toFile())) {
+                        Image img = new Image(fis);
+                        if (!img.isError()) {
+                            return img;
+                        }
+                    }
                 }
-            } catch (Exception ignoredAgain) {
             }
+        } catch (Exception ignored) {
         }
-        return loadPlaceholderImage();
-    }
-
-    private Image loadPlaceholderImage() {
         return null;
-    }
-
-    private Path resolvePathFromRuntime(String rawPath) {
-        Path givenPath = Paths.get(rawPath);
-        if (givenPath.isAbsolute() && Files.exists(givenPath)) {
-            return givenPath;
-        }
-
-        Path cwd = Paths.get(System.getProperty("user.dir")).toAbsolutePath().normalize();
-        Path candidate = cwd.resolve(rawPath).normalize();
-        if (Files.exists(candidate)) {
-            return candidate;
-        }
-
-        // If app is launched from target/classes or another subdir, remonte parents.
-        Path cursor = cwd;
-        for (int i = 0; i < 8 && cursor != null; i++) {
-            Path parentCandidate = cursor.resolve(rawPath).normalize();
-            if (Files.exists(parentCandidate)) {
-                return parentCandidate;
-            }
-            cursor = cursor.getParent();
-        }
-        return candidate;
-    }
-
-    private void clearMessages() {
-        errorJeu.setText("");
-        errorChoix.setText("");
-        errorGlobal.setText("");
-        msgSuccess.setText("");
-    }
-
-    private void showError(Label label, String message) {
-        label.setText(message);
-        label.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
-    }
-
-    private void showSuccess(String message) {
-        msgSuccess.setText(message);
-        msgSuccess.setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
-        errorGlobal.setText("");
     }
 }

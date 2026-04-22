@@ -3,31 +3,196 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="mainContainer"
-            xmlns="http://javafx.com/javafx/17"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="org.example.controller.EspaceEnfantController"
-            stylesheets="@/styles/template.css"
-            style="-fx-background-color: linear-gradient(to bottom, #fff9e8, #f6fbff);">
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="org.example.controller.EspaceEnfantController"
+           style="-fx-background-color: linear-gradient(to bottom, #fff7de, #ebf8ff);">
 
-    <top>
-        <HBox alignment="CENTER_LEFT" spacing="14.0"
-              style="-fx-background-color: white; -fx-padding: 16 24; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12,0,0,4);">
+    <children>
+        <BorderPane fx:id="mainContainer" maxWidth="1280.0" maxHeight="820.0"
+                    style="-fx-background-color: transparent;">
+            <top>
+                <HBox alignment="CENTER_LEFT" spacing="14.0"
+                      style="-fx-background-color: rgba(255,255,255,0.92); -fx-background-radius: 24; -fx-padding: 18 24; -fx-effect: dropshadow(gaussian, rgba(24,82,65,0.12), 24,0,0,8);">
+                    <children>
+                        <Label text="Mon Espace Enfant"
+                               style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #0f6a5f;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button text="Accueil" onAction="#showHome"
+                                style="-fx-background-color: #ffffff; -fx-font-size: 14px; -fx-background-radius: 18; -fx-padding: 10 14; -fx-border-color: #dbeee9; -fx-border-radius: 18;"/>
+                        <Button text="Parent" onAction="#showParentDashboard"
+                                style="-fx-background-color: #0f6a5f; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 18; -fx-padding: 10 14;"/>
+                        <Button text="Sortir" onAction="#goToDeconnexion"
+                                style="-fx-background-color: #ffefe2; -fx-text-fill: #b85a2b; -fx-font-size: 14px; -fx-background-radius: 18; -fx-padding: 10 14;"/>
+                    </children>
+                    <BorderPane.margin>
+                        <Insets top="20.0" right="20.0" bottom="10.0" left="20.0"/>
+                    </BorderPane.margin>
+                </HBox>
+            </top>
+
+            <center>
+                <StackPane>
+                    <children>
+                        <VBox fx:id="childHomePane" alignment="CENTER" spacing="28.0">
+                            <children>
+                                <VBox alignment="CENTER" spacing="22.0" maxWidth="760.0"
+                                      style="-fx-background-color: rgba(255,255,255,0.95); -fx-background-radius: 40; -fx-padding: 48; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 26,0,0,10);">
+                                    <children>
+                                        <Label fx:id="welcomeTitle" text="Commencer le test"
+                                               style="-fx-font-size: 42px; -fx-font-weight: bold; -fx-text-fill: #174d45;"/>
+                                        <Label fx:id="welcomeSubtitle"
+                                               text="Le test affiche une série de scénarios en images. L'enfant choisit une réponse visuelle à chaque scène."
+                                               wrapText="true"
+                                               style="-fx-font-size: 19px; -fx-text-fill: #5f726d;"/>
+                                        <Button text="Demarrer le test" onAction="#startGame"
+                                                style="-fx-background-color: linear-gradient(to right, #6fd56f, #52c86d); -fx-text-fill: white; -fx-font-size: 24px; -fx-font-weight: bold; -fx-background-radius: 28; -fx-padding: 16 34;"/>
+                                        <Label text="L'analyse comportementale et l'enrichissement IA sont appliques a la fin de la session."
+                                               wrapText="true"
+                                               style="-fx-font-size: 15px; -fx-text-fill: #7a8a86;"/>
+                                    </children>
+                                </VBox>
+                            </children>
+                            <padding>
+                                <Insets top="20.0" right="20.0" bottom="28.0" left="20.0"/>
+                            </padding>
+                        </VBox>
+
+                        <BorderPane fx:id="gamePane" visible="false" managed="false">
+                            <center>
+                                <StackPane fx:id="gameContentHost" maxWidth="1180.0" maxHeight="720.0">
+                                    <BorderPane.margin>
+                                        <Insets top="16.0" right="16.0" bottom="22.0" left="16.0"/>
+                                    </BorderPane.margin>
+                                </StackPane>
+                            </center>
+                        </BorderPane>
+                    </children>
+                </StackPane>
+            </center>
+        </BorderPane>
+
+        <StackPane fx:id="parentOverlay" visible="false" managed="false"
+                   style="-fx-background-color: rgba(7, 41, 36, 0.44);">
             <children>
-                <Label text="Espace Enfant" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1f6f5f;"/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <Button text="Gestion Jeux" onAction="#openJeux"
-                        style="-fx-background-color: #1f6f5f; -fx-text-fill: white; -fx-background-radius: 18; -fx-padding: 8 18; -fx-font-weight: bold;"/>
-                <Button text="Participant (Enfant)" onAction="#openParticipations"
-                        style="-fx-background-color: #e7a83c; -fx-text-fill: white; -fx-background-radius: 18; -fx-padding: 8 18; -fx-font-weight: bold;"/>
+                <BorderPane maxWidth="1180.0" maxHeight="760.0"
+                            style="-fx-background-color: linear-gradient(to bottom, #fbfffd, #f2fbf9); -fx-background-radius: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.22), 30,0,0,12);">
+                    <top>
+                        <HBox alignment="CENTER_LEFT" spacing="12.0"
+                              style="-fx-background-color: #0f6a5f; -fx-background-radius: 30 30 0 0; -fx-padding: 18 24;">
+                            <children>
+                                <Label text="Espace Parent"
+                                       style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                                <Region HBox.hgrow="ALWAYS"/>
+                                <Button text="Fermer" onAction="#hideParentDashboard"
+                                        style="-fx-background-color: white; -fx-text-fill: #0f6a5f; -fx-font-weight: bold; -fx-background-radius: 18; -fx-padding: 10 18;"/>
+                            </children>
+                        </HBox>
+                    </top>
+                    <center>
+                        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" hbarPolicy="NEVER">
+                            <content>
+                                <VBox spacing="20.0" style="-fx-background-color: transparent;">
+                                    <children>
+                                        <HBox spacing="18.0">
+                                            <children>
+                                                <VBox spacing="10.0" prefWidth="360.0"
+                                                      style="-fx-background-color: white; -fx-background-radius: 24; -fx-padding: 22; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 16,0,0,6);">
+                                                    <children>
+                                                        <Label text="Profil enfant" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #114840;"/>
+                                                        <Label fx:id="parentNameLabel" style="-fx-font-size: 16px; -fx-text-fill: #5b6d68;"/>
+                                                        <Label fx:id="profileLabel" wrapText="true" style="-fx-font-size: 18px; -fx-text-fill: #0f6a5f; -fx-font-weight: bold;"/>
+                                                        <Label fx:id="trendLabel" wrapText="true" style="-fx-font-size: 14px; -fx-text-fill: #506763;"/>
+                                                        <Label fx:id="anomalyLabel" wrapText="true" style="-fx-font-size: 14px; -fx-text-fill: #b4552d; -fx-font-weight: bold;"/>
+                                                    </children>
+                                                </VBox>
+                                                <VBox spacing="10.0" HBox.hgrow="ALWAYS"
+                                                      style="-fx-background-color: white; -fx-background-radius: 24; -fx-padding: 22; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 16,0,0,6);">
+                                                    <children>
+                                                        <Label text="Score emotionnel" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #114840;"/>
+                                                        <Label fx:id="scoreLabel" style="-fx-font-size: 34px; -fx-font-weight: bold; -fx-text-fill: #0f6a5f;"/>
+                                                        <Label fx:id="summaryLabel" wrapText="true" style="-fx-font-size: 14px; -fx-text-fill: #5a6d68;"/>
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </HBox>
+
+                                        <HBox spacing="18.0">
+                                            <children>
+                                                <VBox spacing="12.0" HBox.hgrow="ALWAYS"
+                                                      style="-fx-background-color: white; -fx-background-radius: 24; -fx-padding: 22; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 16,0,0,6);">
+                                                    <children>
+                                                        <Label text="Scores detailles" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #114840;"/>
+                                                        <Label text="Sociabilite" style="-fx-font-size: 14px; -fx-text-fill: #3f5c57;"/>
+                                                        <ProgressBar fx:id="sociabilityBar" prefWidth="500.0" progress="0.0" style="-fx-accent: #44c28c;"/>
+                                                        <Label text="Stress" style="-fx-font-size: 14px; -fx-text-fill: #3f5c57;"/>
+                                                        <ProgressBar fx:id="stressBar" prefWidth="500.0" progress="0.0" style="-fx-accent: #ff8c42;"/>
+                                                        <Label text="Timidite" style="-fx-font-size: 14px; -fx-text-fill: #3f5c57;"/>
+                                                        <ProgressBar fx:id="timidityBar" prefWidth="500.0" progress="0.0" style="-fx-accent: #f2c14e;"/>
+                                                        <Label text="Curiosite" style="-fx-font-size: 14px; -fx-text-fill: #3f5c57;"/>
+                                                        <ProgressBar fx:id="curiosityBar" prefWidth="500.0" progress="0.0" style="-fx-accent: #5aa9ff;"/>
+                                                    </children>
+                                                </VBox>
+                                                <VBox spacing="12.0" prefWidth="320.0"
+                                                      style="-fx-background-color: white; -fx-background-radius: 24; -fx-padding: 22; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 16,0,0,6);">
+                                                    <children>
+                                                        <Label text="Actions" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #114840;"/>
+                                                        <Button text="Envoyer rapport" onAction="#sendReportByEmail"
+                                                                style="-fx-background-color: #0f6a5f; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold; -fx-background-radius: 18; -fx-padding: 12 18;"/>
+                                                        <Button text="Voir le jeu" onAction="#hideParentDashboard"
+                                                                style="-fx-background-color: #eef8f5; -fx-text-fill: #0f6a5f; -fx-font-size: 15px; -fx-font-weight: bold; -fx-background-radius: 18; -fx-padding: 12 18;"/>
+                                                        <Label fx:id="emailStatusLabel" wrapText="true" style="-fx-font-size: 13px; -fx-text-fill: #5c6d68;"/>
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </HBox>
+
+                                        <HBox spacing="18.0">
+                                            <children>
+                                                <VBox spacing="12.0" HBox.hgrow="ALWAYS"
+                                                      style="-fx-background-color: white; -fx-background-radius: 24; -fx-padding: 22; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 16,0,0,6);">
+                                                    <children>
+                                                        <Label text="Analyse et conseils" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #114840;"/>
+                                                        <TextArea fx:id="reportArea" editable="false" wrapText="true" prefRowCount="10"
+                                                                  style="-fx-background-radius: 16; -fx-border-color: #d6ebe6; -fx-border-radius: 16; -fx-font-size: 14px;"/>
+                                                    </children>
+                                                </VBox>
+                                                <VBox spacing="12.0" prefWidth="340.0"
+                                                      style="-fx-background-color: white; -fx-background-radius: 24; -fx-padding: 22; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 16,0,0,6);">
+                                                    <children>
+                                                        <Label text="Alertes" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #114840;"/>
+                                                        <Label fx:id="alertLabel" wrapText="true" style="-fx-font-size: 14px; -fx-text-fill: #b4552d; -fx-font-weight: bold;"/>
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </HBox>
+
+                                        <VBox spacing="12.0"
+                                              style="-fx-background-color: white; -fx-background-radius: 24; -fx-padding: 22; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 16,0,0,6);">
+                                            <children>
+                                                <Label text="Heatmap et statistiques" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #114840;"/>
+                                                <StackPane fx:id="heatmapContainer" minHeight="380.0"/>
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                    <padding>
+                                        <Insets top="18.0" right="18.0" bottom="22.0" left="18.0"/>
+                                    </padding>
+                                </VBox>
+                            </content>
+                        </ScrollPane>
+                    </center>
+                </BorderPane>
             </children>
-            <padding>
-                <Insets top="8.0" right="8.0" bottom="8.0" left="8.0"/>
-            </padding>
-        </HBox>
-    </top>
-</BorderPane>
+        </StackPane>
+    </children>
+</StackPane>

@@ -13,12 +13,13 @@ public class ServiceImageCarte {
     private final Connection cnx = DataSource.getInstance().getConnection();
 
     public boolean ajouter(ImageCarte img) {
-        String sql = "INSERT INTO image_carte(jeu_id, image_path, interpretation_psy) VALUES (?,?,?)";
+        String sql = "INSERT INTO image_carte(jeu_id, image_path, interpretation_psy, comportement_tag) VALUES (?,?,?,?)";
         try {
             PreparedStatement ps = cnx.prepareStatement(sql);
             ps.setInt(1, img.getJeuId());
             ps.setString(2, img.getImagePath());
             ps.setString(3, img.getInterpretationPsy());
+            ps.setString(4, normalizeTag(img.getComportementTag(), img.getInterpretationPsy()));
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             System.out.println("Erreur ajout image_carte: " + e.getMessage());
@@ -40,7 +41,7 @@ public class ServiceImageCarte {
 
     public List<ImageCarte> findByJeuId(int jeuId) {
         List<ImageCarte> images = new ArrayList<>();
-        String sql = "SELECT id, jeu_id, image_path, interpretation_psy FROM image_carte WHERE jeu_id = ? ORDER BY id";
+        String sql = "SELECT id, jeu_id, image_path, interpretation_psy, comportement_tag FROM image_carte WHERE jeu_id = ? ORDER BY id";
         try {
             PreparedStatement ps = cnx.prepareStatement(sql);
             ps.setInt(1, jeuId);
@@ -55,7 +56,7 @@ public class ServiceImageCarte {
     }
 
     public ImageCarte findById(int id) {
-        String sql = "SELECT id, jeu_id, image_path, interpretation_psy FROM image_carte WHERE id = ?";
+        String sql = "SELECT id, jeu_id, image_path, interpretation_psy, comportement_tag FROM image_carte WHERE id = ?";
         try {
             PreparedStatement ps = cnx.prepareStatement(sql);
             ps.setInt(1, id);
@@ -71,15 +72,15 @@ public class ServiceImageCarte {
 
     public void migrerAnciennesImages() {
         java.util.Map<String, String> mapping = java.util.Map.of(
-                "https://placehold.co/320x220/png?text=Lion",           "/images/animaux/lion.png",
-                "https://placehold.co/320x220/png?text=Chat",           "/images/animaux/chat.png",
-                "https://placehold.co/320x220/png?text=Chien",          "/images/animaux/chien.png",
-                "https://placehold.co/320x220/png?text=Soleil",         "/images/nature/soleil.png",
-                "https://placehold.co/320x220/png?text=Ciel",           "/images/nature/ciel.png",
-                "https://placehold.co/320x220/png?text=Arbre",          "/images/nature/arbre.png",
-                "https://placehold.co/320x220/png?text=Enfant+seul",    "/images/situation/enfant_seul.png",
+                "https://placehold.co/320x220/png?text=Lion", "/images/animaux/lion.png",
+                "https://placehold.co/320x220/png?text=Chat", "/images/animaux/chat.png",
+                "https://placehold.co/320x220/png?text=Chien", "/images/animaux/chien.png",
+                "https://placehold.co/320x220/png?text=Soleil", "/images/nature/soleil.png",
+                "https://placehold.co/320x220/png?text=Ciel", "/images/nature/ciel.png",
+                "https://placehold.co/320x220/png?text=Arbre", "/images/nature/arbre.png",
+                "https://placehold.co/320x220/png?text=Enfant+seul", "/images/situation/enfant_seul.png",
                 "https://placehold.co/320x220/png?text=Enfant+qui+dessine", "/images/situation/enfant_dessin.png",
-                "https://placehold.co/320x220/png?text=Enfants+en+groupe",  "/images/situation/enfants_groupe.png"
+                "https://placehold.co/320x220/png?text=Enfants+en+groupe", "/images/situation/enfants_groupe.png"
         );
         String sql = "UPDATE image_carte SET image_path = ? WHERE image_path = ?";
         try {
@@ -95,6 +96,28 @@ public class ServiceImageCarte {
         }
     }
 
+    private String normalizeTag(String tag, String interpretation) {
+        if (tag != null && !tag.isBlank()) {
+            return tag.trim().toLowerCase();
+        }
+        if (interpretation == null) {
+            return "neutre";
+        }
+        String value = interpretation.toLowerCase();
+        if (value.contains("jou")) {
+            return "jouer";
+        }
+        if (value.contains("seul") || value.contains("solitude")) {
+            return "rester_seul";
+        }
+        if (value.contains("peur") || value.contains("stress")) {
+            return "peur";
+        }
+        if (value.contains("explor") || value.contains("curieux")) {
+            return "curiosite";
+        }
+        return "neutre";
+    }
 
     private ImageCarte mapImageCarte(ResultSet rs) throws Exception {
         ImageCarte img = new ImageCarte();
@@ -102,6 +125,7 @@ public class ServiceImageCarte {
         img.setJeuId(rs.getInt("jeu_id"));
         img.setImagePath(rs.getString("image_path"));
         img.setInterpretationPsy(rs.getString("interpretation_psy"));
+        img.setComportementTag(normalizeTag(rs.getString("comportement_tag"), rs.getString("interpretation_psy")));
         return img;
     }
 }

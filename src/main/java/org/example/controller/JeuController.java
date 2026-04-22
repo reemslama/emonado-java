@@ -16,23 +16,26 @@ import org.example.service.ServiceJeu;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class JeuController {
-    private static final Pattern TEXT_PATTERN = Pattern.compile("[-\\p{L}0-9'(),.!?\\s]+");
+    private static final Pattern TEXT_PATTERN = Pattern.compile("[-\\p{L}0-9'(),.!?\\s/]+");
 
     @FXML private TextField txtTitre;
     @FXML private TextArea txtDescription;
-    @FXML private TextArea txtImagesAuto;
+    @FXML private TextField txtSceneImagePath;
+    @FXML private TextArea txtCheminsImages;
     @FXML private TextArea txtInterpretationBase;
+    @FXML private TextArea txtTagsComportement;
     @FXML private TextField txtMaxParticipants;
     @FXML private CheckBox checkActif;
     @FXML private Label errorTitre;
     @FXML private Label errorDescription;
+    @FXML private Label errorScene;
     @FXML private Label errorImages;
     @FXML private Label errorInterpretation;
+    @FXML private Label errorTags;
     @FXML private Label errorMaxParticipants;
     @FXML private Label errorGlobal;
     @FXML private Label msgSuccess;
@@ -45,26 +48,6 @@ public class JeuController {
     private final ServiceJeu serviceJeu = new ServiceJeu();
     private final ServiceImageCarte serviceImageCarte = new ServiceImageCarte();
     private Jeu selectedJeu;
-    private static final String THEME_ANIMAUX = "animaux";
-    private static final String THEME_NATURE = "nature";
-    private static final String THEME_SITUATION = "situation";
-    private static final Map<String, List<String>> STATIC_THEME_IMAGES = Map.of(
-            THEME_ANIMAUX, List.of(
-                    "/images/animaux/lion.png",
-                    "/images/animaux/chat.png",
-                    "/images/animaux/chien.png"
-            ),
-            THEME_NATURE, List.of(
-                    "/images/nature/soleil.png",
-                    "/images/nature/ciel.png",
-                    "/images/nature/arbre.png"
-            ),
-            THEME_SITUATION, List.of(
-                    "/images/situation/enfant_seul.png",
-                    "/images/situation/enfant_dessin.png",
-                    "/images/situation/enfants_groupe.png"
-            )
-    );
 
     @FXML
     public void initialize() {
@@ -83,13 +66,12 @@ public class JeuController {
             selectedJeu = newValue;
             populateForm(newValue);
         });
-        txtTitre.textProperty().addListener((obs, oldValue, newValue) -> updateAutoImagesPreview(newValue));
 
         txtMaxParticipants.setText("3");
         txtMaxParticipants.setDisable(true);
         checkActif.setSelected(true);
-        txtImagesAuto.setEditable(false);
-        updateAutoImagesPreview("");
+        txtSceneImagePath.setPromptText("/images/situation/enfants_groupe.png");
+        txtTagsComportement.setPromptText("jouer\nrester_seul\npeur");
         serviceImageCarte.migrerAnciennesImages();
         refreshTable();
     }
@@ -106,8 +88,8 @@ public class JeuController {
                     .filter(item -> item.getTitre().equalsIgnoreCase(jeu.getTitre()))
                     .findFirst()
                     .orElse(null);
-            if (jeuSaved != null && !saveImagesForJeu(jeuSaved.getId(), jeu.getTitre())) {
-                showError(errorGlobal, "Jeu ajoute, mais erreur lors de l'ajout des images.");
+            if (jeuSaved != null && !saveImagesForJeu(jeuSaved.getId())) {
+                showError(errorGlobal, "Jeu ajoute, mais erreur lors de l'ajout des options.");
                 return;
             }
             showSuccess("Jeu ajoute avec succes.");
@@ -136,8 +118,8 @@ public class JeuController {
             for (ImageCarte old : oldImages) {
                 serviceImageCarte.supprimer(old.getId());
             }
-            if (!saveImagesForJeu(selectedJeu.getId(), jeu.getTitre())) {
-                showError(errorGlobal, "Jeu modifie, mais erreur lors de l'ajout des images.");
+            if (!saveImagesForJeu(selectedJeu.getId())) {
+                showError(errorGlobal, "Jeu modifie, mais erreur lors de l'ajout des options.");
                 return;
             }
             showSuccess("Jeu modifie avec succes.");
@@ -168,11 +150,12 @@ public class JeuController {
         selectedJeu = null;
         txtTitre.clear();
         txtDescription.clear();
-        txtImagesAuto.clear();
+        txtSceneImagePath.clear();
+        txtCheminsImages.clear();
         txtInterpretationBase.clear();
+        txtTagsComportement.clear();
         txtMaxParticipants.setText("3");
         checkActif.setSelected(true);
-        updateAutoImagesPreview("");
         clearMessages();
         tableJeux.getSelectionModel().clearSelection();
     }
@@ -183,8 +166,10 @@ public class JeuController {
 
         String titre = normalizeText(txtTitre.getText());
         String description = normalizeText(txtDescription.getText());
-        List<String> imagePaths = getStaticImagesForTitre(titre);
+        String sceneImagePath = normalizePath(txtSceneImagePath.getText());
+        List<String> imagePaths = parseMultilineValues(txtCheminsImages.getText());
         List<String> interpretations = parseMultilineValues(txtInterpretationBase.getText());
+        List<String> tags = parseTags(txtTagsComportement.getText());
 
         if (!isValidText(titre, 3, 80)) {
             showError(errorTitre, "Titre obligatoire, 3 a 80 caracteres.");
@@ -196,30 +181,24 @@ public class JeuController {
             valid = false;
         }
 
-        if (imagePaths.isEmpty()) {
-            showError(errorImages, "Impossible de generer les images statiques du theme.");
+        if (sceneImagePath == null || sceneImagePath.isBlank() || sceneImagePath.length() > 255) {
+            showError(errorScene, "Image de scene obligatoire.");
             valid = false;
         }
 
-        if (interpretations.isEmpty() || interpretations.size() != imagePaths.size()) {
-            showError(errorInterpretation, "Entrez " + imagePaths.size() + " interpretations (1 ligne par image).");
+        if (imagePaths.size() < 2 || imagePaths.size() > 3) {
+            showError(errorImages, "Chaque scene doit proposer 2 a 3 options.");
             valid = false;
         }
 
-        for (String imagePath : imagePaths) {
-            if (imagePath.length() > 255) {
-                showError(errorImages, "Chaque chemin d'image doit faire max 255 caracteres.");
-                valid = false;
-                break;
-            }
+        if (interpretations.size() != imagePaths.size()) {
+            showError(errorInterpretation, "Une interpretation par image est requise.");
+            valid = false;
         }
 
-        for (String interpretation : interpretations) {
-            if (!isValidText(interpretation, 5, 255)) {
-                showError(errorInterpretation, "Chaque interpretation doit faire 5 a 255 caracteres.");
-                valid = false;
-                break;
-            }
+        if (tags.size() != imagePaths.size()) {
+            showError(errorTags, "Un tag comportemental par image est requis.");
+            valid = false;
         }
 
         Integer maxParticipants = parseMaxParticipants();
@@ -240,6 +219,7 @@ public class JeuController {
         Jeu jeu = new Jeu();
         jeu.setTitre(titre);
         jeu.setDescription(description);
+        jeu.setSceneImagePath(sceneImagePath);
         jeu.setMaxParticipants(maxParticipants);
         jeu.setActif(checkActif.isSelected());
         return jeu;
@@ -271,6 +251,13 @@ public class JeuController {
         return value.trim().replaceAll("\\s+", " ");
     }
 
+    private String normalizePath(String value) {
+        if (value == null) {
+            return null;
+        }
+        return value.trim().replace("\\", "/");
+    }
+
     private void populateForm(Jeu jeu) {
         if (jeu == null) {
             return;
@@ -278,8 +265,10 @@ public class JeuController {
 
         txtTitre.setText(jeu.getTitre());
         txtDescription.setText(jeu.getDescription());
-        updateAutoImagesPreview(jeu.getTitre());
+        txtSceneImagePath.setText(jeu.getSceneImagePath());
+        txtCheminsImages.setText(jeu.getImages().stream().map(ImageCarte::getImagePath).collect(Collectors.joining("\n")));
         txtInterpretationBase.setText(jeu.getImages().stream().map(ImageCarte::getInterpretationPsy).collect(Collectors.joining("\n")));
+        txtTagsComportement.setText(jeu.getImages().stream().map(ImageCarte::getComportementTag).collect(Collectors.joining("\n")));
         txtMaxParticipants.setText(String.valueOf(jeu.getMaxParticipants()));
         checkActif.setSelected(jeu.isActif());
         clearMessages();
@@ -293,10 +282,11 @@ public class JeuController {
         tableJeux.setItems(FXCollections.observableArrayList(jeux));
     }
 
-    private boolean saveImagesForJeu(int jeuId, String titreJeu) {
-        List<String> imagePaths = getStaticImagesForTitre(titreJeu);
+    private boolean saveImagesForJeu(int jeuId) {
+        List<String> imagePaths = parseMultilineValues(txtCheminsImages.getText());
         List<String> interpretations = parseMultilineValues(txtInterpretationBase.getText());
-        if (imagePaths.size() != interpretations.size()) {
+        List<String> tags = parseTags(txtTagsComportement.getText());
+        if (imagePaths.size() != interpretations.size() || imagePaths.size() != tags.size()) {
             return false;
         }
 
@@ -305,32 +295,12 @@ public class JeuController {
             imageCarte.setJeuId(jeuId);
             imageCarte.setImagePath(imagePaths.get(i));
             imageCarte.setInterpretationPsy(interpretations.get(i));
+            imageCarte.setComportementTag(tags.get(i));
             if (!serviceImageCarte.ajouter(imageCarte)) {
                 return false;
             }
         }
         return true;
-    }
-
-    private void updateAutoImagesPreview(String titre) {
-        List<String> imagePaths = getStaticImagesForTitre(titre);
-        String theme = resolveThemeFromTitre(titre);
-        txtImagesAuto.setText("Theme detecte: " + theme + "\n" + String.join("\n", imagePaths));
-    }
-
-    private List<String> getStaticImagesForTitre(String titre) {
-        return STATIC_THEME_IMAGES.getOrDefault(resolveThemeFromTitre(titre), STATIC_THEME_IMAGES.get(THEME_ANIMAUX));
-    }
-
-    private String resolveThemeFromTitre(String titre) {
-        String normalized = titre == null ? "" : titre.toLowerCase();
-        if (normalized.contains("nature") || normalized.contains("soleil") || normalized.contains("ciel")) {
-            return THEME_NATURE;
-        }
-        if (normalized.contains("situation") || normalized.contains("enfant") || normalized.contains("groupe")) {
-            return THEME_SITUATION;
-        }
-        return THEME_ANIMAUX;
     }
 
     private List<String> parseMultilineValues(String rawText) {
@@ -339,7 +309,7 @@ public class JeuController {
         }
         List<String> values = new ArrayList<>();
         for (String line : rawText.split("\\R")) {
-            String normalized = normalizeText(line);
+            String normalized = normalizePath(line);
             if (normalized != null && !normalized.isBlank()) {
                 values.add(normalized);
             }
@@ -347,11 +317,20 @@ public class JeuController {
         return values;
     }
 
+    private List<String> parseTags(String rawText) {
+        List<String> values = parseMultilineValues(rawText);
+        return values.stream()
+                .map(value -> value.trim().toLowerCase().replace(' ', '_'))
+                .collect(Collectors.toList());
+    }
+
     private void clearMessages() {
         errorTitre.setText("");
         errorDescription.setText("");
+        errorScene.setText("");
         errorImages.setText("");
         errorInterpretation.setText("");
+        errorTags.setText("");
         errorMaxParticipants.setText("");
         errorGlobal.setText("");
         msgSuccess.setText("");

@@ -16,27 +16,22 @@ public class ServiceParticipation {
     private String lastError = "";
 
     public ServiceParticipation() {
-        new ServiceJeu(); // ensures schema is created
+        new ServiceJeu();
     }
 
     public boolean ajouter(Participation participation) {
         lastError = "";
-        String sql = "INSERT INTO participation(jeu_id, nom_enfant, age_enfant, resultat_psy, date_participation, user_id) VALUES (?,?,?,?,?,?)";
+        String sql = "INSERT INTO participation(user_id, jeu_id, image_choisie_id, resultat_psy, comportement_tag, temps_reponse_ms, date_participation) VALUES (?,?,?,?,?,?,?)";
         try {
-            String nomEnfant = "Invite";
-            int ageEnfant = 8;
-            org.example.entities.User currentUser = org.example.utils.UserSession.getInstance();
-            if (currentUser != null) {
-                nomEnfant = currentUser.getNom() + " " + currentUser.getPrenom();
-            }
             int userId = resolveFallbackUserId(participation.getUserId());
             return tryInsert(sql,
+                    userId,
                     participation.getJeuId(),
-                    nomEnfant,
-                    ageEnfant,
+                    participation.getImageChoisieId(),
                     participation.getResultatPsy(),
-                    Timestamp.valueOf(participation.getDateParticipation()),
-                    userId
+                    normalizeTag(participation.getComportementTag()),
+                    participation.getTempsReponseMs(),
+                    Timestamp.valueOf(participation.getDateParticipation())
             );
         } catch (Exception e) {
             lastError = e.getMessage();
@@ -46,15 +41,17 @@ public class ServiceParticipation {
     }
 
     public boolean modifier(Participation participation) {
-        String sql = "UPDATE participation SET user_id = ?, jeu_id = ?, image_choisie_id = ?, resultat_psy = ?, date_participation = ? WHERE id = ?";
+        String sql = "UPDATE participation SET user_id = ?, jeu_id = ?, image_choisie_id = ?, resultat_psy = ?, comportement_tag = ?, temps_reponse_ms = ?, date_participation = ? WHERE id = ?";
         try {
             PreparedStatement ps = cnx.prepareStatement(sql);
             ps.setInt(1, participation.getUserId());
             ps.setInt(2, participation.getJeuId());
             ps.setInt(3, participation.getImageChoisieId());
             ps.setString(4, participation.getResultatPsy());
-            ps.setTimestamp(5, Timestamp.valueOf(participation.getDateParticipation()));
-            ps.setInt(6, participation.getId());
+            ps.setString(5, normalizeTag(participation.getComportementTag()));
+            ps.setLong(6, participation.getTempsReponseMs());
+            ps.setTimestamp(7, Timestamp.valueOf(participation.getDateParticipation()));
+            ps.setInt(8, participation.getId());
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             System.out.println("Erreur modification participation: " + e.getMessage());
@@ -78,12 +75,38 @@ public class ServiceParticipation {
         String sql =
                 "SELECT p.id, p.user_id, p.jeu_id, j.titre AS jeu_titre, " +
                         "p.image_choisie_id, COALESCE(ic.image_path, '') AS image_path, " +
-                        "p.resultat_psy, p.date_participation " +
+                        "p.resultat_psy, p.comportement_tag, p.temps_reponse_ms, p.date_participation " +
                         "FROM participation p " +
                         "JOIN jeu j ON j.id = p.jeu_id " +
                         "LEFT JOIN image_carte ic ON ic.id = p.image_choisie_id " +
                         "ORDER BY p.date_participation DESC";
+        return executeParticipationQuery(sql);
+    }
 
+    public List<Participation> findByUserId(int userId) {
+        String sql =
+                "SELECT p.id, p.user_id, p.jeu_id, j.titre AS jeu_titre, " +
+                        "p.image_choisie_id, COALESCE(ic.image_path, '') AS image_path, " +
+                        "p.resultat_psy, p.comportement_tag, p.temps_reponse_ms, p.date_participation " +
+                        "FROM participation p " +
+                        "JOIN jeu j ON j.id = p.jeu_id " +
+                        "LEFT JOIN image_carte ic ON ic.id = p.image_choisie_id " +
+                        "WHERE p.user_id = ? " +
+                        "ORDER BY p.date_participation DESC";
+        List<Participation> participations = new ArrayList<>();
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                participations.add(mapParticipation(rs));
+            }
+        } catch (Exception e) {
+            System.out.println("Erreur lecture participations user: " + e.getMessage());
+        }
+        return participations;
+    }
+
+    private List<Participation> executeParticipationQuery(String sql) {
         List<Participation> participations = new ArrayList<>();
         try {
             Statement st = cnx.createStatement();
@@ -123,6 +146,10 @@ public class ServiceParticipation {
         return 0;
     }
 
+    private String normalizeTag(String tag) {
+        return tag == null || tag.isBlank() ? "neutre" : tag.trim().toLowerCase();
+    }
+
     private Participation mapParticipation(ResultSet rs) throws Exception {
         Participation participation = new Participation();
         participation.setId(rs.getInt("id"));
@@ -132,6 +159,8 @@ public class ServiceParticipation {
         participation.setImageChoisieId(rs.getInt("image_choisie_id"));
         participation.setImagePath(rs.getString("image_path"));
         participation.setResultatPsy(rs.getString("resultat_psy"));
+        participation.setComportementTag(normalizeTag(rs.getString("comportement_tag")));
+        participation.setTempsReponseMs(rs.getLong("temps_reponse_ms"));
         participation.setDateParticipation(rs.getTimestamp("date_participation").toLocalDateTime());
         return participation;
     }
@@ -151,5 +180,34 @@ public class ServiceParticipation {
 
     public String getLastError() {
         return lastError == null ? "" : lastError;
+    }
+
+    public List<Object[]> getHeatmapData() {
+        String sql =
+                "SELECT ic.image_path, j.titre AS jeu_titre, COUNT(*) as choix_count, " +
+                        "p.resultat_psy " +
+                        "FROM participation p " +
+                        "JOIN jeu j ON j.id = p.jeu_id " +
+                        "JOIN image_carte ic ON ic.id = p.image_choisie_id " +
+                        "GROUP BY ic.image_path, j.titre, p.resultat_psy " +
+                        "ORDER BY j.titre, choix_count DESC";
+
+        List<Object[]> heatmapData = new ArrayList<>();
+        try {
+            Statement st = cnx.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next()) {
+                Object[] row = new Object[] {
+                        rs.getString("image_path"),
+                        rs.getString("jeu_titre"),
+                        rs.getInt("choix_count"),
+                        rs.getString("resultat_psy")
+                };
+                heatmapData.add(row);
+            }
+        } catch (Exception e) {
+            System.out.println("Erreur lecture heatmap data: " + e.getMessage());
+        }
+        return heatmapData;
     }
 }

@@ -5,6 +5,7 @@ public class ImageCarte {
     private int jeuId;
     private String imagePath;
     private String interpretationPsy;
+    private String comportementTag;
 
     public int getId() {
         return id;
@@ -36,6 +37,14 @@ public class ImageCarte {
 
     public void setInterpretationPsy(String interpretationPsy) {
         this.interpretationPsy = interpretationPsy;
+    }
+
+    public String getComportementTag() {
+        return comportementTag;
+    }
+
+    public void setComportementTag(String comportementTag) {
+        this.comportementTag = comportementTag;
     }
 
     @Override

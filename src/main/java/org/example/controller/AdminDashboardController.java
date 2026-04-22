@@ -4,10 +4,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
-import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import org.example.entities.User;
+
 import java.io.IOException;
 
 public class AdminDashboardController {
@@ -27,7 +28,7 @@ public class AdminDashboardController {
 
     public void setUserData(User user) {
         this.currentAdmin = user;
-        if (adminEmailLabel != null) {
+        if (adminEmailLabel != null && user != null) {
             adminEmailLabel.setText(user.getEmail());
         }
     }
@@ -61,10 +62,20 @@ public class AdminDashboardController {
     @FXML
     private void showQuestionsReponses() {
         try {
-            headerTitle.setText("Questions / Réponses");
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/fxml/test/QuestionsReponses.fxml")
-            );
+            headerTitle.setText("Questions / Reponses");
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/test/QuestionsReponses.fxml"));
+            Parent view = loader.load();
+            contentArea.getChildren().setAll(view);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void showGameManagement() {
+        try {
+            headerTitle.setText("Gestion des jeux");
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GestionJeux.fxml"));
             Parent view = loader.load();
             contentArea.getChildren().setAll(view);
         } catch (IOException e) {
@@ -75,9 +86,7 @@ public class AdminDashboardController {
     private void loadTable(String role, String title) {
         try {
             headerTitle.setText(title);
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/admin_users_table.fxml")
-            );
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/admin_users_table.fxml"));
             Parent tableRoot = loader.load();
 
             AdminTableController controller = loader.getController();
