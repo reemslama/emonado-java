@@ -100,3 +100,93 @@
     -fx-text-fill: white;
     -fx-border-color: #c5df43;
 }
+
+/* Shared professional tabs/cards for Journal/Analyse */
+.pro-tab-pane {
+    -fx-background-color: transparent;
+}
+
+.pro-tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: transparent;
+}
+
+.pro-tab-pane .tab {
+    -fx-background-color: rgba(255, 255, 255, 0.75);
+    -fx-background-radius: 12 12 0 0;
+    -fx-padding: 8 12;
+}
+
+.pro-tab-pane .tab:selected {
+    -fx-background-color: white;
+}
+
+.pro-card {
+    -fx-background-color: rgba(255, 255, 255, 0.95);
+    -fx-background-radius: 18;
+    -fx-padding: 16;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.10), 12, 0, 0, 3);
+}
+
+.pro-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1f3a4d;
+}
+
+.pro-action-btn {
+    -fx-background-color: #1976f3;
+    -fx-text-fill: white;
+    -fx-background-radius: 12;
+    -fx-padding: 10 18;
+    -fx-font-weight: bold;
+}
+
+.pro-mood-card {
+    -fx-background-radius: 22;
+    -fx-padding: 18;
+    -fx-alignment: center;
+    -fx-effect: dropshadow(three-pass-box, rgba(26, 61, 74, 0.12), 18, 0, 0, 6);
+    -fx-border-color: rgba(255, 255, 255, 0.75);
+    -fx-border-radius: 22;
+}
+
+.pro-mood-happy {
+    -fx-background-color: linear-gradient(to bottom right, #fffdf2, #fff5bc);
+}
+
+.pro-mood-calm {
+    -fx-background-color: linear-gradient(to bottom right, #f4feff, #d9f7fb);
+}
+
+.pro-mood-sos {
+    -fx-background-color: linear-gradient(to bottom right, #fff9f0, #ffe0b8);
+}
+
+.pro-mood-anger {
+    -fx-background-color: linear-gradient(to bottom right, #fff7fc, #efd7fb);
+}
+
+.mood-ring-percent {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #23424e;
+}
+
+.mood-ring-detail {
+    -fx-font-size: 12px;
+    -fx-text-fill: #52707d;
+    -fx-font-weight: bold;
+}
+
+.mood-card-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #203846;
+}
+
+.mood-card-copy {
+    -fx-font-size: 12px;
+    -fx-text-fill: #4f6874;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+}

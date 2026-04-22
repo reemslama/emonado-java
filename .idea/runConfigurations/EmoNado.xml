@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectRunConfigurationManager">
+    <configuration default="false" name="EmoNado" type="MavenRunConfiguration" factoryName="Maven">
+      <MavenSettings>
+        <option name="myGeneralSettings" />
+        <option name="myRunnerSettings" />
+        <option name="myDoverallSettings" />
+        <option name="myVmOptions" value="-ea" />
+        <option name="myDmOptions" value="" />
+        <option name="myGoals">
+          <set>
+            <option value="clean" />
+            <option value="javafx:run" />
+          </set>
+        </option>
+        <option name="mySkipTests" value="false" />
+        <option name="myIsDebugToolWindowVisible" value="false" />
+        <option name="myExcludedModules" />
+        <option name="myCurrentProjectPath" value="$PROJECT_DIR$" />
+        <option name="myModuleName" value="PI" />
+        <option name="myResolveToWorkspace" value="false" />
+        <option name="myInteractiveMode" value="false" />
+        <option name="myPassParentEnvs" value="true" />
+        <option name="myJrePath" value="" />
+        <option name="myMavenHome" value="$PROJECT_DIR$/tools/apache-maven-3.9.9" />
+        <option name="mySystemSettingsFile" />
+        <option name="myProjectSettingsFile" />
+        <option name="myEnvs">
+          <map />
+        </option>
+        <option name="myAfterRunTaskActivities" />
+        <option name="myCharset" value="UTF-8" />
+        <option name="myOsEnvs">
+          <map />
+        </option>
+      </MavenSettings>
+      <method v="2" />
+    </configuration>
+  </component>
+</project>

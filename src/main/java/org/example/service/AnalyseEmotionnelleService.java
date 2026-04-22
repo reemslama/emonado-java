@@ -14,6 +14,7 @@ import java.util.List;
 
 public class AnalyseEmotionnelleService {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    private final RiskDetectionService riskDetectionService = new RiskDetectionService();
 
     public List<JournalAnalyseRow> findRowsByUser(User user) throws SQLException {
         String sql = """
@@ -34,9 +35,16 @@ public class AnalyseEmotionnelleService {
                     JournalAnalyseRow row = new JournalAnalyseRow();
                     row.setJournalId(rs.getInt("journal_id"));
                     row.setHumeur(rs.getString("humeur"));
-                    row.setContenuResume(buildSummary(rs.getString("contenu")));
+                    String contenu = rs.getString("contenu");
+                    row.setContenuComplet(contenu);
+                    row.setContenuResume(buildSummary(contenu));
                     Timestamp journalTimestamp = rs.getTimestamp("date_creation");
                     row.setDateJournal(journalTimestamp == null ? "" : journalTimestamp.toLocalDateTime().format(DATE_FORMATTER));
+
+                    RiskDetectionService.RiskAssessment riskAssessment = riskDetectionService.assess(contenu);
+                    row.setRisqueLabel(riskAssessment.level());
+                    row.setRisqueDetails(riskAssessment.summary());
+                    row.setRisqueScore(riskAssessment.score());
 
                     int analyseId = rs.getInt("analyse_id");
                     if (!rs.wasNull()) {
@@ -54,11 +62,11 @@ public class AnalyseEmotionnelleService {
                         row.setAnalyseEmotionnelle(analyse);
                         row.setEtatEmotionnel(analyse.getEtatEmotionnel());
                         row.setNiveau(analyse.getNiveau());
-                        row.setStatut("Analysee");
+                        row.setStatut(riskAssessment.requiresAlert() ? "Alerte psy" : "Analysee");
                     } else {
                         row.setEtatEmotionnel("Aucune");
                         row.setNiveau("-");
-                        row.setStatut("En attente");
+                        row.setStatut(riskAssessment.requiresAlert() ? "Alerte psy" : "En attente");
                     }
                     rows.add(row);
                 }
