@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.controller.AnalyseEmotionnelleController"
+            style="-fx-background-color: linear-gradient(to bottom, #f3f4f6 0%, #eceff1 100%);">
+
+    <stylesheets>
+        <URL value="@/styles/template.css" />
+    </stylesheets>
+
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="18" style="-fx-background-color: #187d67;">
+            <padding>
+                <Insets top="16" right="24" bottom="16" left="24" />
+            </padding>
+            <Label text="EmoNado" styleClass="brand" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Button text="Accueil" styleClass="nav-btn" onAction="#goToDashboard" />
+            <Button text="Mon profil" styleClass="nav-btn" onAction="#goToProfil" />
+            <Button fx:id="navJournauxBtn" text="Mes journaux" styleClass="nav-btn" onAction="#goToJournaux" />
+            <Button text="Analyse emotionnelle" style="-fx-background-color: rgba(255,255,255,0.18); -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 18; -fx-padding: 8 16;" />
+            <Button text="Deconnexion" styleClass="nav-btn" onAction="#handleLogout" />
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="18" style="-fx-padding: 24;">
+            <Label fx:id="welcomeLabel" text="Analyse emotionnelle" style="-fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #125846;" />
+
+            <HBox spacing="12" alignment="CENTER_LEFT" fx:id="patientSelectorBox" visible="false" managed="false">
+                <Label text="Patient concerne" style="-fx-font-weight: bold; -fx-text-fill: #1f3a4d;" />
+                <ComboBox fx:id="patientCombo" prefWidth="320.0" />
+            </HBox>
+
+            <HBox spacing="16">
+                <VBox spacing="6" HBox.hgrow="ALWAYS" style="-fx-background-color: #d7f1e5; -fx-background-radius: 16; -fx-padding: 18;">
+                    <Label text="Journaux du jour" style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #25554f;" />
+                    <Label fx:id="todayCountLabel" text="0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #134a39;" />
+                </VBox>
+                <VBox spacing="6" HBox.hgrow="ALWAYS" style="-fx-background-color: #dcedff; -fx-background-radius: 16; -fx-padding: 18;">
+                    <Label text="Analyses faites" style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #25554f;" />
+                    <Label fx:id="analysedCountLabel" text="0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #134a39;" />
+                </VBox>
+                <VBox spacing="6" HBox.hgrow="ALWAYS" style="-fx-background-color: #fff4cf; -fx-background-radius: 16; -fx-padding: 18;">
+                    <Label text="Journaux a analyser" style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #25554f;" />
+                    <Label fx:id="pendingCountLabel" text="0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #134a39;" />
+                </VBox>
+            </HBox>
+
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <TextField fx:id="searchField" promptText="Recherche dynamique par date, humeur, statut ou analyse" HBox.hgrow="ALWAYS" />
+            </HBox>
+
+            <VBox fx:id="psyAlertBox" spacing="10" visible="false" managed="false" style="-fx-background-color: #fff6f5; -fx-background-radius: 18; -fx-padding: 16; -fx-border-color: #ef9a9a; -fx-border-radius: 18;">
+                <Label text="Alertes psy detectees" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #a93434;" />
+                <Label fx:id="psyAlertSummaryLabel" text="Aucune alerte critique detectee." style="-fx-text-fill: #6a5a5a;" />
+                <VBox fx:id="psyAlertListBox" spacing="8" />
+            </VBox>
+
+            <TabPane VBox.vgrow="ALWAYS" tabClosingPolicy="UNAVAILABLE" styleClass="pro-tab-pane">
+                <tabs>
+                    <Tab text="Suivi analyses">
+                        <HBox spacing="18" style="-fx-padding: 10 0 0 0;">
+                            <VBox spacing="12" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS" styleClass="pro-card">
+                                <Label text="Journaux et analyses" styleClass="pro-title" />
+                                <HBox spacing="10">
+                                    <Button text="Ajouter analyse" onAction="#handleAdd" styleClass="pro-action-btn" />
+                                    <Button text="Modifier" onAction="#handleEdit" styleClass="pro-action-btn" />
+                                    <Button text="Supprimer" onAction="#handleDelete" styleClass="pro-action-btn" />
+                                </HBox>
+                                <TableView fx:id="analyseTable" VBox.vgrow="ALWAYS">
+                                    <columns>
+                                        <TableColumn fx:id="dateColumn" text="Date" prefWidth="150.0" />
+                                        <TableColumn fx:id="humeurColumn" text="Humeur" prefWidth="120.0" />
+                                        <TableColumn fx:id="contenuColumn" text="Journal" prefWidth="280.0" />
+                                        <TableColumn fx:id="etatColumn" text="Etat analyse" prefWidth="150.0" />
+                                        <TableColumn fx:id="statutColumn" text="Statut" prefWidth="120.0" />
+                                    </columns>
+                                </TableView>
+                            </VBox>
+
+                            <VBox spacing="12" prefWidth="360.0" styleClass="pro-card">
+                                <Label text="Analyse emotionnelle" styleClass="pro-title" />
+                                <Label text="Selectionnez un journal dans la liste puis utilisez Ajouter analyse ou Modifier." wrapText="true" style="-fx-text-fill: #4d6472;" />
+                                <Label text="La modification s'ouvre maintenant dans un nouvel onglet, comme pour le journal." wrapText="true" style="-fx-text-fill: #4d6472;" />
+                                <Label fx:id="errorLabel" textFill="#c62828" wrapText="true" />
+                            </VBox>
+                        </HBox>
+                    </Tab>
+
+                    <Tab text="Statistiques pro">
+                        <VBox spacing="16" style="-fx-padding: 12 0 0 0;">
+                            <HBox spacing="16">
+                                <VBox spacing="6" HBox.hgrow="ALWAYS" styleClass="pro-card">
+                                    <Label text="Total journaux" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #25554f;" />
+                                    <Label fx:id="totalJournauxStatLabel" text="0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #134a39;" />
+                                </VBox>
+                                <VBox spacing="6" HBox.hgrow="ALWAYS" styleClass="pro-card">
+                                    <Label text="Analyses completees" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #25554f;" />
+                                    <Label fx:id="totalAnalysesStatLabel" text="0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #134a39;" />
+                                </VBox>
+                                <VBox spacing="6" HBox.hgrow="ALWAYS" styleClass="pro-card">
+                                    <Label text="En attente" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #25554f;" />
+                                    <Label fx:id="totalPendingStatLabel" text="0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #134a39;" />
+                                </VBox>
+                            </HBox>
+
+                            <VBox spacing="14" styleClass="pro-card">
+                                <Label text="Distribution des humeurs (animee)" styleClass="pro-title" />
+
+                                <HBox alignment="CENTER_LEFT" spacing="10">
+                                    <Label text="Heureux" prefWidth="110" />
+                                    <ProgressBar fx:id="heureuxProgress" progress="0" HBox.hgrow="ALWAYS" />
+                                    <Label fx:id="heureuxPercentLabel" text="0% (0)" prefWidth="70" />
+                                </HBox>
+                                <HBox alignment="CENTER_LEFT" spacing="10">
+                                    <Label text="Calme" prefWidth="110" />
+                                    <ProgressBar fx:id="calmeProgress" progress="0" HBox.hgrow="ALWAYS" />
+                                    <Label fx:id="calmePercentLabel" text="0% (0)" prefWidth="70" />
+                                </HBox>
+                                <HBox alignment="CENTER_LEFT" spacing="10">
+                                    <Label text="SOS" prefWidth="110" />
+                                    <ProgressBar fx:id="sosProgress" progress="0" HBox.hgrow="ALWAYS" />
+                                    <Label fx:id="sosPercentLabel" text="0% (0)" prefWidth="70" />
+                                </HBox>
+                                <HBox alignment="CENTER_LEFT" spacing="10">
+                                    <Label text="En colere" prefWidth="110" />
+                                    <ProgressBar fx:id="colereProgress" progress="0" HBox.hgrow="ALWAYS" />
+                                    <Label fx:id="colerePercentLabel" text="0% (0)" prefWidth="70" />
+                                </HBox>
+                            </VBox>
+                        </VBox>
+                    </Tab>
+                </tabs>
+            </TabPane>
+        </VBox>
+    </center>
+</BorderPane>

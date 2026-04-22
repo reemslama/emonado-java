@@ -1,0 +1,192 @@
+/* Background */
+.background {
+    /* On remonte d'un dossier (..) pour sortir de 'styles' puis on va dans 'images' */
+    -fx-background-image: url("../images/background.png");
+    -fx-background-size: cover;
+    -fx-background-position: center;
+}
+
+/* Navbar */
+.navbar {
+    -fx-background-color: #c5df43;
+    -fx-padding: 15;
+}
+
+/* Logo */
+.brand {
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+/* Boutons navbar */
+.nav-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+
+/* Hover effet */
+.nav-btn:hover {
+    -fx-underline: true;
+}
+
+/* Bouton principal */
+.btn-custom {
+    -fx-background-color: #c5df43;
+    -fx-text-fill: white;
+    -fx-padding: 10 30;
+    -fx-background-radius: 50;
+}
+
+/* Title */
+.title {
+    -fx-font-size: 28px;
+    -fx-text-fill: white;
+}
+/* Style pour les boites d'icônes Psy */
+.icon-box {
+    -fx-background-color: white;
+    -fx-min-width: 130;
+    -fx-min-height: 130;
+    -fx-background-radius: 20;
+    -fx-alignment: center;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4);
+}
+
+.icon-box:hover {
+    -fx-background-color: #f1f5f9;
+    -fx-translate-y: -5;
+}
+
+/* Style pour les boites d'icônes Patient */
+.icon-box-patient {
+    -fx-background-color: white;
+    -fx-min-width: 120;
+    -fx-min-height: 120;
+    -fx-background-radius: 20;
+    -fx-alignment: center;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 8, 0, 0, 4);
+}
+
+.icon-box-patient:hover {
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+/* Style de base des boutons de rôle */
+.option-btn {
+    -fx-background-color: white;
+    -fx-text-fill: #555555;
+    -fx-border-color: #c5df43;
+    -fx-border-width: 2;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-padding: 8 15;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-transition: 0.3s;
+}
+
+/* Style quand on survole avec la souris */
+.option-btn:hover {
+    -fx-background-color: #f1f1f1;
+}
+
+/* Style quand le bouton est sélectionné (cliqué) */
+.option-btn::selection {
+    -fx-background-color: #c5df43; /* Vert de ton application */
+    -fx-text-fill: white;
+    -fx-border-color: #c5df43;
+}
+
+/* Shared professional tabs/cards for Journal/Analyse */
+.pro-tab-pane {
+    -fx-background-color: transparent;
+}
+
+.pro-tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: transparent;
+}
+
+.pro-tab-pane .tab {
+    -fx-background-color: rgba(255, 255, 255, 0.75);
+    -fx-background-radius: 12 12 0 0;
+    -fx-padding: 8 12;
+}
+
+.pro-tab-pane .tab:selected {
+    -fx-background-color: white;
+}
+
+.pro-card {
+    -fx-background-color: rgba(255, 255, 255, 0.95);
+    -fx-background-radius: 18;
+    -fx-padding: 16;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.10), 12, 0, 0, 3);
+}
+
+.pro-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1f3a4d;
+}
+
+.pro-action-btn {
+    -fx-background-color: #1976f3;
+    -fx-text-fill: white;
+    -fx-background-radius: 12;
+    -fx-padding: 10 18;
+    -fx-font-weight: bold;
+}
+
+.pro-mood-card {
+    -fx-background-radius: 22;
+    -fx-padding: 18;
+    -fx-alignment: center;
+    -fx-effect: dropshadow(three-pass-box, rgba(26, 61, 74, 0.12), 18, 0, 0, 6);
+    -fx-border-color: rgba(255, 255, 255, 0.75);
+    -fx-border-radius: 22;
+}
+
+.pro-mood-happy {
+    -fx-background-color: linear-gradient(to bottom right, #fffdf2, #fff5bc);
+}
+
+.pro-mood-calm {
+    -fx-background-color: linear-gradient(to bottom right, #f4feff, #d9f7fb);
+}
+
+.pro-mood-sos {
+    -fx-background-color: linear-gradient(to bottom right, #fff9f0, #ffe0b8);
+}
+
+.pro-mood-anger {
+    -fx-background-color: linear-gradient(to bottom right, #fff7fc, #efd7fb);
+}
+
+.mood-ring-percent {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #23424e;
+}
+
+.mood-ring-detail {
+    -fx-font-size: 12px;
+    -fx-text-fill: #52707d;
+    -fx-font-weight: bold;
+}
+
+.mood-card-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #203846;
+}
+
+.mood-card-copy {
+    -fx-font-size: 12px;
+    -fx-text-fill: #4f6874;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+}

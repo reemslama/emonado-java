@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Arc?>
+<?import javafx.scene.shape.Circle?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.controller.StatsProController"
+            style="-fx-background-color: linear-gradient(to bottom, #8fd9ee 0%, #dff7ff 100%);">
+
+    <stylesheets>
+        <URL value="@/styles/template.css" />
+    </stylesheets>
+
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="18" style="-fx-background-color: #1f8b57;">
+            <padding>
+                <Insets top="16" right="24" bottom="16" left="24" />
+            </padding>
+            <Label text="EmoNado" styleClass="brand" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Button text="Accueil" styleClass="nav-btn" onAction="#goToDashboard" />
+            <Button text="Mon profil" styleClass="nav-btn" onAction="#goToProfil" />
+            <Button text="Mes journaux" style="-fx-background-color: rgba(255, 255, 255, 0.18); -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 18; -fx-padding: 8 16;" onAction="#goToJournaux" />
+            <Button text="Deconnexion" styleClass="nav-btn" onAction="#handleLogout" />
+        </HBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+            <content>
+                <VBox spacing="18" style="-fx-padding: 24;">
+                    <padding>
+                        <Insets top="24" right="26" bottom="24" left="26" />
+                    </padding>
+
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                            <Label fx:id="pageTitleLabel" text="Stat pro complet" style="-fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #116b46;" />
+                            <Label fx:id="pageSubtitleLabel" text="Vue analytique complete des journaux et des humeurs." style="-fx-text-fill: #56707c; -fx-font-size: 13px;" />
+                        </VBox>
+                        <Button text="Retour journaux" onAction="#goToJournaux" style="-fx-background-color: white; -fx-text-fill: #1f8b57; -fx-background-radius: 12; -fx-padding: 10 18; -fx-font-weight: bold; -fx-border-color: #1f8b57; -fx-border-radius: 12;" />
+                    </HBox>
+
+                    <HBox spacing="16">
+                        <VBox spacing="6" HBox.hgrow="ALWAYS" styleClass="pro-card">
+                            <Label text="Total journaux" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #25554f;" />
+                            <Label fx:id="totalLabel" text="0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #134a39;" />
+                        </VBox>
+                        <VBox spacing="6" HBox.hgrow="ALWAYS" styleClass="pro-card">
+                            <Label text="Humeur dominante" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #25554f;" />
+                            <Label fx:id="dominantMoodLabel" text="Aucune" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #134a39;" />
+                        </VBox>
+                        <VBox spacing="6" HBox.hgrow="ALWAYS" styleClass="pro-card">
+                            <Label text="Stabilite emotionnelle" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #25554f;" />
+                            <Label fx:id="stabilityLabel" text="Inconnue" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #134a39;" />
+                        </VBox>
+                        <VBox spacing="6" HBox.hgrow="ALWAYS" styleClass="pro-card">
+                            <Label text="Generation" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #25554f;" />
+                            <Label fx:id="generatedAtLabel" text="-" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #134a39;" />
+                        </VBox>
+                    </HBox>
+
+                    <VBox spacing="14" styleClass="pro-card">
+                        <Label text="Tableau d'humeur creatif" styleClass="pro-title" />
+                        <FlowPane hgap="18" vgap="18" prefWrapLength="920">
+                            <VBox spacing="10" prefWidth="205" styleClass="pro-mood-card pro-mood-happy">
+                                <StackPane prefWidth="168" prefHeight="168">
+                                    <Pane fx:id="heureuxOrbitPane" prefWidth="168" prefHeight="168" pickOnBounds="false">
+                                        <Circle centerX="20.0" centerY="84.0" radius="7.0" fill="#ffe95e" opacity="0.95" />
+                                        <Circle centerX="148.0" centerY="84.0" radius="5.0" fill="#fff6be" opacity="0.85" />
+                                    </Pane>
+                                    <Circle radius="66" fill="#fffef7" stroke="#f3ecd2" strokeWidth="14" />
+                                    <Arc fx:id="heureuxArc" radiusX="66" radiusY="66" startAngle="90" length="0" type="OPEN" fill="TRANSPARENT" stroke="#ffe23d" strokeWidth="14" strokeLineCap="ROUND" />
+                                    <VBox alignment="CENTER" spacing="2">
+                                        <Label fx:id="heureuxPercentLabel" text="0%" styleClass="mood-ring-percent" />
+                                        <Label fx:id="heureuxDetailLabel" text="0 journal" styleClass="mood-ring-detail" />
+                                    </VBox>
+                                </StackPane>
+                                <Label text="Heureux" styleClass="mood-card-title" />
+                            </VBox>
+
+                            <VBox spacing="10" prefWidth="205" styleClass="pro-mood-card pro-mood-calm">
+                                <StackPane prefWidth="168" prefHeight="168">
+                                    <Pane fx:id="calmeOrbitPane" prefWidth="168" prefHeight="168" pickOnBounds="false">
+                                        <Circle centerX="24.0" centerY="60.0" radius="6.0" fill="#92e6f4" opacity="0.9" />
+                                        <Circle centerX="142.0" centerY="110.0" radius="5.0" fill="#daf8ff" opacity="0.85" />
+                                    </Pane>
+                                    <Circle radius="66" fill="#f8feff" stroke="#d8eef5" strokeWidth="14" />
+                                    <Arc fx:id="calmeArc" radiusX="66" radiusY="66" startAngle="90" length="0" type="OPEN" fill="TRANSPARENT" stroke="#59cee2" strokeWidth="14" strokeLineCap="ROUND" />
+                                    <VBox alignment="CENTER" spacing="2">
+                                        <Label fx:id="calmePercentLabel" text="0%" styleClass="mood-ring-percent" />
+                                        <Label fx:id="calmeDetailLabel" text="0 journal" styleClass="mood-ring-detail" />
+                                    </VBox>
+                                </StackPane>
+                                <Label text="Calme" styleClass="mood-card-title" />
+                            </VBox>
+
+                            <VBox spacing="10" prefWidth="205" styleClass="pro-mood-card pro-mood-sos">
+                                <StackPane prefWidth="168" prefHeight="168">
+                                    <Pane fx:id="sosOrbitPane" prefWidth="168" prefHeight="168" pickOnBounds="false">
+                                        <Circle centerX="28.0" centerY="112.0" radius="6.0" fill="#ffb357" opacity="0.95" />
+                                        <Circle centerX="144.0" centerY="56.0" radius="5.0" fill="#ffe1b7" opacity="0.85" />
+                                    </Pane>
+                                    <Circle radius="66" fill="#fff9f2" stroke="#f7e6cf" strokeWidth="14" />
+                                    <Arc fx:id="sosArc" radiusX="66" radiusY="66" startAngle="90" length="0" type="OPEN" fill="TRANSPARENT" stroke="#ff9c33" strokeWidth="14" strokeLineCap="ROUND" />
+                                    <VBox alignment="CENTER" spacing="2">
+                                        <Label fx:id="sosPercentLabel" text="0%" styleClass="mood-ring-percent" />
+                                        <Label fx:id="sosDetailLabel" text="0 journal" styleClass="mood-ring-detail" />
+                                    </VBox>
+                                </StackPane>
+                                <Label text="SOS" styleClass="mood-card-title" />
+                            </VBox>
+
+                            <VBox spacing="10" prefWidth="205" styleClass="pro-mood-card pro-mood-anger">
+                                <StackPane prefWidth="168" prefHeight="168">
+                                    <Pane fx:id="colereOrbitPane" prefWidth="168" prefHeight="168" pickOnBounds="false">
+                                        <Circle centerX="24.0" centerY="84.0" radius="7.0" fill="#ef75b6" opacity="0.95" />
+                                        <Circle centerX="146.0" centerY="88.0" radius="5.0" fill="#f8d4f1" opacity="0.85" />
+                                    </Pane>
+                                    <Circle radius="66" fill="#fff8fd" stroke="#f0dcec" strokeWidth="14" />
+                                    <Arc fx:id="colereArc" radiusX="66" radiusY="66" startAngle="90" length="0" type="OPEN" fill="TRANSPARENT" stroke="#cf67d9" strokeWidth="14" strokeLineCap="ROUND" />
+                                    <VBox alignment="CENTER" spacing="2">
+                                        <Label fx:id="colerePercentLabel" text="0%" styleClass="mood-ring-percent" />
+                                        <Label fx:id="colereDetailLabel" text="0 journal" styleClass="mood-ring-detail" />
+                                    </VBox>
+                                </StackPane>
+                                <Label text="En colere" styleClass="mood-card-title" />
+                            </VBox>
+                        </FlowPane>
+                    </VBox>
+
+                    <HBox spacing="16">
+                        <VBox spacing="12" HBox.hgrow="ALWAYS" styleClass="pro-card">
+                            <Label text="Distribution globale" styleClass="pro-title" />
+                            <BarChart fx:id="distributionChart" categoryGap="18" legendVisible="false" animated="false">
+                                <xAxis>
+                                    <CategoryAxis />
+                                </xAxis>
+                                <yAxis>
+                                    <NumberAxis />
+                                </yAxis>
+                            </BarChart>
+                            <VBox fx:id="distributionInsightBox" spacing="6" />
+                        </VBox>
+
+                        <VBox spacing="12" HBox.hgrow="ALWAYS" styleClass="pro-card">
+                            <Label text="Evolution journaliere" styleClass="pro-title" />
+                            <LineChart fx:id="trendChart" createSymbols="true" animated="false">
+                                <xAxis>
+                                    <CategoryAxis />
+                                </xAxis>
+                                <yAxis>
+                                    <NumberAxis />
+                                </yAxis>
+                            </LineChart>
+                            <VBox fx:id="anomalyBox" spacing="8" />
+                        </VBox>
+                    </HBox>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+</BorderPane>
