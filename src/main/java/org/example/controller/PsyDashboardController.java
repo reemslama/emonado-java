@@ -103,6 +103,11 @@ public class PsyDashboardController {
     private void goToTypeRdv() {
         loadView("/AjouterType.fxml", "Types de Rendez-vous");
     }
+
+    @FXML
+    private void goToMedicalManagement() {
+        loadView("/medical_management.fxml", "Suivi medical");
+    }
     /**
      * Méthode utilitaire pour changer le contenu central (si tu utilises un BorderPane)
      */

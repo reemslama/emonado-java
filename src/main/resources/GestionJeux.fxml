@@ -29,7 +29,7 @@
     <TextArea fx:id="txtDescription" promptText="Description du jeu" prefRowCount="2" wrapText="true"/>
     <Label fx:id="errorDescription" style="-fx-font-size: 11px;"/>
 
-    <TextArea fx:id="txtImagesAuto" promptText="Images statiques generees automatiquement selon le titre" prefRowCount="4" wrapText="true"/>
+    <TextArea fx:id="txtCheminsImages" promptText="Chemins des images (un par ligne, ex: /images/animaux/lion.png)" prefRowCount="4" wrapText="true"/>
     <Label fx:id="errorImages" style="-fx-font-size: 11px;"/>
 
     <TextArea fx:id="txtInterpretationBase" promptText="Interpretations (1 ligne par image, meme ordre)" prefRowCount="3" wrapText="true"/>

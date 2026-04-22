@@ -6,6 +6,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
 
 <VBox alignment="TOP_CENTER" spacing="6.0"
       xmlns="http://javafx.com/javafx/17"
@@ -30,8 +31,10 @@
     <Label fx:id="selectedImageLabel" style="-fx-font-size: 11px;"/>
     <Label fx:id="errorChoix" style="-fx-font-size: 11px;"/>
 
-    <Label text="Résultat psychologique :" style="-fx-font-weight: bold; -fx-font-size: 13px;"/>
-    <Label fx:id="labelInterpretation" style="-fx-text-fill: #2e7d32; -fx-font-size: 13px;" wrapText="true" maxWidth="900.0"/>
+    <VBox spacing="4.0" alignment="TOP_CENTER">
+        <Label text="Résultat psychologique :" style="-fx-font-weight: bold; -fx-font-size: 13px;"/>
+        <Label fx:id="labelInterpretation" style="-fx-text-fill: #2e7d32; -fx-font-size: 15px; -fx-font-weight: bold;" wrapText="true" maxWidth="900.0" textAlignment="CENTER"/>
+    </VBox>
 
     <Label fx:id="msgSuccess" style="-fx-font-size: 13px; -fx-font-weight: bold;"/>
     <Label fx:id="errorGlobal" style="-fx-font-size: 12px;"/>

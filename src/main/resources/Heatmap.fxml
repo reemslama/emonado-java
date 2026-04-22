@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.ColumnConstraints?>
+
+<VBox alignment="TOP_CENTER" spacing="10.0"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.controller.HeatmapController"
+      stylesheets="@/styles/style.css">
+
+    <padding>
+        <Insets top="15.0" right="20.0" bottom="15.0" left="20.0"/>
+    </padding>
+
+    <Label text="Heatmap des choix" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1f6f5f;"/>
+    <Label text="Visualisation des images les plus choisies" style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
+
+    <Label fx:id="labelNoData" text="Aucune donn\u00e9e disponible. Les enfants n'ont pas encore particip\u00e9."
+           style="-fx-font-size: 14px; -fx-text-fill: #999;" visible="false"/>
+
+    <ScrollPane fx:id="scrollPane" fitToWidth="true" VBox.vgrow="ALWAYS" prefHeight="600.0">
+        <content>
+            <GridPane fx:id="heatmapGrid" hgap="10.0" vgap="8.0">
+                <padding>
+                    <Insets top="10.0" right="20.0" bottom="10.0" left="20.0"/>
+                </padding>
+                <columnConstraints>
+                    <ColumnConstraints minWidth="150.0"/>
+                    <ColumnConstraints minWidth="80.0"/>
+                    <ColumnConstraints minWidth="80.0"/>
+                    <ColumnConstraints minWidth="300.0" hgrow="ALWAYS"/>
+                </columnConstraints>
+            </GridPane>
+        </content>
+    </ScrollPane>
+
+</VBox>

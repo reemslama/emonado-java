@@ -249,6 +249,38 @@ public class ServiceJeu {
                 System.out.println("Migration interpretation -> resultat_psy: " + e.getMessage());
             }
 
+            // 11. Migration: supprimer nom_enfant de participation (ancien schema)
+            try {
+                ResultSet rs = st.executeQuery("SHOW COLUMNS FROM participation LIKE 'nom_enfant'");
+                if (rs.next()) {
+                    st.executeUpdate("ALTER TABLE participation DROP COLUMN nom_enfant");
+                    System.out.println("Migration: colonne nom_enfant supprimee de participation");
+                }
+            } catch (Exception e) {
+                System.out.println("Migration participation.nom_enfant: " + e.getMessage());
+            }
+
+            // 12. Migration: supprimer age_enfant de participation (ancien schema)
+            try {
+                ResultSet rs = st.executeQuery("SHOW COLUMNS FROM participation LIKE 'age_enfant'");
+                if (rs.next()) {
+                    st.executeUpdate("ALTER TABLE participation DROP COLUMN age_enfant");
+                    System.out.println("Migration: colonne age_enfant supprimee de participation");
+                }
+            } catch (Exception e) {
+                System.out.println("Migration participation.age_enfant: " + e.getMessage());
+            }
+
+            // 13. Migration: ajouter image_choisie_id si absent
+            try {
+                ResultSet rs = st.executeQuery("SHOW COLUMNS FROM participation LIKE 'image_choisie_id'");
+                if (!rs.next()) {
+                    st.executeUpdate("ALTER TABLE participation ADD COLUMN image_choisie_id INT NOT NULL DEFAULT 0");
+                }
+            } catch (Exception e) {
+                System.out.println("Migration add image_choisie_id: " + e.getMessage());
+            }
+
         } catch (Exception e) {
             System.out.println("Erreur creation schema jeu/image_carte/participation: " + e.getMessage());
         }

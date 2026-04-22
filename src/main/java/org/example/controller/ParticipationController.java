@@ -64,26 +64,35 @@ public class ParticipationController {
 
     @FXML
     private void ajouterParticipation() {
+        // Verification preliminaire
+        if (aDejaParticipeCeJeu) {
+            showError(errorGlobal, "Deja joue - Choisissez un autre jeu.");
+            return;
+        }
+
         Participation participation = validateForm();
         if (participation == null) {
             return;
         }
 
         participation.setDateParticipation(LocalDateTime.now());
+        System.out.println("=== Tentative enregistrement participation ===");
+        System.out.println("Jeu ID: " + participation.getJeuId());
+        System.out.println("Image ID: " + participation.getImageChoisieId());
+        System.out.println("Resultat: " + participation.getResultatPsy());
+        
         if (serviceParticipation.ajouter(participation)) {
             aDejaParticipeCeJeu = true;
             String resultat = participation.getResultatPsy();
             labelInterpretation.setText(resultat);
-            showSuccess("Choix enregistre !");
             lockCards();
-            refreshJeux();
-            Jeu jeuActuel = comboJeux.getValue();
-            if (jeuActuel != null) {
-                updateDisponibiliteLabel(serviceJeu.findById(jeuActuel.getId()));
-            }
+            // NE PAS refreshJeux() pour eviter de reinitialiser le listener
+            updateDisponibiliteLabel(serviceJeu.findById(participation.getJeuId()));
+            System.out.println("=== Enregistrement reussi ===");
         } else {
             String details = serviceParticipation.getLastError();
             showError(errorGlobal, "Erreur enregistrement DB: " + (details == null || details.isBlank() ? "verifiez la table participation." : details));
+            System.out.println("=== Erreur enregistrement: " + details + " ===");
         }
     }
 
@@ -105,35 +114,21 @@ public class ParticipationController {
             comboJeux.getSelectionModel().select(jeu);
         }
         User currentUser = UserSession.getInstance();
-        boolean valid = true;
 
         if (jeu == null) {
             showError(errorJeu, "Selectionnez un jeu.");
-            valid = false;
+            return null;
         }
         if (selectedImage == null) {
             showError(errorChoix, "Selectionnez une image.");
-            valid = false;
-        }
-        if (aDejaParticipeCeJeu) {
-            showError(errorGlobal, "Vous avez deja participe a ce jeu. Choisissez un autre jeu.");
-            valid = false;
-        }
-        if (jeu != null && !serviceJeu.aPlacesDisponibles(jeu.getId(), null)) {
-            showError(errorGlobal, "Ce jeu est complet (3/3). Choisissez un autre jeu.");
-            valid = false;
-        }
-        if (jeu != null && currentUser != null && currentUser.getId() > 0
-                && serviceParticipation.dejaParticipe(jeu.getId(), currentUser.getId())) {
-            showError(errorGlobal, "Vous avez deja participe a ce jeu. Choisissez un autre jeu.");
-            aDejaParticipeCeJeu = true;
-            valid = false;
+            return null;
         }
         if (jeu != null && selectedImage != null && selectedImage.getJeuId() != jeu.getId()) {
             showError(errorChoix, "Le choix doit appartenir au jeu selectionne.");
-            valid = false;
+            return null;
         }
-        if (!valid) {
+        if (jeu != null && !serviceJeu.aPlacesDisponibles(jeu.getId(), null)) {
+            showError(errorGlobal, "Ce jeu est complet (3/3). Choisissez un autre jeu.");
             return null;
         }
 
@@ -175,8 +170,10 @@ public class ParticipationController {
             return;
         }
         String message = "Participants: " + jeu.getNombreParticipations() + "/" + jeu.getMaxParticipants();
-        if (!jeu.isDisponible()) {
-            message += " - complet, choisissez un autre jeu";
+        if (aDejaParticipeCeJeu) {
+            message += " - Deja joue";
+        } else if (!jeu.isDisponible()) {
+            message += " - COMPLET, choisissez un autre jeu";
         }
         labelDisponibilite.setText(message);
     }
@@ -190,28 +187,40 @@ public class ParticipationController {
 
         try {
             Image image = loadImage(imageCarte.getImagePath());
-            imageView.setImage(image);
-            imageLoaded = image != null;
+            if (image != null && !image.isError()) {
+                imageView.setImage(image);
+                imageLoaded = true;
+            }
         } catch (Exception e) {
+            System.out.println("Erreur chargement image " + imageCarte.getImagePath() + ": " + e.getMessage());
+        }
+
+        if (!imageLoaded) {
             imageView.setImage(null);
         }
 
         Label label = new Label(simplifyImageLabel(imageCarte.getImagePath()));
         label.setWrapText(true);
         label.setMaxWidth(120);
-        Label missingLabel = new Label(imageLoaded ? "" : "fichier introuvable");
-        missingLabel.setStyle("-fx-text-fill: #c62828; -fx-font-size: 10px;");
-        missingLabel.setWrapText(true);
-        missingLabel.setMaxWidth(120);
+        Label statusLabel = new Label(imageLoaded ? "" : "fichier introuvable");
+        statusLabel.setStyle("-fx-text-fill: #c62828; -fx-font-size: 10px;");
+        statusLabel.setWrapText(true);
+        statusLabel.setMaxWidth(120);
 
         Button button = new Button();
-        button.setGraphic(new VBox(4, imageView, label, missingLabel));
+        button.setGraphic(new VBox(4, imageView, label, statusLabel));
         button.setUserData(imageCarte.getId());
         button.setStyle("-fx-background-color: white; -fx-border-color: #d9d9d9; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 10;");
         button.setOnAction(event -> {
+            if (aDejaParticipeCeJeu) {
+                showError(errorGlobal, "Deja joue - Choisissez un autre jeu.");
+                return;
+            }
             selectedImage = imageCarte;
             selectedImageLabel.setText("Image choisie : " + simplifyImageLabel(imageCarte.getImagePath()));
-            labelInterpretation.setText(imageCarte.getInterpretationPsy());
+            // Afficher le resultat psychologique AVANT enregistrement
+            String interpretation = imageCarte.getInterpretationPsy();
+            labelInterpretation.setText(interpretation.isBlank() ? "Resultat non defini." : interpretation);
             highlightSelectedImage();
             ajouterParticipation();
         });
@@ -237,7 +246,7 @@ public class ParticipationController {
         if (currentUser != null && currentUser.getId() > 0
                 && serviceParticipation.dejaParticipe(jeu.getId(), currentUser.getId())) {
             aDejaParticipeCeJeu = true;
-            showError(errorGlobal, "Vous avez deja participe a ce jeu. Choisissez un autre jeu.");
+            showError(errorGlobal, "Deja joue - Vous avez deja participe a ce jeu. Choisissez un autre jeu.");
             lockCards();
         }
     }
@@ -277,100 +286,75 @@ public class ParticipationController {
         labelUserNom.setText("Participant (Enfant) : " + (currentUser == null ? "Invite" : currentUser.getNom() + " " + currentUser.getPrenom()));
     }
 
-    private Image loadImage(String imagePath) throws Exception {
+    private Image loadImage(String imagePath) {
         if (imagePath == null || imagePath.isBlank()) {
-            return loadPlaceholderImage();
+            return null;
         }
-        imagePath = imagePath.trim();
-        if (imagePath.startsWith("file:") || imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
-            return new Image(imagePath);
+        String path = imagePath.trim().replace("\\", "/");
+
+        // Essayer directement via le classpath JavaFX (fonctionne avec file: ou chemin relatif)
+        try {
+            // Si le chemin commence déjà par /, l'utiliser tel quel
+            if (path.startsWith("/")) {
+                Image img = new Image(path);
+                if (!img.isError()) {
+                    return img;
+                }
+            }
+            // Sinon essayer avec / devant
+            Image img = new Image("/" + path);
+            if (!img.isError()) {
+                return img;
+            }
+        } catch (Exception e) {
+            // Continuer avec les autres méthodes
         }
 
-        String normalized = imagePath.replace("\\", "/");
-        String fromResourcesRoot = normalized;
-        int resourcesPrefixIndex = normalized.indexOf("src/main/resources/");
-        if (resourcesPrefixIndex >= 0) {
-            fromResourcesRoot = normalized.substring(resourcesPrefixIndex + "src/main/resources/".length());
-        }
-        String fileName = extractFileName(normalized);
-
+        // Essayer via getResourceAsStream
         String[] candidates = new String[] {
-                normalized,
-                fromResourcesRoot,
-                normalized.startsWith("/") ? normalized : "/" + normalized,
-                fromResourcesRoot.startsWith("/") ? fromResourcesRoot : "/" + fromResourcesRoot,
-                normalized.startsWith("/images/") ? normalized : "/images/" + fileName,
-                "/images/animaux/" + fileName,
-                "/images/nature/" + fileName
-                ,
-                "/images/situation/" + fileName
+                path,
+                path.startsWith("/") ? path : "/" + path,
         };
 
         for (String candidate : candidates) {
-            var classpathStream = getClass().getResourceAsStream(candidate);
-            if (classpathStream == null && candidate.startsWith("/")) {
-                classpathStream = getClass().getResourceAsStream(candidate.substring(1));
+            var stream = getClass().getResourceAsStream(candidate);
+            if (stream == null && candidate.startsWith("/")) {
+                stream = getClass().getResourceAsStream(candidate.substring(1));
             }
-            if (classpathStream != null) {
-                return new Image(classpathStream);
-            }
-        }
-
-        try {
-            Path directPath = resolvePathFromRuntime(normalized);
-            if (directPath != null && Files.exists(directPath)) {
-                return new Image(new FileInputStream(directPath.toFile()));
-            }
-        } catch (Exception ignored) {}
-
-        for (String candidate : candidates) {
-            try {
-                String localPath = "src/main/resources/" + (candidate.startsWith("/") ? candidate.substring(1) : candidate);
-                Path candidatePath = resolvePathFromRuntime(localPath);
-                if (Files.exists(candidatePath)) {
-                    return new Image(new FileInputStream(candidatePath.toFile()));
+            if (stream != null) {
+                try {
+                    Image img = new Image(stream);
+                    if (!img.isError()) {
+                        return img;
+                    }
+                } catch (Exception ignored) {
                 }
-            } catch (Exception ignoredAgain) {
             }
         }
-        return loadPlaceholderImage();
-    }
 
-    private Image loadPlaceholderImage() {
+        // Essayer via le système de fichiers
+        try {
+            String[] fsPaths = new String[] {
+                    "src/main/resources" + (path.startsWith("/") ? path : "/" + path),
+                    "target/classes" + (path.startsWith("/") ? path : "/" + path),
+                    path.startsWith("/") ? "." + path : "./" + path,
+            };
+            for (String fsPath : fsPaths) {
+                Path p = Paths.get(fsPath).normalize();
+                if (Files.exists(p)) {
+                    try (FileInputStream fis = new FileInputStream(p.toFile())) {
+                        Image img = new Image(fis);
+                        if (!img.isError()) {
+                            return img;
+                        }
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+        }
+
+        System.out.println("Image non trouvée: " + imagePath);
         return null;
-    }
-
-    private Path resolvePathFromRuntime(String rawPath) {
-        Path givenPath = Paths.get(rawPath);
-        if (givenPath.isAbsolute() && Files.exists(givenPath)) {
-            return givenPath;
-        }
-
-        Path cwd = Paths.get(System.getProperty("user.dir")).toAbsolutePath().normalize();
-        Path candidate = cwd.resolve(rawPath).normalize();
-        if (Files.exists(candidate)) {
-            return candidate;
-        }
-
-        // If app is launched from target/classes or another subdir, remonte parents.
-        Path cursor = cwd;
-        for (int i = 0; i < 8 && cursor != null; i++) {
-            Path parentCandidate = cursor.resolve(rawPath).normalize();
-            if (Files.exists(parentCandidate)) {
-                return parentCandidate;
-            }
-            cursor = cursor.getParent();
-        }
-        return candidate;
-    }
-
-    private String extractFileName(String imagePath) {
-        if (imagePath == null || imagePath.isBlank()) {
-            return "";
-        }
-        String normalized = imagePath.replace("\\", "/");
-        int slashIndex = normalized.lastIndexOf('/');
-        return slashIndex >= 0 ? normalized.substring(slashIndex + 1) : normalized;
     }
 
     private void clearMessages() {

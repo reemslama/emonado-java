@@ -30,6 +30,12 @@
                            style="-fx-background-radius: 15; -fx-padding: 10; -fx-border-color: #ddd; -fx-border-radius: 15;"/>
         </VBox>
 
+        <HBox alignment="CENTER_RIGHT">
+            <Hyperlink text="Mot de passe oublié ?"
+                       onAction="#handleForgotPassword"
+                       style="-fx-text-fill: #e7a83c; -fx-font-weight: bold; -fx-underline: false; -fx-border-color: transparent;"/>
+        </HBox>
+
         <Button text="Se connecter" onAction="#handleLogin"
                 style="-fx-background-color: #c5df43; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-weight: bold; -fx-font-size: 16px; -fx-padding: 12; -fx-cursor: hand;"
                 maxWidth="Infinity"/>

@@ -21,22 +21,15 @@ public class ServiceParticipation {
 
     public boolean ajouter(Participation participation) {
         lastError = "";
-        String sql = "INSERT INTO participation(jeu_id, nom_enfant, age_enfant, resultat_psy, date_participation, user_id) VALUES (?,?,?,?,?,?)";
+        String sql = "INSERT INTO participation(user_id, jeu_id, image_choisie_id, resultat_psy, date_participation) VALUES (?,?,?,?,?)";
         try {
-            String nomEnfant = "Invite";
-            int ageEnfant = 8;
-            org.example.entities.User currentUser = org.example.utils.UserSession.getInstance();
-            if (currentUser != null) {
-                nomEnfant = currentUser.getNom() + " " + currentUser.getPrenom();
-            }
             int userId = resolveFallbackUserId(participation.getUserId());
             return tryInsert(sql,
+                    userId,
                     participation.getJeuId(),
-                    nomEnfant,
-                    ageEnfant,
+                    participation.getImageChoisieId(),
                     participation.getResultatPsy(),
-                    Timestamp.valueOf(participation.getDateParticipation()),
-                    userId
+                    Timestamp.valueOf(participation.getDateParticipation())
             );
         } catch (Exception e) {
             lastError = e.getMessage();
@@ -151,5 +144,38 @@ public class ServiceParticipation {
 
     public String getLastError() {
         return lastError == null ? "" : lastError;
+    }
+
+    /**
+     * Get heatmap data: images grouped by game with their selection counts
+     * Returns list of arrays: [imagePath, jeuTitre, choixCount, resultatPsy]
+     */
+    public List<Object[]> getHeatmapData() {
+        String sql = 
+                "SELECT ic.image_path, j.titre AS jeu_titre, COUNT(*) as choix_count, " +
+                "p.resultat_psy " +
+                "FROM participation p " +
+                "JOIN jeu j ON j.id = p.jeu_id " +
+                "JOIN image_carte ic ON ic.id = p.image_choisie_id " +
+                "GROUP BY ic.image_path, j.titre, p.resultat_psy " +
+                "ORDER BY j.titre, choix_count DESC";
+
+        List<Object[]> heatmapData = new ArrayList<>();
+        try {
+            Statement st = cnx.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next()) {
+                Object[] row = new Object[] {
+                        rs.getString("image_path"),
+                        rs.getString("jeu_titre"),
+                        rs.getInt("choix_count"),
+                        rs.getString("resultat_psy")
+                };
+                heatmapData.add(row);
+            }
+        } catch (Exception e) {
+            System.out.println("Erreur lecture heatmap data: " + e.getMessage());
+        }
+        return heatmapData;
     }
 }

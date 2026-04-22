@@ -1,6 +1,5 @@
 /* Background */
 .background {
-    /* On remonte d'un dossier (..) pour sortir de 'styles' puis on va dans 'images' */
     -fx-background-image: url("../images/background.png");
     -fx-background-size: cover;
     -fx-background-position: center;
@@ -26,7 +25,6 @@
     -fx-font-size: 14px;
 }
 
-/* Hover effet */
 .nav-btn:hover {
     -fx-underline: true;
 }
@@ -44,7 +42,8 @@
     -fx-font-size: 28px;
     -fx-text-fill: white;
 }
-/* Style pour les boites d'icônes Psy */
+
+/* Style pour les boites d'icones Psy */
 .icon-box {
     -fx-background-color: white;
     -fx-min-width: 130;
@@ -60,7 +59,7 @@
     -fx-translate-y: -5;
 }
 
-/* Style pour les boites d'icônes Patient */
+/* Style pour les boites d'icones Patient */
 .icon-box-patient {
     -fx-background-color: white;
     -fx-min-width: 120;
@@ -75,7 +74,8 @@
     -fx-scale-x: 1.05;
     -fx-scale-y: 1.05;
 }
-/* Style de base des boutons de rôle */
+
+/* Style de base des boutons de role */
 .option-btn {
     -fx-background-color: white;
     -fx-text-fill: #555555;
@@ -86,17 +86,20 @@
     -fx-padding: 8 15;
     -fx-cursor: hand;
     -fx-font-weight: bold;
-    -fx-transition: 0.3s;
 }
 
-/* Style quand on survole avec la souris */
 .option-btn:hover {
     -fx-background-color: #f1f1f1;
 }
 
-/* Style quand le bouton est sélectionné (cliqué) */
-.option-btn::selection {
-    -fx-background-color: #c5df43; /* Vert de ton application */
+.option-btn:selected {
+    -fx-background-color: #c5df43;
+    -fx-text-fill: white;
+    -fx-border-color: #c5df43;
+}
+
+.option-btn:selected:hover {
+    -fx-background-color: #c5df43;
     -fx-text-fill: white;
     -fx-border-color: #c5df43;
 }

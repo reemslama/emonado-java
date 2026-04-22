@@ -82,11 +82,11 @@ public class RegisterController {
             errorLabel.setText("Tous les champs sont obligatoires.");
             return;
         }
-        if (nom.length() <= 4) {
+        if (nom.length() < 3) {
             errorLabel.setText("Le nom doit contenir plus de 4 caracteres.");
             return;
         }
-        if (prenom.length() <= 4) {
+        if (prenom.length() < 3) {
             errorLabel.setText("Le prenom doit contenir plus de 4 caracteres.");
             return;
         }
