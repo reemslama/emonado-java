@@ -29,7 +29,9 @@ public class PatientDashboardController {
     }
 
     public void setUserData(User user) {
-        if (user == null) return;
+        if (user == null) {
+            return;
+        }
 
         this.currentUser = user;
 
@@ -42,8 +44,6 @@ public class PatientDashboardController {
             espaceEnfantBtn.setManaged(true);
         }
     }
-
-    // ================= NAVIGATION =================
 
     @FXML
     private void goToProfil() {
@@ -59,12 +59,10 @@ public class PatientDashboardController {
     private void goToTest() {
         try {
             URL url = getClass().getResource("/fxml/test/ChoixCategorie.fxml");
-
-            // 🔍 DEBUG IMPORTANT
             System.out.println("Chemin FXML = " + url);
 
             if (url == null) {
-                System.err.println("❌ ERREUR : FXML introuvable !");
+                System.err.println("ERREUR : FXML introuvable.");
                 return;
             }
 
@@ -74,7 +72,6 @@ public class PatientDashboardController {
             Stage stage = (Stage) welcomeLabel.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setMaximized(true);
-
         } catch (IOException e) {
             System.err.println("Erreur chargement test : " + e.getMessage());
             e.printStackTrace();
@@ -82,13 +79,8 @@ public class PatientDashboardController {
     }
 
     @FXML
-    private void goToRendezVous() {
-        loadView("/AjouterRendezVous.fxml", "Rendez-vous");
-    }
-
-    @FXML
     private void goToMedicalRecord() {
-        loadView("/medical_record.fxml", "Dossier médical");
+        loadView("/medical_record.fxml", "Dossier medical");
     }
 
     @FXML
@@ -101,12 +93,19 @@ public class PatientDashboardController {
         loadView("/EspaceEnfant.fxml", "Espace Enfant");
     }
 
-    // ================= MÉTHODE GÉNÉRIQUE =================
+    @FXML
+    private void openChat() {
+        loadView("/chat_dashboard.fxml", "Messagerie");
+    }
+
+    @FXML
+    private void openChatbot() {
+        loadView("/patient_chatbot.fxml", "Assistant psychologique");
+    }
 
     private void loadView(String fxmlPath, String viewName) {
-
         if (this.currentUser == null) {
-            System.err.println("❌ User est NULL.");
+            System.err.println("User est NULL.");
             return;
         }
 
@@ -114,35 +113,30 @@ public class PatientDashboardController {
             URL url = getClass().getResource(fxmlPath);
 
             if (url == null) {
-                System.err.println("❌ Fichier FXML introuvable : " + fxmlPath);
+                System.err.println("Fichier FXML introuvable : " + fxmlPath);
                 return;
             }
 
             FXMLLoader loader = new FXMLLoader(url);
             Parent view = loader.load();
 
-            // Injection du user si nécessaire
             Object controller = loader.getController();
             if (controller != null) {
                 try {
-                    controller.getClass()
-                            .getMethod("setUserData", User.class)
-                            .invoke(controller, this.currentUser);
+                    controller.getClass().getMethod("setUserData", User.class).invoke(controller, this.currentUser);
                 } catch (NoSuchMethodException e) {
-                    System.out.println("ℹ️ " + viewName + " ne nécessite pas setUserData.");
+                    System.out.println(viewName + " ne necessite pas setUserData.");
                 } catch (Exception e) {
                     System.err.println("Erreur injection user dans " + viewName + " : " + e.getMessage());
                 }
             }
 
             BorderPane mainContainer = (BorderPane) welcomeLabel.getScene().lookup("#mainContainer");
-
             if (mainContainer != null) {
                 mainContainer.setCenter(view);
             } else {
                 welcomeLabel.getScene().setRoot(view);
             }
-
         } catch (IOException e) {
             System.err.println("Erreur chargement vue [" + viewName + "] : " + e.getMessage());
             e.printStackTrace();

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.controller.PatientChatbotController"
+            styleClass="bot-shell">
+    <stylesheets>
+        <URL value="@/styles/template.css" />
+    </stylesheets>
+
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 26 32 18 32;">
+            <VBox spacing="4">
+                <Label text="Chatbot patient" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                <Label text="Assistant temporaire centre sur le soutien psychologique." style="-fx-font-size: 13px; -fx-text-fill: #64748b;"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Retour" onAction="#goBack" styleClass="secondary-action"/>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="0" style="-fx-padding: 0 32 28 32;">
+            <VBox styleClass="bot-card">
+                <VBox spacing="4" styleClass="bot-header">
+                    <Label fx:id="titleLabel" text="Assistant psychologique" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                    <Label text="Limite au soutien emotionnel et aux conseils non medicaux." style="-fx-font-size: 12px; -fx-text-fill: #475569;"/>
+                </VBox>
+
+                <ScrollPane fx:id="messagesScrollPane" fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="bot-scroll">
+                    <content>
+                        <VBox fx:id="messagesBox" spacing="14" style="-fx-padding: 24;"/>
+                    </content>
+                </ScrollPane>
+
+                <VBox spacing="12" style="-fx-padding: 18 22 22 22;">
+                    <Label fx:id="statusLabel" text="Assistant disponible." style="-fx-text-fill: #475569; -fx-font-size: 12px;"/>
+                    <HBox spacing="14" alignment="CENTER">
+                        <TextArea fx:id="messageInput" promptText="Expliquez votre etat, vos emotions ou ce dont vous avez besoin..." wrapText="true" prefRowCount="3" styleClass="bot-input" HBox.hgrow="ALWAYS"/>
+                        <Button fx:id="sendButton" text="Envoyer" onAction="#sendMessage" styleClass="chat-send-btn"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+        </VBox>
+    </center>
+</BorderPane>

@@ -7,7 +7,7 @@
 
 /* Navbar */
 .navbar {
-    -fx-background-color: #c5df43;
+    -fx-background-color: #198754;
     -fx-padding: 15;
 }
 
@@ -29,21 +29,18 @@
     -fx-underline: true;
 }
 
-/* Bouton principal */
 .btn-custom {
-    -fx-background-color: #c5df43;
+    -fx-background-color: #198754;
     -fx-text-fill: white;
     -fx-padding: 10 30;
     -fx-background-radius: 50;
 }
 
-/* Title */
 .title {
     -fx-font-size: 28px;
     -fx-text-fill: white;
 }
 
-/* Style pour les boites d'icones Psy */
 .icon-box {
     -fx-background-color: white;
     -fx-min-width: 130;
@@ -51,7 +48,7 @@
     -fx-background-radius: 20;
     -fx-alignment: center;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 4);
 }
 
 .icon-box:hover {
@@ -59,7 +56,6 @@
     -fx-translate-y: -5;
 }
 
-/* Style pour les boites d'icones Patient */
 .icon-box-patient {
     -fx-background-color: white;
     -fx-min-width: 120;
@@ -67,7 +63,7 @@
     -fx-background-radius: 20;
     -fx-alignment: center;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 8, 0, 0, 4);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 8, 0, 0, 4);
 }
 
 .icon-box-patient:hover {
@@ -75,7 +71,6 @@
     -fx-scale-y: 1.05;
 }
 
-/* Style de base des boutons de role */
 .option-btn {
     -fx-background-color: white;
     -fx-text-fill: #555555;
@@ -83,113 +78,154 @@
     -fx-border-width: 2;
     -fx-border-radius: 20;
     -fx-background-radius: 20;
+    -fx-background-insets: 0;
     -fx-padding: 8 15;
     -fx-cursor: hand;
     -fx-font-weight: bold;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
 }
 
 .option-btn:hover {
-    -fx-background-color: #f1f1f1;
+    -fx-background-color: #f4f9d8;
+    -fx-text-fill: #324b00;
 }
 
-.option-btn:selected {
-    -fx-background-color: #c5df43;
+.toggle-button.option-btn:selected {
+    -fx-background-color: linear-gradient(to right, #c5df43, #9fca1c);
     -fx-text-fill: white;
     -fx-border-color: #c5df43;
 }
 
-.option-btn:selected:hover {
-    -fx-background-color: #c5df43;
+.toggle-button.option-btn:pressed {
+    -fx-background-color: #a8cf2b;
     -fx-text-fill: white;
-    -fx-border-color: #c5df43;
 }
 
-/* Shared professional tabs/cards for Journal/Analyse */
-.pro-tab-pane {
-    -fx-background-color: transparent;
+.auth-root {
+    -fx-background-color: linear-gradient(to bottom right, #f7fbef, #ffffff, #eef7e8);
+    -fx-padding: 50;
 }
 
-.pro-tab-pane .tab-header-area .tab-header-background {
-    -fx-background-color: transparent;
-}
-
-.pro-tab-pane .tab {
-    -fx-background-color: rgba(255, 255, 255, 0.75);
-    -fx-background-radius: 12 12 0 0;
-    -fx-padding: 8 12;
-}
-
-.pro-tab-pane .tab:selected {
+.auth-card {
     -fx-background-color: white;
+    -fx-background-radius: 28;
+    -fx-padding: 36;
+    -fx-max-width: 460;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 18, 0, 0, 6);
 }
 
-.pro-card {
-    -fx-background-color: rgba(255, 255, 255, 0.95);
-    -fx-background-radius: 18;
-    -fx-padding: 16;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.10), 12, 0, 0, 3);
-}
-
-.pro-title {
-    -fx-font-size: 20px;
+.auth-title {
+    -fx-font-size: 26px;
     -fx-font-weight: bold;
-    -fx-text-fill: #1f3a4d;
+    -fx-text-fill: #1f2937;
 }
 
-.pro-action-btn {
-    -fx-background-color: #1976f3;
+.auth-subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #6b7280;
+}
+
+.auth-field {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-border-color: #d1d5db;
+    -fx-border-radius: 16;
+    -fx-padding: 12;
+}
+
+.auth-field:focused {
+    -fx-border-color: #c5df43;
+    -fx-background-color: #fcfef7;
+}
+
+.primary-action {
+    -fx-background-color: linear-gradient(to right, #c5df43, #9fca1c);
     -fx-text-fill: white;
-    -fx-background-radius: 12;
+    -fx-background-radius: 20;
+    -fx-font-weight: bold;
+    -fx-font-size: 15px;
+    -fx-padding: 12;
+    -fx-cursor: hand;
+}
+
+.secondary-action {
+    -fx-background-color: transparent;
+    -fx-border-color: #c5df43;
+    -fx-border-radius: 18;
+    -fx-background-radius: 18;
+    -fx-text-fill: #6b7280;
+    -fx-font-weight: bold;
     -fx-padding: 10 18;
+    -fx-cursor: hand;
+}
+
+.chat-shell {
+    -fx-background-color: linear-gradient(to bottom right, #eff6ff, #f8fafc, #ecfeff);
+}
+
+.chat-list-panel {
+    -fx-background-color: white;
+    -fx-background-radius: 26;
+    -fx-padding: 22;
+    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.08), 24, 0, 0, 8);
+}
+
+.chat-conversation-panel {
+    -fx-background-color: white;
+    -fx-background-radius: 26;
+    -fx-padding: 0;
+    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.08), 24, 0, 0, 8);
+}
+
+.chat-contact-list {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-insets: 0;
+}
+
+.chat-contact-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 10 12;
+    -fx-background-radius: 18;
+}
+
+.chat-contact-list .list-cell:selected {
+    -fx-background-color: #e0f2fe;
+}
+
+.chat-contact-list .list-cell:hover {
+    -fx-background-color: #f8fafc;
+}
+
+.chat-header {
+    -fx-background-color: linear-gradient(to right, #dbeafe, #ecfeff);
+    -fx-background-radius: 26 26 0 0;
+    -fx-padding: 20 24;
+}
+
+.chat-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.chat-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.chat-input {
+    -fx-background-color: #f8fafc;
+    -fx-background-radius: 18;
+    -fx-border-color: #dbeafe;
+    -fx-border-radius: 18;
+    -fx-padding: 14;
+}
+
+.chat-send-btn {
+    -fx-background-color: linear-gradient(to right, #2563eb, #06b6d4);
+    -fx-text-fill: white;
     -fx-font-weight: bold;
-}
-
-.pro-mood-card {
-    -fx-background-radius: 22;
-    -fx-padding: 18;
-    -fx-alignment: center;
-    -fx-effect: dropshadow(three-pass-box, rgba(26, 61, 74, 0.12), 18, 0, 0, 6);
-    -fx-border-color: rgba(255, 255, 255, 0.75);
-    -fx-border-radius: 22;
-}
-
-.pro-mood-happy {
-    -fx-background-color: linear-gradient(to bottom right, #fffdf2, #fff5bc);
-}
-
-.pro-mood-calm {
-    -fx-background-color: linear-gradient(to bottom right, #f4feff, #d9f7fb);
-}
-
-.pro-mood-sos {
-    -fx-background-color: linear-gradient(to bottom right, #fff9f0, #ffe0b8);
-}
-
-.pro-mood-anger {
-    -fx-background-color: linear-gradient(to bottom right, #fff7fc, #efd7fb);
-}
-
-.mood-ring-percent {
-    -fx-font-size: 28px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #23424e;
-}
-
-.mood-ring-detail {
-    -fx-font-size: 12px;
-    -fx-text-fill: #52707d;
-    -fx-font-weight: bold;
-}
-
-.mood-card-title {
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #203846;
-}
-
-.mood-card-copy {
-    -fx-font-size: 12px;
-    -fx-text-fill: #4f6874;
-    -fx-alignment: center;
-    -fx-text-alignment: center;
+    -fx-background-radius: 18;
+    -fx-padding: 12 20;
+    -fx-cursor: hand;
 }
