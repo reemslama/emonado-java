@@ -10,11 +10,18 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Region;
 import org.example.entities.User;
+import org.example.service.FaceProfileService;
 import org.example.utils.DataSource;
 import org.example.utils.UserSession;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -29,6 +36,10 @@ public class ProfilPatientController {
     @FXML private PasswordField passwordField;
     @FXML private ComboBox<String> sexeCombo;
     @FXML private DatePicker datePicker;
+    @FXML private Region avatarCircle;
+    @FXML private Label avatarInitialsLabel;
+    @FXML private Label faceIdStatusLabel;
+    @FXML private ImageView faceIdImageView;
 
     private User currentUser;
 
@@ -56,6 +67,9 @@ public class ProfilPatientController {
         sexeCombo.getItems().setAll("Homme", "Femme");
         sexeCombo.setValue(currentUser.getSexe());
         datePicker.setValue(currentUser.getDateNaissance());
+        avatarInitialsLabel.setText(buildInitials(currentUser));
+        applyAvatarAppearance(currentUser.getAvatar());
+        updateFaceIdPreview(currentUser.getFaceIdImagePath());
     }
 
     @FXML
@@ -151,5 +165,51 @@ public class ProfilPatientController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void applyAvatarAppearance(String avatarKey) {
+        String normalized = FaceProfileService.normalizeAvatar(avatarKey);
+        avatarCircle.setStyle(switch (normalized == null ? "" : normalized) {
+            case "OCEAN" -> "-fx-background-color: linear-gradient(to bottom right, #38bdf8, #2563eb); -fx-background-radius: 55; -fx-min-width: 110; -fx-min-height: 110; -fx-border-color: white; -fx-border-width: 4; -fx-border-radius: 55;";
+            case "SOLEIL" -> "-fx-background-color: linear-gradient(to bottom right, #facc15, #f97316); -fx-background-radius: 55; -fx-min-width: 110; -fx-min-height: 110; -fx-border-color: white; -fx-border-width: 4; -fx-border-radius: 55;";
+            case "ROSE" -> "-fx-background-color: linear-gradient(to bottom right, #f9a8d4, #ec4899); -fx-background-radius: 55; -fx-min-width: 110; -fx-min-height: 110; -fx-border-color: white; -fx-border-width: 4; -fx-border-radius: 55;";
+            case "FORET" -> "-fx-background-color: linear-gradient(to bottom right, #4ade80, #166534); -fx-background-radius: 55; -fx-min-width: 110; -fx-min-height: 110; -fx-border-color: white; -fx-border-width: 4; -fx-border-radius: 55;";
+            case "LUNE" -> "-fx-background-color: linear-gradient(to bottom right, #94a3b8, #334155); -fx-background-radius: 55; -fx-min-width: 110; -fx-min-height: 110; -fx-border-color: white; -fx-border-width: 4; -fx-border-radius: 55;";
+            default -> "-fx-background-color: linear-gradient(to bottom right, #6ee7b7, #14b8a6); -fx-background-radius: 55; -fx-min-width: 110; -fx-min-height: 110; -fx-border-color: white; -fx-border-width: 4; -fx-border-radius: 55;";
+        });
+    }
+
+    private void updateFaceIdPreview(String faceIdImagePath) {
+        if (faceIdImagePath == null || faceIdImagePath.isBlank()) {
+            faceIdStatusLabel.setText("Face ID non configure");
+            faceIdImageView.setImage(null);
+            return;
+        }
+
+        Path imagePath = Path.of(faceIdImagePath);
+        if (!Files.exists(imagePath)) {
+            faceIdStatusLabel.setText("Photo Face ID introuvable");
+            faceIdImageView.setImage(null);
+            return;
+        }
+
+        try (InputStream inputStream = Files.newInputStream(imagePath)) {
+            faceIdImageView.setImage(new Image(inputStream));
+            faceIdStatusLabel.setText("Face ID configure");
+        } catch (IOException e) {
+            faceIdStatusLabel.setText("Impossible de charger la photo Face ID");
+            faceIdImageView.setImage(null);
+        }
+    }
+
+    private String buildInitials(User user) {
+        String prenomInitial = user.getPrenom() != null && !user.getPrenom().isBlank()
+                ? user.getPrenom().substring(0, 1).toUpperCase()
+                : "";
+        String nomInitial = user.getNom() != null && !user.getNom().isBlank()
+                ? user.getNom().substring(0, 1).toUpperCase()
+                : "";
+        String initials = prenomInitial + nomInitial;
+        return initials.isBlank() ? "PT" : initials;
     }
 }

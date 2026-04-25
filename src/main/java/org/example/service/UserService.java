@@ -106,10 +106,20 @@ public class UserService {
         user.setSpecialite(rs.getString("specialite"));
         user.setRole(rs.getString("role"));
         user.setHasChild(rs.getBoolean("hasChild"));
+        user.setAvatar(getOptionalString(rs, "avatar"));
+        user.setFaceIdImagePath(getOptionalString(rs, "face_id_image_path"));
         Date birthDate = rs.getDate("dateNaissance");
         if (birthDate != null) {
             user.setDateNaissance(birthDate.toLocalDate());
         }
         return user;
+    }
+
+    private static String getOptionalString(ResultSet rs, String column) {
+        try {
+            return rs.getString(column);
+        } catch (SQLException e) {
+            return null;
+        }
     }
 }
