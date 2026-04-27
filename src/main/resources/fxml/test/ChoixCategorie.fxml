@@ -1,81 +1,255 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
 
-<VBox xmlns:fx="http://javafx.com/fxml"
-      fx:id="rootBox"
-      fx:controller="org.example.controller.ChoixCategorieController"
-      alignment="CENTER"
-      spacing="30"
-      maxWidth="Infinity"
-      maxHeight="Infinity"
-      style="-fx-background-color: rgba(221, 245, 131, 0.27); -fx-padding: 60;">
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.controller.ChoixCategorieController"
+            prefWidth="1200.0" prefHeight="800.0"
+            style="-fx-background-color: #fafaf8;">
 
-    <!-- BOUTON RETOUR -->
-    <VBox alignment="TOP_LEFT" maxWidth="Infinity">
-        <Button text="← Retour"
-                onAction="#retour"
-                style="-fx-background-color: transparent; -fx-text-fill: #2c3e50; -fx-font-size: 15px; -fx-cursor: hand; -fx-font-weight: bold; -fx-border-color: transparent;"/>
-    </VBox>
+    <center>
+        <ScrollPane fitToWidth="true"
+                    style="-fx-background: transparent; -fx-background-color: transparent; -fx-border-color: transparent;">
+            <VBox spacing="0">
 
-    <Label text="Test de Sante Mentale"
-           style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                <!-- ══ HERO ══════════════════════════════════════════════════ -->
+                <VBox spacing="22" style="-fx-background-color: #f4f1eb; -fx-padding: 50 80 60 80;">
 
-    <Label text="Ces tests sont bases sur des echelles cliniques reconnues (PSS, PHQ-9, GAD-7)"
-           wrapText="true"
-           alignment="CENTER"
-           style="-fx-font-size: 15px; -fx-text-fill: #7f8c8d;"
-           maxWidth="700"/>
+                    <Button text="← Retour" onAction="#retour"
+                            style="-fx-background-color: transparent;
+                                   -fx-text-fill: #aaaaaa;
+                                   -fx-font-size: 13px;
+                                   -fx-cursor: hand;
+                                   -fx-padding: 0 0 10 0;" />
 
-    <Label text="Choisissez un test a passer :"
-           style="-fx-font-size: 18px; -fx-text-fill: #2c3e50; -fx-padding: 10 0 0 0;"/>
+                    <Label text="Prends conscience de toi-même"
+                           style="-fx-background-color: #d4f5a0;
+                                  -fx-background-radius: 6;
+                                  -fx-text-fill: #4a7a1e;
+                                  -fx-font-size: 13px;
+                                  -fx-font-weight: bold;
+                                  -fx-padding: 6 14;" />
 
-    <HBox spacing="30" alignment="CENTER" fillHeight="true">
+                    <Label text="Tests psychologiques"
+                           wrapText="true"
+                           style="-fx-text-fill: #2a2a2a; -fx-font-size: 50px; -fx-font-weight: bold;">
+                        <font><Font name="System Bold" size="50.0"/></font>
+                    </Label>
 
-        <VBox onMouseClicked="#choisirStress"
-              prefWidth="180" prefHeight="180"
-              maxWidth="220" maxHeight="220"
-              alignment="CENTER"
-              style="-fx-background-color: white; -fx-background-radius: 25; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
-            <Label text="&#128552;" style="-fx-font-size: 55px;"/>
-            <Label text="Stress" style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #2c3e50;"/>
-        </VBox>
+                    <VBox spacing="10" style="-fx-max-width: 680;">
+                        <Label wrapText="true"
+                               text="Évaluez votre état psychologique grâce à nos tests cliniques validés. Chaque test est conçu pour vous donner une vision claire de votre bien-être mental."
+                               style="-fx-text-fill: #666666; -fx-font-size: 15px; -fx-line-spacing: 4;" />
+                        <Label wrapText="true"
+                               text="Sélectionnez un test ci-dessous pour commencer votre évaluation."
+                               style="-fx-text-fill: #999999; -fx-font-size: 14px;" />
+                    </VBox>
 
-        <VBox onMouseClicked="#choisirDepression"
-              prefWidth="180" prefHeight="180"
-              maxWidth="220" maxHeight="220"
-              alignment="CENTER"
-              style="-fx-background-color: white; -fx-background-radius: 25; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
-            <Label text="&#128532;" style="-fx-font-size: 55px;"/>
-            <Label text="Depression" style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #2c3e50;"/>
-        </VBox>
+                </VBox>
 
-        <VBox onMouseClicked="#choisirAnxiete"
-              prefWidth="180" prefHeight="180"
-              maxWidth="220" maxHeight="220"
-              alignment="CENTER"
-              style="-fx-background-color: white; -fx-background-radius: 25; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
-            <Label text="&#128543;" style="-fx-font-size: 55px;"/>
-            <Label text="Anxiete" style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #2c3e50;"/>
-        </VBox>
+                <!-- ══ CARTES ═════════════════════════════════════════════════ -->
+                <VBox spacing="10" style="-fx-background-color: #fafaf8; -fx-padding: 40 80 60 80;">
 
-        <VBox onMouseClicked="#choisirIQ"
-              prefWidth="180" prefHeight="180"
-              maxWidth="220" maxHeight="220"
-              alignment="CENTER"
-              style="-fx-background-color: white; -fx-background-radius: 25; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
-            <Label text="&#129513;" style="-fx-font-size: 55px;"/>
-            <Label text="IQ" style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #2c3e50;"/>
-        </VBox>
+                    <Label text="Choisissez un module"
+                           style="-fx-text-fill: #333333;
+                                  -fx-font-size: 16px;
+                                  -fx-font-weight: bold;
+                                  -fx-padding: 0 0 10 0;" />
 
-    </HBox>
+                    <!-- ── Stress ── -->
+                    <HBox onMouseClicked="#choisirStress" spacing="18" alignment="CENTER_LEFT"
+                          style="-fx-background-color: #ffffff;
+                                 -fx-background-radius: 12;
+                                 -fx-border-color: #ede9e3;
+                                 -fx-border-radius: 12;
+                                 -fx-border-width: 1;
+                                 -fx-padding: 18 24;
+                                 -fx-cursor: hand;">
+                        <StackPane minWidth="46" minHeight="46"
+                                   style="-fx-background-color: #fff8e8; -fx-background-radius: 10;">
+                            <HBox spacing="3" alignment="BOTTOM_CENTER" style="-fx-padding: 8 10;">
+                                <StackPane prefWidth="5" prefHeight="10" style="-fx-background-color: #f5c842; -fx-background-radius: 2;"/>
+                                <StackPane prefWidth="5" prefHeight="18" style="-fx-background-color: #f5c842; -fx-background-radius: 2;"/>
+                                <StackPane prefWidth="5" prefHeight="13" style="-fx-background-color: #f5c842; -fx-background-radius: 2;"/>
+                                <StackPane prefWidth="5" prefHeight="22" style="-fx-background-color: #f5c842; -fx-background-radius: 2;"/>
+                            </HBox>
+                        </StackPane>
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <Label text="Test de Stress"
+                                   style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #2a2a2a;"/>
+                            <Label text="Échelle PSS  ·  10 questions"
+                                   style="-fx-font-size: 12px; -fx-text-fill: #bbbbbb;"/>
+                        </VBox>
+                        <Label text="Commencer"
+                               style="-fx-font-size: 12px; -fx-font-weight: bold;
+                                      -fx-text-fill: #c4920a;
+                                      -fx-background-color: #fff8e8;
+                                      -fx-background-radius: 20;
+                                      -fx-padding: 6 14;"/>
+                    </HBox>
 
-    <Label text="Ces tests ne remplacent pas un avis medical professionnel."
-           wrapText="true"
-           alignment="CENTER"
-           style="-fx-font-size: 13px; -fx-text-fill: #e74c3c; -fx-padding: 15 0 0 0;"
-           maxWidth="600"/>
+                    <!-- ── Dépression ── -->
+                    <HBox onMouseClicked="#choisirDepression" spacing="18" alignment="CENTER_LEFT"
+                          style="-fx-background-color: #ffffff;
+                                 -fx-background-radius: 12;
+                                 -fx-border-color: #ede9e3;
+                                 -fx-border-radius: 12;
+                                 -fx-border-width: 1;
+                                 -fx-padding: 18 24;
+                                 -fx-cursor: hand;">
+                        <StackPane minWidth="46" minHeight="46"
+                                   style="-fx-background-color: #eef2ff; -fx-background-radius: 10;">
+                            <VBox alignment="CENTER" spacing="2" style="-fx-padding: 8 10;">
+                                <HBox spacing="5" alignment="CENTER">
+                                    <StackPane prefWidth="7" prefHeight="7" style="-fx-background-color: #9aabf0; -fx-background-radius: 4;"/>
+                                    <StackPane prefWidth="14" prefHeight="1.5" style="-fx-background-color: #9aabf0;"/>
+                                    <StackPane prefWidth="7" prefHeight="7" style="-fx-background-color: #9aabf0; -fx-background-radius: 4;"/>
+                                    <StackPane prefWidth="14" prefHeight="1.5" style="-fx-background-color: #9aabf0;"/>
+                                    <StackPane prefWidth="7" prefHeight="7" style="-fx-background-color: #9aabf0; -fx-background-radius: 4;"/>
+                                </HBox>
+                                <Label text="PHQ-9" style="-fx-font-size: 9px; -fx-font-weight: bold; -fx-text-fill: #9aabf0;"/>
+                            </VBox>
+                        </StackPane>
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <Label text="Test de Dépression"
+                                   style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #2a2a2a;"/>
+                            <Label text="Échelle PHQ-9  ·  9 questions"
+                                   style="-fx-font-size: 12px; -fx-text-fill: #bbbbbb;"/>
+                        </VBox>
+                        <Label text="Commencer"
+                               style="-fx-font-size: 12px; -fx-font-weight: bold;
+                                      -fx-text-fill: #6a7fd4;
+                                      -fx-background-color: #eef2ff;
+                                      -fx-background-radius: 20;
+                                      -fx-padding: 6 14;"/>
+                    </HBox>
 
-</VBox>
+                    <!-- ── Anxiété ── -->
+                    <HBox onMouseClicked="#choisirAnxiete" spacing="18" alignment="CENTER_LEFT"
+                          style="-fx-background-color: #ffffff;
+                                 -fx-background-radius: 12;
+                                 -fx-border-color: #ede9e3;
+                                 -fx-border-radius: 12;
+                                 -fx-border-width: 1;
+                                 -fx-padding: 18 24;
+                                 -fx-cursor: hand;">
+                        <StackPane minWidth="46" minHeight="46"
+                                   style="-fx-background-color: #fff0f6; -fx-background-radius: 10;">
+                            <StackPane style="-fx-padding: 6;">
+                                <StackPane prefWidth="30" prefHeight="30"
+                                           style="-fx-background-color: transparent; -fx-border-color: #f0b8d0; -fx-border-radius: 15; -fx-border-width: 1.5;"/>
+                                <StackPane prefWidth="20" prefHeight="20"
+                                           style="-fx-background-color: transparent; -fx-border-color: #f0b8d0; -fx-border-radius: 10; -fx-border-width: 1.5;"/>
+                                <StackPane prefWidth="8" prefHeight="8"
+                                           style="-fx-background-color: #f0b8d0; -fx-background-radius: 4;"/>
+                            </StackPane>
+                        </StackPane>
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <Label text="Test d'Anxiété"
+                                   style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #2a2a2a;"/>
+                            <Label text="Échelle GAD-7  ·  7 questions"
+                                   style="-fx-font-size: 12px; -fx-text-fill: #bbbbbb;"/>
+                        </VBox>
+                        <Label text="Commencer"
+                               style="-fx-font-size: 12px; -fx-font-weight: bold;
+                                      -fx-text-fill: #d47099;
+                                      -fx-background-color: #fff0f6;
+                                      -fx-background-radius: 20;
+                                      -fx-padding: 6 14;"/>
+                    </HBox>
+
+                    <!-- ── QI ── -->
+                    <HBox onMouseClicked="#choisirIQ" spacing="18" alignment="CENTER_LEFT"
+                          style="-fx-background-color: #ffffff;
+                                 -fx-background-radius: 12;
+                                 -fx-border-color: #ede9e3;
+                                 -fx-border-radius: 12;
+                                 -fx-border-width: 1;
+                                 -fx-padding: 18 24;
+                                 -fx-cursor: hand;">
+                        <StackPane minWidth="46" minHeight="46"
+                                   style="-fx-background-color: #edfaf3; -fx-background-radius: 10;">
+                            <VBox alignment="CENTER" spacing="2" style="-fx-padding: 7 12;">
+                                <StackPane prefWidth="18" prefHeight="18"
+                                           style="-fx-background-color: #7dd4aa; -fx-background-radius: 9;"/>
+                                <StackPane prefWidth="14" prefHeight="3"
+                                           style="-fx-background-color: #7dd4aa; -fx-background-radius: 2;"/>
+                                <StackPane prefWidth="10" prefHeight="3"
+                                           style="-fx-background-color: #7dd4aa; -fx-background-radius: 2;"/>
+                            </VBox>
+                        </StackPane>
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <Label text="Test de QI"
+                                   style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #2a2a2a;"/>
+                            <Label text="Cognitif  ·  Questions progressives"
+                                   style="-fx-font-size: 12px; -fx-text-fill: #bbbbbb;"/>
+                        </VBox>
+                        <Label text="Commencer"
+                               style="-fx-font-size: 12px; -fx-font-weight: bold;
+                                      -fx-text-fill: #3aaa7a;
+                                      -fx-background-color: #edfaf3;
+                                      -fx-background-radius: 20;
+                                      -fx-padding: 6 14;"/>
+                    </HBox>
+
+                    <!-- ── IA ── -->
+                    <HBox onMouseClicked="#choisirTestIA" spacing="18" alignment="CENTER_LEFT"
+                          style="-fx-background-color: #ffffff;
+                                 -fx-background-radius: 12;
+                                 -fx-border-color: #ddd8f8;
+                                 -fx-border-radius: 12;
+                                 -fx-border-width: 1.5;
+                                 -fx-padding: 18 24;
+                                 -fx-cursor: hand;">
+                        <StackPane minWidth="46" minHeight="46"
+                                   style="-fx-background-color: #f0edff; -fx-background-radius: 10;">
+                            <VBox alignment="CENTER" spacing="4" style="-fx-padding: 6 10;">
+                                <HBox spacing="8" alignment="CENTER">
+                                    <StackPane prefWidth="8" prefHeight="8" style="-fx-background-color: #b8aef0; -fx-background-radius: 4;"/>
+                                    <StackPane prefWidth="8" prefHeight="8" style="-fx-background-color: #b8aef0; -fx-background-radius: 4;"/>
+                                </HBox>
+                                <StackPane prefWidth="8" prefHeight="8" style="-fx-background-color: #b8aef0; -fx-background-radius: 4;"/>
+                                <HBox spacing="8" alignment="CENTER">
+                                    <StackPane prefWidth="8" prefHeight="8" style="-fx-background-color: #b8aef0; -fx-background-radius: 4;"/>
+                                    <StackPane prefWidth="8" prefHeight="8" style="-fx-background-color: #b8aef0; -fx-background-radius: 4;"/>
+                                </HBox>
+                            </VBox>
+                        </StackPane>
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <HBox spacing="8" alignment="CENTER_LEFT">
+                                <Label text="IA Adaptatif"
+                                       style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #2a2a2a;"/>
+                                <Label text="NOUVEAU"
+                                       style="-fx-font-size: 10px; -fx-font-weight: bold;
+                                              -fx-text-fill: #9a8ee0;
+                                              -fx-background-color: #f0edff;
+                                              -fx-background-radius: 4;
+                                              -fx-padding: 2 7;"/>
+                            </HBox>
+                            <Label text="Mode intelligent  ·  Questions personnalisées"
+                                   style="-fx-font-size: 12px; -fx-text-fill: #bbbbbb;"/>
+                        </VBox>
+                        <Label text="Commencer"
+                               style="-fx-font-size: 12px; -fx-font-weight: bold;
+                                      -fx-text-fill: #9a8ee0;
+                                      -fx-background-color: #f0edff;
+                                      -fx-background-radius: 20;
+                                      -fx-padding: 6 14;"/>
+                    </HBox>
+
+                    <!-- Avertissement -->
+                    <Label text="⚠  Ces tests ne remplacent pas un diagnostic médical professionnel."
+                           style="-fx-text-fill: #e08a8a;
+                                  -fx-font-size: 12px;
+                                  -fx-padding: 14 0 0 0;" />
+
+                </VBox>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+
+</BorderPane>

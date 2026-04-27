@@ -4,93 +4,100 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.VBox;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 public class ChoixCategorieController {
 
     @FXML
-    private VBox rootBox;
-
-    // ===== Constantes catégories =====
-    private static final String STRESS = "stress";
-    private static final String DEPRESSION = "depression";
-    private static final String ANXIETE = "anxiete";
-    private static final String IQ = "iq";
-
-    // ===== Choix des tests =====
-    @FXML
-    private void choisirStress() {
-        ouvrirTest(STRESS);
+    private void choisirTestIA(MouseEvent event) {
+        // Pour l'IA, on va d'abord charger une catégorie par défaut, puis activer l'IA
+        naviguerVersTestAvecIA("stress"); // On commence par stress, l'utilisateur pourra changer
     }
 
     @FXML
-    private void choisirDepression() {
-        ouvrirTest(DEPRESSION);
+    private void choisirStress(MouseEvent event) {
+        naviguerVersTest("stress");
     }
 
     @FXML
-    private void choisirAnxiete() {
-        ouvrirTest(ANXIETE);
+    private void choisirDepression(MouseEvent event) {
+        naviguerVersTest("depression");
     }
 
     @FXML
-    private void choisirIQ() {
-        ouvrirTest(IQ);
+    private void choisirAnxiete(MouseEvent event) {
+        naviguerVersTest("anxiete");
     }
 
-    // ===== Navigation vers le test =====
-    private void ouvrirTest(String categorie) {
+    @FXML
+    private void choisirIQ(MouseEvent event) {
+        naviguerVersTest("iq");
+    }
+
+    /**
+     * Navigation vers test classique (sans IA)
+     */
+    private void naviguerVersTest(String categorie) {
         try {
-            var url = getClass().getResource("/fxml/test/PasserTest.fxml");
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/test/PasserTest.fxml"));
+            Parent root = loader.load();
 
-            if (url == null) {
-                throw new RuntimeException("FXML introuvable : PasserTest.fxml");
-            }
+            PasserTestController controller = loader.getController();
+            controller.setCategorie(categorie);
+            // Pas d'activation IA, mode classique par défaut
 
-            FXMLLoader loader = new FXMLLoader(url);
+            Stage stage = (Stage) Stage.getWindows().filtered(w -> w.isFocused()).get(0);
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setMaximized(true);
+            stage.setFullScreen(true);
+            stage.setFullScreenExitHint("");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Navigation vers test avec IA activée
+     */
+    private void naviguerVersTestAvecIA(String categorie) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/test/PasserTest.fxml"));
             Parent root = loader.load();
 
             PasserTestController controller = loader.getController();
             controller.setCategorie(categorie);
 
-            changerScene(root, "Test - " + categorie);
+            // Appeler directement la méthode d'activation IA après un petit délai
+            // pour laisser le temps à l'interface de se charger
+            javafx.application.Platform.runLater(() -> {
+                controller.activerTestAdaptatifIA();
+            });
+
+            Stage stage = (Stage) Stage.getWindows().filtered(w -> w.isFocused()).get(0);
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setMaximized(true);
+            stage.setFullScreen(true);
+            stage.setFullScreenExitHint("");
 
         } catch (Exception e) {
-            System.err.println("Erreur lors de l'ouverture du test");
             e.printStackTrace();
         }
     }
 
-    // ===== Retour dashboard =====
     @FXML
     private void retour() {
         try {
-            var url = getClass().getResource("/fxml/patient_dashboard.fxml");
-
-            if (url == null) {
-                throw new RuntimeException("FXML introuvable : patient_dashboard.fxml");
-            }
-
-            FXMLLoader loader = new FXMLLoader(url);
-            Parent root = loader.load();
-
-            changerScene(root, "Espace Patient");
-
+            Parent root = FXMLLoader.load(getClass().getResource("/patient_dashboard.fxml"));
+            Stage stage = (Stage) Stage.getWindows().filtered(w -> w.isFocused()).get(0);
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setFullScreen(true);
         } catch (Exception e) {
-            System.err.println("Erreur retour dashboard");
             e.printStackTrace();
         }
-    }
-
-    // ===== Méthode centralisée de changement de scène =====
-    private void changerScene(Parent root, String titre) {
-        Stage stage = (Stage) rootBox.getScene().getWindow();
-
-        Scene scene = new Scene(root, stage.getWidth(), stage.getHeight());
-        stage.setScene(scene);
-
-        stage.setTitle(titre);
-        stage.setMaximized(true);
     }
 }
