@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
@@ -9,6 +8,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
+<<<<<<< Updated upstream
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
@@ -196,3 +196,40 @@
         </StackPane>
     </children>
 </StackPane>
+=======
+<?import javafx.scene.shape.Circle?>
+
+<BorderPane fx:id="mainContainer"
+            xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.controller.EspaceEnfantController"
+            stylesheets="@/styles/template.css"
+            style="-fx-background-color: linear-gradient(to bottom, #fff9e8, #f6fbff);">
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="14.0"
+              style="-fx-background-color: white; -fx-padding: 16 24;
+                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 4);">
+            <children>
+                <Circle radius="14"
+                        style="-fx-fill: linear-gradient(to bottom right, #1f6f5f, #2196F3);"/>
+                <Label text="EMONADO"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                <Label text="Espace Famille"
+                       style="-fx-font-size: 14px; -fx-text-fill: #64748b; -fx-padding: 0 0 0 6;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="📝  Test"
+                        onAction="#openTest"
+                        style="-fx-background-color: #1f6f5f; -fx-text-fill: white;
+                               -fx-background-radius: 20; -fx-padding: 9 22;
+                               -fx-font-weight: bold; -fx-font-size: 13px; -fx-cursor: hand;"/>
+                <Button text="📋  Rapport"
+                        onAction="#openRapport"
+                        style="-fx-background-color: #2196F3; -fx-text-fill: white;
+                               -fx-background-radius: 20; -fx-padding: 9 22;
+                               -fx-font-weight: bold; -fx-font-size: 13px; -fx-cursor: hand;"/>
+            </children>
+            <padding><Insets top="6.0" right="8.0" bottom="6.0" left="8.0"/></padding>
+        </HBox>
+    </top>
+</BorderPane>
+>>>>>>> Stashed changes

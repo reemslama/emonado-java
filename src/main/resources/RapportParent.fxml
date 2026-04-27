@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="TOP_CENTER" spacing="12.0"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.controller.RapportParentController"
+      stylesheets="@/styles/style.css"
+      style="-fx-background-color: #fefefe;">
+    <padding><Insets top="20.0" right="24.0" bottom="20.0" left="24.0"/></padding>
+
+    <Label text="📋 Rapports Psychologiques"
+           style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #1e40af;"/>
+    <Label text="Consultez ici les rapports générés suite aux tests de votre enfant."
+           style="-fx-font-size: 13px; -fx-text-fill: #475569;" wrapText="true"/>
+    <Label fx:id="labelParentNom" text="Parent : "
+           style="-fx-font-weight: bold; -fx-font-size: 13px;"/>
+
+    <TableView fx:id="tableRapports" prefHeight="220.0" prefWidth="900.0">
+        <columns>
+            <TableColumn fx:id="colDate"     text="Date"            prefWidth="160.0"/>
+            <TableColumn fx:id="colScenario" text="Scénario"        prefWidth="220.0"/>
+            <TableColumn fx:id="colImage"    text="Image choisie"   prefWidth="160.0"/>
+            <TableColumn fx:id="colEtat"     text="État observé"    prefWidth="160.0"/>
+            <TableColumn fx:id="colReco"     text="Recommandation"  prefWidth="180.0"/>
+        </columns>
+    </TableView>
+
+    <Label text="Rapport complet :"
+           style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #374151;"/>
+    <TextArea fx:id="txtRapportDetail"
+              prefRowCount="12" wrapText="true" editable="false"
+              promptText="Sélectionnez une ligne pour afficher le rapport complet…"
+              style="-fx-background-color: #f8fafc; -fx-border-color: #e2e8f0;
+                     -fx-border-radius: 8; -fx-background-radius: 8;
+                     -fx-font-size: 13px; -fx-text-fill: #1e293b;"/>
+
+    <Label fx:id="labelAucunRapport" text=""
+           style="-fx-font-size: 13px; -fx-text-fill: #94a3b8; -fx-font-style: italic;"/>
+</VBox>

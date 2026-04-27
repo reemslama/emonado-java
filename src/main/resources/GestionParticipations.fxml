@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.geometry.Insets?>
+<<<<<<< Updated upstream
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.FlowPane?>
@@ -45,3 +45,71 @@
         </children>
     </StackPane>
 </VBox>
+=======
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.TilePane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="TOP_CENTER" spacing="10.0"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.controller.ParticipationController"
+      stylesheets="@/styles/style.css"
+      style="-fx-background-color: #fefefe;">
+    <padding><Insets top="20.0" right="24.0" bottom="20.0" left="24.0"/></padding>
+
+    <Label text="🧒 Test Psychologique"
+           style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #1f6f5f;"/>
+    <Label text="Lis l'histoire ci-dessous et choisis l'image qui correspond à ce que tu ressens."
+           style="-fx-font-size: 13px; -fx-text-fill: #475569;" wrapText="true" maxWidth="900.0"/>
+
+    <Label fx:id="labelUserNom" text="Participant : "
+           style="-fx-font-weight: bold; -fx-font-size: 13px;"/>
+
+    <HBox spacing="10.0" alignment="CENTER_LEFT">
+        <Label text="Scénario :" style="-fx-font-size: 13px; -fx-font-weight: bold;"/>
+        <ComboBox fx:id="comboJeux" promptText="Sélectionner un scénario" prefWidth="380.0"/>
+    </HBox>
+    <Label fx:id="errorJeu"           style="-fx-font-size: 11px;"/>
+    <Label fx:id="labelDisponibilite" style="-fx-font-size: 11px; -fx-text-fill: #64748b;"/>
+
+    <!-- Histoire / scénario narratif -->
+    <VBox spacing="4.0"
+          style="-fx-background-color: #fffbeb; -fx-border-color: #fde68a;
+                 -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 14 18;">
+        <Label text="📖 L'histoire :"
+               style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #92400e;"/>
+        <Label fx:id="labelScenario" text=""
+               style="-fx-font-size: 14px; -fx-text-fill: #1c1917;"
+               wrapText="true" maxWidth="860.0"/>
+    </VBox>
+
+    <Label text="Choisis l'image qui correspond à ce que tu ressens :"
+           style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+    <TilePane fx:id="imageChoicesPane" hgap="12.0" vgap="12.0"
+              prefColumns="3" prefWidth="900.0"/>
+    <Label fx:id="selectedImageLabel" style="-fx-font-size: 11px; -fx-text-fill: #475569;"/>
+    <Label fx:id="errorChoix"         style="-fx-font-size: 11px;"/>
+
+    <!-- Résultat IA -->
+    <VBox spacing="6.0"
+          style="-fx-background-color: #f0fdf4; -fx-border-color: #bbf7d0;
+                 -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 14 18;">
+        <HBox spacing="10.0" alignment="CENTER_LEFT">
+            <Label text="🌟 Résultat :"
+                   style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #166534;"/>
+            <ProgressIndicator fx:id="progressIA"
+                               prefWidth="20.0" prefHeight="20.0" visible="false"/>
+        </HBox>
+        <Label fx:id="labelInterpretation" text=""
+               style="-fx-text-fill: #15803d; -fx-font-size: 13px;"
+               wrapText="true" maxWidth="860.0"/>
+    </VBox>
+
+    <Label fx:id="msgSuccess"  style="-fx-font-size: 13px; -fx-font-weight: bold;"/>
+    <Label fx:id="errorGlobal" style="-fx-font-size: 12px;"/>
+</VBox>
+>>>>>>> Stashed changes

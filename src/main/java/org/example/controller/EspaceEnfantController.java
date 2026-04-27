@@ -8,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
+<<<<<<< Updated upstream
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -17,10 +18,13 @@ import org.example.entities.User;
 import org.example.service.SessionJeuService;
 import org.example.utils.UserSession;
 
+=======
+>>>>>>> Stashed changes
 import java.io.IOException;
 import java.util.Objects;
 
 public class EspaceEnfantController {
+<<<<<<< Updated upstream
     @FXML private BorderPane mainContainer;
     @FXML private VBox childHomePane;
     @FXML private BorderPane gamePane;
@@ -187,6 +191,34 @@ public class EspaceEnfantController {
             heatmapContainer.getChildren().setAll(heatmapView);
         } catch (IOException e) {
             System.err.println("Erreur chargement heatmap: " + e.getMessage());
+=======
+
+    @FXML private BorderPane mainContainer;
+
+    @FXML
+    public void initialize() {
+        openTest();
+    }
+
+    @FXML
+    public void openTest() {
+        loadCenter("/GestionParticipations.fxml");
+    }
+
+    @FXML
+    public void openRapport() {
+        loadCenter("/RapportParent.fxml");
+    }
+
+    private void loadCenter(String fxmlPath) {
+        try {
+            Parent view = FXMLLoader.load(
+                    Objects.requireNonNull(getClass().getResource(fxmlPath))
+            );
+            mainContainer.setCenter(view);
+        } catch (IOException e) {
+            System.err.println("Erreur chargement vue : " + e.getMessage());
+>>>>>>> Stashed changes
         }
     }
 }

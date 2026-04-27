@@ -83,6 +83,24 @@ public class AdminDashboardController {
         }
     }
 
+    // ════════════════════════════════════════════════════════
+    //  NOUVEAU — Scénarios de tests psychologiques
+    // ════════════════════════════════════════════════════════
+    @FXML
+    private void showScenariosTests() {
+        try {
+            headerTitle.setText("Scénarios Tests Psychologiques");
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/GestionJeux.fxml")
+            );
+            Parent view = loader.load();
+            contentArea.getChildren().setAll(view);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    // ════════════════════════════════════════════════════════
+
     private void loadTable(String role, String title) {
         try {
             headerTitle.setText(title);

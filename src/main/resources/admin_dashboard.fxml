@@ -58,7 +58,17 @@
                   style="-fx-background-color: white; -fx-padding: 18 30; -fx-border-color: #f1f5f9; -fx-border-width: 0 0 1 0;">
 
                 <Label fx:id="headerTitle" text="Dashboard" style="-fx-font-size: 22; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
-
+                <!-- Séparateur + bouton Tests Psychologiques -->
+                <Separator style="-fx-background-color: #334155;" opacity="0.3">
+                    <VBox.margin><Insets left="20" right="20" top="8" bottom="4"/></VBox.margin>
+                </Separator>
+                <Label text="TESTS PSYCHOLOGIQUES"
+                       style="-fx-padding: 4 24 6 24; -fx-font-size: 10; -fx-text-fill: #475569; -fx-font-weight: bold;"/>
+                <Button text="🧩  Scénarios Tests"
+                        onAction="#showScenariosTests"
+                        styleClass="side-button"
+                        maxWidth="Infinity"
+                        alignment="BASELINE_LEFT"/>
                 <Region HBox.hgrow="ALWAYS"/>
 
                 <HBox alignment="CENTER" spacing="8"
