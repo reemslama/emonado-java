@@ -48,32 +48,65 @@ public class LoginController {
         User user = AuthService.authenticate(email, password);
 
         if (user != null) {
-            String roleAttendu = switch (selectedRole.getText().toUpperCase()) {
-                case "PSYCHOLOGUE" -> "ROLE_PSYCHOLOGUE";
-                case "ADMIN" -> "ROLE_ADMIN";
-                default -> "ROLE_PATIENT";
-            };
+            String roleAttendu = resolveExpectedRole(selectedRole);
+            String roleTrouve = normalizeRole(user.getRole());
 
-            if (user.getRole().equalsIgnoreCase(roleAttendu)) {
+            if (roleTrouve.equalsIgnoreCase(roleAttendu)) {
                 // 1. ON REMPLIT LA SESSION STATIQUE (Crucial pour éviter le NULL plus tard)
                 UserSession.setInstance(user);
 
                 // 2. ON REDIRIGE
                 redirectUser(user);
             } else {
-                errorLabel.setText("Accès refusé : Ce compte n'a pas le rôle " + selectedRole.getText());
+                errorLabel.setText("Accès refusé : rôle du compte = " + displayRole(roleTrouve)
+                        + " (vous avez choisi " + displayRole(roleAttendu) + ").");
             }
         } else {
             errorLabel.setText("Email ou mot de passe incorrect.");
         }
     }
 
+    private String resolveExpectedRole(ToggleButton selectedRole) {
+        if (selectedRole == rolePsy) {
+            return "ROLE_PSYCHOLOGUE";
+        }
+        if (selectedRole == roleAdmin) {
+            return "ROLE_ADMIN";
+        }
+        return "ROLE_PATIENT";
+    }
+
+    private String normalizeRole(String role) {
+        if (role == null) {
+            return "ROLE_PATIENT";
+        }
+        String r = role.trim().toUpperCase();
+        return switch (r) {
+            case "ROLE_ADMIN", "ADMIN" -> "ROLE_ADMIN";
+            case "ROLE_PSYCHOLOGUE", "PSYCHOLOGUE", "PSY", "ROLE_PSY" -> "ROLE_PSYCHOLOGUE";
+            case "ROLE_PATIENT", "PATIENT", "USER" -> "ROLE_PATIENT";
+            default -> r.startsWith("ROLE_") ? r : "ROLE_" + r;
+        };
+    }
+
+    private String displayRole(String normalizedRole) {
+        if (normalizedRole == null) {
+            return "Patient";
+        }
+        return switch (normalizedRole.toUpperCase()) {
+            case "ROLE_ADMIN" -> "Admin";
+            case "ROLE_PSYCHOLOGUE" -> "Psychologue";
+            default -> "Patient";
+        };
+    }
+
     private void redirectUser(User user) {
         try {
             String fxmlPath;
-            if ("ROLE_ADMIN".equalsIgnoreCase(user.getRole())) {
+            String role = normalizeRole(user.getRole());
+            if ("ROLE_ADMIN".equalsIgnoreCase(role)) {
                 fxmlPath = "/admin_dashboard.fxml";
-            } else if ("ROLE_PSYCHOLOGUE".equalsIgnoreCase(user.getRole())) {
+            } else if ("ROLE_PSYCHOLOGUE".equalsIgnoreCase(role)) {
                 fxmlPath = "/psy_dashboard.fxml";
             } else if (user.isHasChild()) {
                 fxmlPath = "/EspaceEnfant.fxml";

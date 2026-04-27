@@ -100,3 +100,43 @@
     -fx-text-fill: white;
     -fx-border-color: #c5df43;
 }
+
+/* Shared professional tabs/cards for Journal/Analyse */
+.pro-tab-pane {
+    -fx-background-color: transparent;
+}
+
+.pro-tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: transparent;
+}
+
+.pro-tab-pane .tab {
+    -fx-background-color: rgba(255, 255, 255, 0.75);
+    -fx-background-radius: 12 12 0 0;
+    -fx-padding: 8 12;
+}
+
+.pro-tab-pane .tab:selected {
+    -fx-background-color: white;
+}
+
+.pro-card {
+    -fx-background-color: rgba(255, 255, 255, 0.95);
+    -fx-background-radius: 18;
+    -fx-padding: 16;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.10), 12, 0, 0, 3);
+}
+
+.pro-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1f3a4d;
+}
+
+.pro-action-btn {
+    -fx-background-color: #1976f3;
+    -fx-text-fill: white;
+    -fx-background-radius: 12;
+    -fx-padding: 10 18;
+    -fx-font-weight: bold;
+}
