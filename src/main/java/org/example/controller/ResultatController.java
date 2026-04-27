@@ -3,336 +3,322 @@ package org.example.controller;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.ArcType;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.StrokeLineCap;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.example.entities.ResultatTest;
+import org.example.entities.TestAdaptatif;
+import org.example.service.GrokAIService;
+import org.example.service.PdfExportService;
+import org.example.service.ResultatTestService;
 
-public class ResultatController {
+import java.io.File;
+import java.net.URL;
+import java.time.LocalDateTime;
+import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-    @FXML private Label lblCategorie;
-    @FXML private Label lblScore;
-    @FXML private Label lblNiveau;
-    @FXML private Label lblDescription;
+public class ResultatController implements Initializable {
 
-    @FXML private Circle dotCategorie;
+    @FXML private Label  lblCategorie, lblScore, lblNiveau, lblDescription,
+            lblAnalyseIA, lblStatutAnalyse, lblEmo, lblPhy, lblCog;
     @FXML private Circle dotNiveau;
-    @FXML private HBox pillNiveau;
+    @FXML private HBox   pillNiveau;
+    @FXML private Canvas canvasScore, canvasThermo, barEmo, barPhy, barCog;
+    @FXML private VBox   cardAnalyseIA, vboxThemes;
 
-    @FXML private Canvas canvasThermo;
-    @FXML private Canvas barEmo;
-    @FXML private Canvas barPhy;
-    @FXML private Canvas barCog;
+    private final GrokAIService       grokAIService       = new GrokAIService();
+    private final ResultatTestService resultatTestService = new ResultatTestService();
+    private final PdfExportService    pdfExportService    = new PdfExportService();
 
-    @FXML private Label lblEmo;
-    @FXML private Label lblPhy;
-    @FXML private Label lblCog;
+    private String        categorie;
+    private int           scoreActuel, scoreMax;
+    private TestAdaptatif testAdaptatif;
+    private ResultatTest  resultatSauvegarde;
 
-    @FXML private VBox banniereConsultation;
-    @FXML private VBox suggestionConsultation;
-    @FXML private VBox cardJournal;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r, "ia-thread");
+        t.setDaemon(true);
+        return t;
+    });
 
-    private String categorie;
-    private int scoreActuel;
-    private int scoreMax;
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        if (cardAnalyseIA != null) {
+            cardAnalyseIA.setVisible(false);
+            cardAnalyseIA.setManaged(false);
+        }
+        if (lblStatutAnalyse != null) lblStatutAnalyse.setText("");
+    }
 
-    // =========================
-    // SET RESULTAT
-    // =========================
+    // ── Points d'entrée publics ──────────────────────────────────────────────
+
     public void setResultat(int score, String categorie, int nbQuestions) {
-
-        this.categorie = categorie;
+        this.categorie   = categorie;
         this.scoreActuel = score;
-        this.scoreMax = nbQuestions * 3;
+        this.scoreMax    = nbQuestions * 3;
+        refreshUI();
+        sauvegarderResultat(null);
+    }
 
-        lblCategorie.setText("Catégorie : " + categorie.toUpperCase());
-        lblScore.setText(score + " / " + scoreMax);
+    public void setResultatAvecTestAdaptatif(int score, int scoreMax, String categorie,
+                                             TestAdaptatif testAdaptatif) {
+        this.categorie     = categorie;
+        this.scoreActuel   = score;
+        this.scoreMax      = scoreMax;
+        this.testAdaptatif = testAdaptatif;
+        refreshUI();
+        sauvegarderResultat(null);
+        if (grokAIService.isConfigured()) lancerAnalyseIAAsynchrone();
+    }
 
-        String[] resultat = interpreter(score, scoreMax, categorie);
+    // ── Sauvegarde MySQL ─────────────────────────────────────────────────────
 
-        String niveau = resultat[0];
-        String couleurHex = resultat[1];
-        String description = resultat[2];
+    private void sauvegarderResultat(String analyseIA) {
+        ResultatInterpretation interp = interpreterScore(scoreActuel, scoreMax);
+        ResultatTest r = new ResultatTest(
+                categorie, scoreActuel, scoreMax,
+                interp.niveau, analyseIA, LocalDateTime.now());
+        resultatTestService.sauvegarder(r);
+        this.resultatSauvegarde = r;
+    }
 
-        Color couleur = Color.web(couleurHex);
+    // ── Refresh UI ───────────────────────────────────────────────────────────
 
-        lblNiveau.setText(niveau);
-        lblNiveau.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: " + couleurHex + ";");
-
-        lblDescription.setText(description);
-
-        dotNiveau.setFill(couleur);
-        dotCategorie.setFill(couleur);
-
-        // Couleur fond pill
-        String bgPill =
-                niveau.contains("Faible") || niveau.contains("Positif") || niveau.contains("Excellent")
-                        ? "#e8f8ef"
-                        : niveau.contains("Modéré") || niveau.contains("Moyen")
-                          ? "#fff8e6"
-                          : "#fde8e8";
-
-        pillNiveau.setStyle(
-                "-fx-background-radius: 20;" +
-                        "-fx-padding: 6 14 6 14;" +
-                        "-fx-background-color: " + bgPill + ";"
-        );
-
-        // =========================
-        // DIMENSIONS
-        // =========================
-        double pct = (double) score / scoreMax;
-
-        final int emo = Math.min((int) Math.round(pct * 10 * 1.1), 10);
-        final int phy = Math.min((int) Math.round(pct * 10 * 0.8), 10); // FIX BUG
-        final int cog = Math.min((int) Math.round(pct * 10 * 1.05), 10);
-
-        lblEmo.setText(emo + "/10");
-        lblPhy.setText(phy + "/10");
-        lblCog.setText(cog + "/10");
-
-        final int finalScore = score;
-        final int finalScoreMax = scoreMax;
-        final String finalColor = couleurHex;
-
-        // =========================
-        // DRAW SAFE (JavaFX Thread)
-        // =========================
+    private void refreshUI() {
         Platform.runLater(() -> {
-            drawThermometre(finalScore, finalScoreMax);
-            drawDimensionBar(barEmo, emo, 10, finalColor);
-            drawDimensionBar(barPhy, phy, 10, phy <= 4 ? "#27ae60" : finalColor);
-            drawDimensionBar(barCog, cog, 10, finalColor);
+            if (lblCategorie != null) lblCategorie.setText(categorie.toUpperCase());
+            ResultatInterpretation interp = interpreterScore(scoreActuel, scoreMax);
+            lblNiveau.setText(interp.niveau);
+            lblNiveau.setStyle("-fx-text-fill: " + interp.couleur + ";");
+            lblDescription.setText(interp.description);
+            dotNiveau.setFill(Color.web(interp.couleur));
+            pillNiveau.setStyle("-fx-background-color: " + interp.couleur + "22; -fx-background-radius: 20;");
+            double pct = (double) scoreActuel / scoreMax;
+            drawScoreArc(canvasScore, scoreActuel, scoreMax, interp.couleur);
+            drawThermometre(canvasThermo, pct);
+            double e = Math.min(pct * 1.1, 1.0);
+            double p = Math.min(pct * 0.7, 1.0);
+            double c = Math.min(pct * 0.9, 1.0);
+            drawBar(barEmo, e, "#3498db");
+            drawBar(barPhy, p, "#2ecc71");
+            drawBar(barCog, c, "#f1c40f");
+            lblEmo.setText((int)(e * 10) + "/10");
+            lblPhy.setText((int)(p * 10) + "/10");
+            lblCog.setText((int)(c * 10) + "/10");
         });
+    }
 
-        // =========================
-        // LOGIQUE CONSULTATION
-        // =========================
-        if (categorie.equals("stress") || categorie.equals("depression")) {
+    // ── Analyse IA asynchrone ────────────────────────────────────────────────
 
-            double pourcentage = pct * 100;
-
-            if (pourcentage > 66) {
-                banniereConsultation.setVisible(true);
-                banniereConsultation.setManaged(true);
-
-            } else if (pourcentage > 33) {
-                suggestionConsultation.setVisible(true);
-                suggestionConsultation.setManaged(true);
+    private void lancerAnalyseIAAsynchrone() {
+        cardAnalyseIA.setManaged(true);
+        cardAnalyseIA.setVisible(true);
+        lblStatutAnalyse.setText("✨ Analyse IA en cours...");
+        lblStatutAnalyse.setStyle("-fx-text-fill: #3498db;");
+        executor.submit(() -> {
+            try {
+                String analyseFull = grokAIService.genererAnalyse(
+                        categorie, testAdaptatif.getQuestionsReponses(), scoreActuel, scoreMax / 3);
+                Platform.runLater(() -> {
+                    lblAnalyseIA.setText(analyseFull);
+                    lblStatutAnalyse.setText("✅ Analyse complétée");
+                    lblStatutAnalyse.setStyle("-fx-text-fill: #2ecc71;");
+                    if (resultatSauvegarde != null) {
+                        resultatSauvegarde.setAnalyseIA(analyseFull);
+                        resultatTestService.sauvegarder(resultatSauvegarde);
+                    }
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    lblStatutAnalyse.setText("⚠️ Erreur de connexion IA");
+                    lblStatutAnalyse.setStyle("-fx-text-fill: #e74c3c;");
+                });
             }
+        });
+    }
+
+    // ── ACTION : Exporter PDF ────────────────────────────────────────────────
+
+    @FXML
+    private void exporterPDF() {
+        if (resultatSauvegarde == null) {
+            afficherAlerte("Export PDF", "Aucun résultat à exporter.", Alert.AlertType.WARNING);
+            return;
         }
-    }
-
-    // =========================
-    // THERMOMETRE
-    // =========================
-    private void drawThermometre(int score, int scoreMax) {
-
-        GraphicsContext gc = canvasThermo.getGraphicsContext2D();
-
-        double w = canvasThermo.getWidth();
-        double h = canvasThermo.getHeight();
-
-        gc.clearRect(0, 0, w, h);
-
-        double tubeX = w / 2 - 5;
-        double tubeW = 10;
-        double tubeTop = 12;
-        double tubeBottom = h - 26;
-        double tubeH = tubeBottom - tubeTop;
-        double bulbR = 13;
-        double bulbCY = h - bulbR - 2;
-
-        // fond
-        gc.setFill(Color.web("#e8edf2"));
-        gc.fillRoundRect(tubeX, tubeTop, tubeW, tubeH, tubeW, tubeW);
-
-        // zones
-        double zoneH = tubeH / 3;
-        gc.setFill(Color.web("#fde8e8"));
-        gc.fillRect(tubeX, tubeTop, tubeW, zoneH);
-
-        gc.setFill(Color.web("#fff8e6"));
-        gc.fillRect(tubeX, tubeTop + zoneH, tubeW, zoneH);
-
-        gc.setFill(Color.web("#e8f8ef"));
-        gc.fillRect(tubeX, tubeTop + 2 * zoneH, tubeW, zoneH);
-
-        // remplissage
-        double pct = (double) score / scoreMax;
-        double fillH = tubeH * pct;
-
-        String fillColor = pct > 0.66 ? "#e74c3c"
-                : pct > 0.33 ? "#f39c12"
-                  : "#27ae60";
-
-        gc.setFill(Color.web(fillColor));
-        gc.fillRoundRect(tubeX, tubeBottom - fillH, tubeW, fillH, 4, 4);
-
-        // bulbe
-        gc.setFill(Color.web(fillColor));
-        gc.fillOval(w / 2 - bulbR, bulbCY - bulbR, bulbR * 2, bulbR * 2);
-
-        // contour
-        gc.setStroke(Color.web("#d1d9e0"));
-        gc.strokeRoundRect(tubeX, tubeTop, tubeW, tubeH, tubeW, tubeW);
-    }
-
-    // =========================
-    // BARRE DIMENSION
-    // =========================
-    private void drawDimensionBar(Canvas bar, int value, int max, String color) {
-
-        GraphicsContext gc = bar.getGraphicsContext2D();
-
-        double w = bar.getWidth();
-        double h = bar.getHeight();
-
-        gc.clearRect(0, 0, w, h);
-
-        gc.setFill(Color.web("#e8edf2"));
-        gc.fillRoundRect(0, 0, w, h, h, h);
-
-        double fillW = w * ((double) value / max);
-
-        gc.setFill(Color.web(color));
-        gc.fillRoundRect(0, 0, fillW, h, h, h);
-    }
-
-    // =========================
-    // INTERPRETATION
-    // =========================
-    private String[] interpreter(int score, int scoreMax, String categorie) {
-
-        double pourcentage = (double) score / scoreMax * 100;
-
-        switch (categorie) {
-
-            case "stress":
-                if (pourcentage <= 33)
-                    return new String[]{"Stress faible", "#27ae60",
-                            "Votre niveau de stress est faible."};
-
-                else if (pourcentage <= 66)
-                    return new String[]{"Stress modéré", "#f39c12",
-                            "Zone orange : ajustements recommandés."};
-
-                else
-                    return new String[]{"Stress élevé", "#e74c3c",
-                            "Consultation recommandée."};
-
-            case "depression":
-                if (pourcentage <= 33)
-                    return new String[]{"État positif", "#27ae60",
-                            "Bon état mental."};
-
-                else if (pourcentage <= 66)
-                    return new String[]{"Signes modérés", "#f39c12",
-                            "Surveillance recommandée."};
-
-                else
-                    return new String[]{"Signes importants", "#e74c3c",
-                            "Consultez un professionnel."};
-
-            case "iq":
-                if (pourcentage <= 33)
-                    return new String[]{"Score faible", "#e74c3c",
-                            "Continuez à pratiquer."};
-
-                else if (pourcentage <= 66)
-                    return new String[]{"Score moyen", "#f39c12",
-                            "Bon raisonnement logique."};
-
-                else
-                    return new String[]{"Excellent score", "#27ae60",
-                            "Très bonnes capacités cognitives."};
-
-            default:
-                return new String[]{"Résultat", "#2980b9", ""};
-        }
-    }
-
-    // =========================
-    // NAVIGATION
-    // =========================
-    private void naviguerVers(Parent root) {
-
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Enregistrer le rapport PDF");
+        fc.setInitialFileName("rapport_" + categorie + "_"
+                + LocalDateTime.now().toString().replace(":", "-").substring(0, 16) + ".pdf");
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichier PDF", "*.pdf"));
         Stage stage = (Stage) lblScore.getScene().getWindow();
-
-        Scene scene = new Scene(root, stage.getWidth(), stage.getHeight());
-
-        stage.setScene(scene);
-        stage.setMaximized(true);
+        File dest = fc.showSaveDialog(stage);
+        if (dest == null) return;
+        executor.submit(() -> {
+            try {
+                if (lblAnalyseIA != null && lblAnalyseIA.getText() != null
+                        && !lblAnalyseIA.getText().isBlank())
+                    resultatSauvegarde.setAnalyseIA(lblAnalyseIA.getText());
+                pdfExportService.exporterResultat(resultatSauvegarde, dest);
+                Platform.runLater(() -> afficherAlerte("Export réussi",
+                        "Rapport PDF généré :\n" + dest.getAbsolutePath(),
+                        Alert.AlertType.INFORMATION));
+            } catch (Exception ex) {
+                Platform.runLater(() -> afficherAlerte("Erreur PDF",
+                        "Impossible de générer le PDF : " + ex.getMessage(),
+                        Alert.AlertType.ERROR));
+            }
+        });
     }
 
-    // =========================
-    // ACTIONS UI
-    // =========================
+    // ── ACTION : Dashboard (nouvelle fenêtre) ────────────────────────────────
+
+    @FXML
+    private void ouvrirDashboard() {
+        try {
+            URL url = getClass().getResource("/Dashboard.fxml");
+            if (url == null) {
+                afficherAlerte("Dashboard",
+                        "Fichier Dashboard.fxml introuvable dans resources.",
+                        Alert.AlertType.ERROR);
+                return;
+            }
+            Parent root = FXMLLoader.load(url);
+            Stage stage = new Stage();
+            stage.setTitle("📊 Tableau de bord — Évolution");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (Exception e) {
+            afficherAlerte("Dashboard",
+                    "Impossible d'ouvrir le tableau de bord : " + e.getMessage(),
+                    Alert.AlertType.ERROR);
+        }
+    }
+
+    // ── NAVIGATION — même fenêtre ────────────────────────────────────────────
+
+    @FXML
+    private void accueil() {
+        naviguerVers("/patient_dashboard.fxml");
+    }
+
     @FXML
     private void ouvrirJournal() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/journal.fxml"));
-            Parent root = loader.load();
-            naviguerVers(root);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        naviguerVers("/journal.fxml");
     }
 
     @FXML
     private void ouvrirConsultation() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/consultations.fxml"));
-            Parent root = loader.load();
-
-            ConsultationController controller = loader.getController();
-            controller.setContexteDepuisTest(scoreActuel, scoreMax, categorie);
-
-            naviguerVers(root);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        naviguerVers("/consultations.fxml");
     }
 
     @FXML
     private void refaire() {
+        naviguerVers("/fxml.test/passer_test.fxml");
+    }
+
+    /**
+     * Remplace le contenu de la scène courante par le FXML indiqué.
+     * Le Stage (fenêtre) reste le même — seule la page change.
+     */
+    private void naviguerVers(String cheminFxml) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/test/PasserTest.fxml"));
-            Parent root = loader.load();
-
-            PasserTestController controller = loader.getController();
-            controller.setCategorie(categorie);
-
-            naviguerVers(root);
-
+            URL url = getClass().getResource(cheminFxml);
+            if (url == null) {
+                afficherAlerte("Navigation",
+                        "Page introuvable : " + cheminFxml,
+                        Alert.AlertType.ERROR);
+                return;
+            }
+            Parent root = FXMLLoader.load(url);
+            Stage stage = (Stage) lblScore.getScene().getWindow();
+            stage.getScene().setRoot(root);
         } catch (Exception e) {
-            e.printStackTrace();
+            afficherAlerte("Navigation",
+                    "Impossible d'ouvrir la page : " + e.getMessage(),
+                    Alert.AlertType.ERROR);
         }
     }
 
-    @FXML
-    private void accueil() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/test/ChoixCategorie.fxml"));
-            Parent root = loader.load();
-            naviguerVers(root);
+    // ── Graphiques ───────────────────────────────────────────────────────────
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private void drawScoreArc(Canvas canvas, double s, double m, String color) {
+        if (canvas == null) return;
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        double w = canvas.getWidth(), h = canvas.getHeight();
+        gc.clearRect(0, 0, w, h);
+        double cx = w / 2, cy = h - 20, r = 80;
+        gc.setLineWidth(16);
+        gc.setLineCap(StrokeLineCap.ROUND);
+        gc.setStroke(Color.web("#ECF0F1"));
+        gc.strokeArc(cx - r, cy - r, r * 2, r * 2, 180, -180, ArcType.OPEN);
+        gc.setStroke(Color.web(color));
+        gc.strokeArc(cx - r, cy - r, r * 2, r * 2, 180, -(s / m) * 180, ArcType.OPEN);
+        lblScore.setText((int) s + " / " + (int) m);
     }
 
-    // =========================
-    // INTERFACE
-    // =========================
-    public interface ConsultationController {
-        void setContexteDepuisTest(int score, int scoreMax, String categorie);
+    private void drawThermometre(Canvas canvas, double pct) {
+        if (canvas == null) return;
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        double w = canvas.getWidth(), h = canvas.getHeight();
+        gc.clearRect(0, 0, w, h);
+        double tx = w / 2 - 6, tw = 12, th = h - 60;
+        gc.setFill(Color.web("#ECF0F1"));
+        gc.fillRoundRect(tx, 10, tw, th, tw, tw);
+        String color = pct > 0.66 ? "#e74c3c" : pct > 0.33 ? "#f39c12" : "#2ecc71";
+        gc.setFill(Color.web(color));
+        double mH = th * pct;
+        gc.fillRoundRect(tx, 10 + (th - mH), tw, mH + 5, tw, tw);
+        gc.fillOval(w / 2 - 15, h - 35, 30, 30);
+    }
+
+    private void drawBar(Canvas canvas, double pct, String color) {
+        if (canvas == null) return;
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        double w = canvas.getWidth(), h = canvas.getHeight();
+        gc.clearRect(0, 0, w, h);
+        gc.setFill(Color.web("#ECF0F1"));
+        gc.fillRoundRect(0, 0, w, h, 10, 10);
+        gc.setFill(Color.web(color));
+        gc.fillRoundRect(0, 0, w * pct, h, 10, 10);
+    }
+
+    // ── Interprétation ───────────────────────────────────────────────────────
+
+    private ResultatInterpretation interpreterScore(int s, int m) {
+        double p = (double) s / m;
+        if (p < 0.33) return new ResultatInterpretation("FAIBLE",  "#2ecc71", "Votre état semble stable et maîtrisé.");
+        if (p < 0.66) return new ResultatInterpretation("MODÉRÉ",  "#f39c12", "Quelques points de vigilance ont été identifiés.");
+        return          new ResultatInterpretation("ÉLEVÉ",  "#e74c3c", "Il est fortement recommandé de consulter un spécialiste.");
+    }
+
+    // ── Utilitaires ──────────────────────────────────────────────────────────
+
+    private void afficherAlerte(String titre, String msg, Alert.AlertType type) {
+        Alert alert = new Alert(type);
+        alert.setTitle(titre);
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
+        alert.showAndWait();
+    }
+
+    private static class ResultatInterpretation {
+        String niveau, couleur, description;
+        ResultatInterpretation(String n, String c, String d) {
+            this.niveau = n; this.couleur = c; this.description = d;
+        }
     }
 }
