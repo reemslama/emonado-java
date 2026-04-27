@@ -6,7 +6,7 @@
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.example.controller.AnalyseEmotionnelleController"
-            style="-fx-background-color: linear-gradient(to bottom, #eef9f3 0%, #d8f1ef 55%, #eaf7ff 100%);">
+            style="-fx-background-color: linear-gradient(to bottom, #f3f4f6 0%, #eceff1 100%);">
 
     <stylesheets>
         <URL value="@/styles/template.css" />
@@ -54,6 +54,12 @@
             <HBox spacing="12" alignment="CENTER_LEFT">
                 <TextField fx:id="searchField" promptText="Recherche dynamique par date, humeur, statut ou analyse" HBox.hgrow="ALWAYS" />
             </HBox>
+
+            <VBox fx:id="psyAlertBox" spacing="10" visible="false" managed="false" style="-fx-background-color: #fff6f5; -fx-background-radius: 18; -fx-padding: 16; -fx-border-color: #ef9a9a; -fx-border-radius: 18;">
+                <Label text="Alertes psy detectees" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #a93434;" />
+                <Label fx:id="psyAlertSummaryLabel" text="Aucune alerte critique detectee." style="-fx-text-fill: #6a5a5a;" />
+                <VBox fx:id="psyAlertListBox" spacing="8" />
+            </VBox>
 
             <TabPane VBox.vgrow="ALWAYS" tabClosingPolicy="UNAVAILABLE" styleClass="pro-tab-pane">
                 <tabs>
