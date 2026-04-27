@@ -1,5 +1,6 @@
 /* Background */
 .background {
+    /* On remonte d'un dossier (..) pour sortir de 'styles' puis on va dans 'images' */
     -fx-background-image: url("../images/background.png");
     -fx-background-size: cover;
     -fx-background-position: center;
@@ -7,7 +8,7 @@
 
 /* Navbar */
 .navbar {
-    -fx-background-color: #198754;
+    -fx-background-color: #c5df43;
     -fx-padding: 15;
 }
 
@@ -25,22 +26,25 @@
     -fx-font-size: 14px;
 }
 
+/* Hover effet */
 .nav-btn:hover {
     -fx-underline: true;
 }
 
+/* Bouton principal */
 .btn-custom {
-    -fx-background-color: #198754;
+    -fx-background-color: #c5df43;
     -fx-text-fill: white;
     -fx-padding: 10 30;
     -fx-background-radius: 50;
 }
 
+/* Title */
 .title {
     -fx-font-size: 28px;
     -fx-text-fill: white;
 }
-
+/* Style pour les boites d'icônes Psy */
 .icon-box {
     -fx-background-color: white;
     -fx-min-width: 130;
@@ -48,7 +52,7 @@
     -fx-background-radius: 20;
     -fx-alignment: center;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 4);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4);
 }
 
 .icon-box:hover {
@@ -56,6 +60,7 @@
     -fx-translate-y: -5;
 }
 
+/* Style pour les boites d'icônes Patient */
 .icon-box-patient {
     -fx-background-color: white;
     -fx-min-width: 120;
@@ -63,14 +68,14 @@
     -fx-background-radius: 20;
     -fx-alignment: center;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 8, 0, 0, 4);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 8, 0, 0, 4);
 }
 
 .icon-box-patient:hover {
     -fx-scale-x: 1.05;
     -fx-scale-y: 1.05;
 }
-
+/* Style de base des boutons de rôle */
 .option-btn {
     -fx-background-color: white;
     -fx-text-fill: #555555;
@@ -78,154 +83,60 @@
     -fx-border-width: 2;
     -fx-border-radius: 20;
     -fx-background-radius: 20;
-    -fx-background-insets: 0;
     -fx-padding: 8 15;
     -fx-cursor: hand;
     -fx-font-weight: bold;
-    -fx-focus-color: transparent;
-    -fx-faint-focus-color: transparent;
+    -fx-transition: 0.3s;
 }
 
+/* Style quand on survole avec la souris */
 .option-btn:hover {
-    -fx-background-color: #f4f9d8;
-    -fx-text-fill: #324b00;
+    -fx-background-color: #f1f1f1;
 }
 
-.toggle-button.option-btn:selected {
-    -fx-background-color: linear-gradient(to right, #c5df43, #9fca1c);
+/* Style quand le bouton est sélectionné (cliqué) */
+.option-btn::selection {
+    -fx-background-color: #c5df43; /* Vert de ton application */
     -fx-text-fill: white;
     -fx-border-color: #c5df43;
 }
 
-.toggle-button.option-btn:pressed {
-    -fx-background-color: #a8cf2b;
-    -fx-text-fill: white;
-}
-
-.auth-root {
-    -fx-background-color: linear-gradient(to bottom right, #f7fbef, #ffffff, #eef7e8);
-    -fx-padding: 50;
-}
-
-.auth-card {
-    -fx-background-color: white;
-    -fx-background-radius: 28;
-    -fx-padding: 36;
-    -fx-max-width: 460;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 18, 0, 0, 6);
-}
-
-.auth-title {
-    -fx-font-size: 26px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #1f2937;
-}
-
-.auth-subtitle {
-    -fx-font-size: 14px;
-    -fx-text-fill: #6b7280;
-}
-
-.auth-field {
-    -fx-background-color: white;
-    -fx-background-radius: 16;
-    -fx-border-color: #d1d5db;
-    -fx-border-radius: 16;
-    -fx-padding: 12;
-}
-
-.auth-field:focused {
-    -fx-border-color: #c5df43;
-    -fx-background-color: #fcfef7;
-}
-
-.primary-action {
-    -fx-background-color: linear-gradient(to right, #c5df43, #9fca1c);
-    -fx-text-fill: white;
-    -fx-background-radius: 20;
-    -fx-font-weight: bold;
-    -fx-font-size: 15px;
-    -fx-padding: 12;
-    -fx-cursor: hand;
-}
-
-.secondary-action {
+/* Shared professional tabs/cards for Journal/Analyse */
+.pro-tab-pane {
     -fx-background-color: transparent;
-    -fx-border-color: #c5df43;
-    -fx-border-radius: 18;
+}
+
+.pro-tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: transparent;
+}
+
+.pro-tab-pane .tab {
+    -fx-background-color: rgba(255, 255, 255, 0.75);
+    -fx-background-radius: 12 12 0 0;
+    -fx-padding: 8 12;
+}
+
+.pro-tab-pane .tab:selected {
+    -fx-background-color: white;
+}
+
+.pro-card {
+    -fx-background-color: rgba(255, 255, 255, 0.95);
     -fx-background-radius: 18;
-    -fx-text-fill: #6b7280;
+    -fx-padding: 16;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.10), 12, 0, 0, 3);
+}
+
+.pro-title {
+    -fx-font-size: 20px;
     -fx-font-weight: bold;
+    -fx-text-fill: #1f3a4d;
+}
+
+.pro-action-btn {
+    -fx-background-color: #1976f3;
+    -fx-text-fill: white;
+    -fx-background-radius: 12;
     -fx-padding: 10 18;
-    -fx-cursor: hand;
-}
-
-.chat-shell {
-    -fx-background-color: linear-gradient(to bottom right, #eff6ff, #f8fafc, #ecfeff);
-}
-
-.chat-list-panel {
-    -fx-background-color: white;
-    -fx-background-radius: 26;
-    -fx-padding: 22;
-    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.08), 24, 0, 0, 8);
-}
-
-.chat-conversation-panel {
-    -fx-background-color: white;
-    -fx-background-radius: 26;
-    -fx-padding: 0;
-    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.08), 24, 0, 0, 8);
-}
-
-.chat-contact-list {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-    -fx-background-insets: 0;
-}
-
-.chat-contact-list .list-cell {
-    -fx-background-color: transparent;
-    -fx-padding: 10 12;
-    -fx-background-radius: 18;
-}
-
-.chat-contact-list .list-cell:selected {
-    -fx-background-color: #e0f2fe;
-}
-
-.chat-contact-list .list-cell:hover {
-    -fx-background-color: #f8fafc;
-}
-
-.chat-header {
-    -fx-background-color: linear-gradient(to right, #dbeafe, #ecfeff);
-    -fx-background-radius: 26 26 0 0;
-    -fx-padding: 20 24;
-}
-
-.chat-scroll {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-}
-
-.chat-scroll > .viewport {
-    -fx-background-color: transparent;
-}
-
-.chat-input {
-    -fx-background-color: #f8fafc;
-    -fx-background-radius: 18;
-    -fx-border-color: #dbeafe;
-    -fx-border-radius: 18;
-    -fx-padding: 14;
-}
-
-.chat-send-btn {
-    -fx-background-color: linear-gradient(to right, #2563eb, #06b6d4);
-    -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-background-radius: 18;
-    -fx-padding: 12 20;
-    -fx-cursor: hand;
 }

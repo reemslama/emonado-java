@@ -1,10 +1,7 @@
 package org.example.controller;
 
-import javafx.animation.Animation;
-import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
-import javafx.animation.RotateTransition;
 import javafx.animation.Timeline;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
@@ -16,12 +13,11 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Pane;
-import javafx.scene.shape.Arc;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import org.example.entities.Journal;
@@ -61,18 +57,10 @@ public class JournalController {
     @FXML private Label calmePercentLabel;
     @FXML private Label sosPercentLabel;
     @FXML private Label colerePercentLabel;
-    @FXML private Label heureuxDetailLabel;
-    @FXML private Label calmeDetailLabel;
-    @FXML private Label sosDetailLabel;
-    @FXML private Label colereDetailLabel;
-    @FXML private Arc heureuxArc;
-    @FXML private Arc calmeArc;
-    @FXML private Arc sosArc;
-    @FXML private Arc colereArc;
-    @FXML private Pane heureuxOrbitPane;
-    @FXML private Pane calmeOrbitPane;
-    @FXML private Pane sosOrbitPane;
-    @FXML private Pane colereOrbitPane;
+    @FXML private ProgressBar heureuxProgress;
+    @FXML private ProgressBar calmeProgress;
+    @FXML private ProgressBar sosProgress;
+    @FXML private ProgressBar colereProgress;
 
     private final JournalService journalService = new JournalService();
     private final MoodPdfExportService moodPdfExportService = new MoodPdfExportService();
@@ -101,7 +89,6 @@ public class JournalController {
         journalTable.setItems(visibleJournals);
         searchField.textProperty().addListener((obs, oldValue, newValue) -> applyFilters());
         sortCombo.valueProperty().addListener((obs, oldValue, newValue) -> applyFilters());
-        startDecorativeAnimations();
 
         if (currentUser == null) {
             setUserData(UserSession.getInstance());
@@ -225,11 +212,6 @@ public class JournalController {
     }
 
     @FXML
-    private void handleOpenStatsPro() {
-        loadView("/stats_pro.fxml", true);
-    }
-
-    @FXML
     private void goToDashboard() {
         loadView("/patient_dashboard.fxml", true);
     }
@@ -318,15 +300,15 @@ public class JournalController {
             totalPendingStatLabel.setText(String.valueOf(pending));
         }
 
-        animateRing(heureuxArc, toPercent(heureux, total));
-        animateRing(calmeArc, toPercent(calme, total));
-        animateRing(sosArc, toPercent(sos, total));
-        animateRing(colereArc, toPercent(colere, total));
+        animateProgress(heureuxProgress, toPercent(heureux, total));
+        animateProgress(calmeProgress, toPercent(calme, total));
+        animateProgress(sosProgress, toPercent(sos, total));
+        animateProgress(colereProgress, toPercent(colere, total));
 
-        setStatLabels(heureuxPercentLabel, heureuxDetailLabel, heureux, total);
-        setStatLabels(calmePercentLabel, calmeDetailLabel, calme, total);
-        setStatLabels(sosPercentLabel, sosDetailLabel, sos, total);
-        setStatLabels(colerePercentLabel, colereDetailLabel, colere, total);
+        setPercentLabel(heureuxPercentLabel, heureux, total);
+        setPercentLabel(calmePercentLabel, calme, total);
+        setPercentLabel(sosPercentLabel, sos, total);
+        setPercentLabel(colerePercentLabel, colere, total);
     }
 
     private int countAnalysedJournals() {
@@ -343,51 +325,27 @@ public class JournalController {
         return total <= 0 ? 0.0 : (double) value / total;
     }
 
-    private void animateRing(Arc arc, double targetProgress) {
-        if (arc == null) {
+    private void animateProgress(ProgressBar bar, double targetProgress) {
+        if (bar == null) {
             return;
         }
         Timeline timeline = new Timeline(
-                new KeyFrame(Duration.ZERO, new KeyValue(arc.lengthProperty(), arc.getLength(), Interpolator.EASE_BOTH)),
-                new KeyFrame(Duration.millis(900), new KeyValue(arc.lengthProperty(), -360 * targetProgress, Interpolator.EASE_BOTH))
+                new KeyFrame(Duration.ZERO, new KeyValue(bar.progressProperty(), bar.getProgress())),
+                new KeyFrame(Duration.millis(700), new KeyValue(bar.progressProperty(), targetProgress))
         );
         timeline.play();
     }
 
-    private void setStatLabels(Label percentLabel, Label detailLabel, int value, int total) {
-        if (percentLabel == null) {
+    private void setPercentLabel(Label label, int value, int total) {
+        if (label == null) {
             return;
         }
         if (total <= 0) {
-            percentLabel.setText("0%");
-            if (detailLabel != null) {
-                detailLabel.setText("0 journal");
-            }
+            label.setText("0% (0)");
             return;
         }
         int percent = (int) Math.round((value * 100.0) / total);
-        percentLabel.setText(percent + "%");
-        if (detailLabel != null) {
-            detailLabel.setText(value + (value > 1 ? " journaux" : " journal"));
-        }
-    }
-
-    private void startDecorativeAnimations() {
-        startOrbitAnimation(heureuxOrbitPane, 16);
-        startOrbitAnimation(calmeOrbitPane, -18);
-        startOrbitAnimation(sosOrbitPane, 14);
-        startOrbitAnimation(colereOrbitPane, -15);
-    }
-
-    private void startOrbitAnimation(Pane pane, double seconds) {
-        if (pane == null) {
-            return;
-        }
-        RotateTransition rotateTransition = new RotateTransition(Duration.seconds(Math.abs(seconds)), pane);
-        rotateTransition.setByAngle(seconds > 0 ? 360 : -360);
-        rotateTransition.setInterpolator(Interpolator.LINEAR);
-        rotateTransition.setCycleCount(Animation.INDEFINITE);
-        rotateTransition.play();
+        label.setText(percent + "% (" + value + ")");
     }
 
     private void clearForm() {
@@ -421,8 +379,6 @@ public class JournalController {
                     profilPatientController.setUserData(currentUser);
                 } else if (controller instanceof JournalController journalController) {
                     journalController.setUserData(currentUser);
-                } else if (controller instanceof StatsProController statsProController) {
-                    statsProController.setUserData(currentUser);
                 }
             }
 

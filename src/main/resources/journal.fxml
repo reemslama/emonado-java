@@ -11,20 +11,15 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.Priority?>
 <?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.shape.Arc?>
-<?import javafx.scene.shape.Circle?>
 <?import java.net.URL?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.example.controller.JournalController"
-            style="-fx-background-color: linear-gradient(to bottom, #f3f4f6 0%, #eceff1 100%);">
+            style="-fx-background-color: linear-gradient(to bottom, #8fd9ee 0%, #dff7ff 100%);">
 
     <stylesheets>
         <URL value="@/styles/template.css" />
@@ -74,7 +69,6 @@
             <HBox spacing="12">
                 <TextField fx:id="searchField" promptText="Rechercher par humeur ou contenu" HBox.hgrow="ALWAYS" />
                 <ComboBox fx:id="sortCombo" prefWidth="180.0" />
-                <Button text="Stat pro" onAction="#handleOpenStatsPro" style="-fx-background-color: white; -fx-text-fill: #1f8b57; -fx-background-radius: 12; -fx-padding: 10 18; -fx-font-weight: bold; -fx-border-color: #1f8b57; -fx-border-radius: 12;" />
                 <Button text="Exporter PDF" onAction="#handleExportPdf" style="-fx-background-color: #1f8b57; -fx-text-fill: white; -fx-background-radius: 12; -fx-padding: 10 18; -fx-font-weight: bold;" />
             </HBox>
 
@@ -112,6 +106,48 @@
                         </HBox>
                     </Tab>
 
+                    <Tab text="Statistiques pro">
+                        <VBox spacing="16" style="-fx-padding: 12 0 0 0;">
+                            <HBox spacing="16">
+                                <VBox spacing="6" HBox.hgrow="ALWAYS" styleClass="pro-card">
+                                    <Label text="Total journaux" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #25554f;" />
+                                    <Label fx:id="totalJournauxStatLabel" text="0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #134a39;" />
+                                </VBox>
+                                <VBox spacing="6" HBox.hgrow="ALWAYS" styleClass="pro-card">
+                                    <Label text="Analyses disponibles" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #25554f;" />
+                                    <Label fx:id="totalAnalysesStatLabel" text="0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #134a39;" />
+                                </VBox>
+                                <VBox spacing="6" HBox.hgrow="ALWAYS" styleClass="pro-card">
+                                    <Label text="Sans analyse" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #25554f;" />
+                                    <Label fx:id="totalPendingStatLabel" text="0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #134a39;" />
+                                </VBox>
+                            </HBox>
+
+                            <VBox spacing="14" styleClass="pro-card">
+                                <Label text="Distribution des humeurs (animee)" styleClass="pro-title" />
+                                <HBox alignment="CENTER_LEFT" spacing="10">
+                                    <Label text="Heureux" prefWidth="110" />
+                                    <ProgressBar fx:id="heureuxProgress" progress="0" HBox.hgrow="ALWAYS" />
+                                    <Label fx:id="heureuxPercentLabel" text="0% (0)" prefWidth="70" />
+                                </HBox>
+                                <HBox alignment="CENTER_LEFT" spacing="10">
+                                    <Label text="Calme" prefWidth="110" />
+                                    <ProgressBar fx:id="calmeProgress" progress="0" HBox.hgrow="ALWAYS" />
+                                    <Label fx:id="calmePercentLabel" text="0% (0)" prefWidth="70" />
+                                </HBox>
+                                <HBox alignment="CENTER_LEFT" spacing="10">
+                                    <Label text="SOS" prefWidth="110" />
+                                    <ProgressBar fx:id="sosProgress" progress="0" HBox.hgrow="ALWAYS" />
+                                    <Label fx:id="sosPercentLabel" text="0% (0)" prefWidth="70" />
+                                </HBox>
+                                <HBox alignment="CENTER_LEFT" spacing="10">
+                                    <Label text="En colere" prefWidth="110" />
+                                    <ProgressBar fx:id="colereProgress" progress="0" HBox.hgrow="ALWAYS" />
+                                    <Label fx:id="colerePercentLabel" text="0% (0)" prefWidth="70" />
+                                </HBox>
+                            </VBox>
+                        </VBox>
+                    </Tab>
                 </tabs>
             </TabPane>
         </VBox>

@@ -19,7 +19,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 import org.example.entities.JournalAnalyseRow;
@@ -30,9 +29,6 @@ import org.example.utils.UserSession;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Comparator;
-import java.util.List;
-
 public class AnalyseEmotionnelleController {
     @FXML private Label welcomeLabel;
     @FXML private Label todayCountLabel;
@@ -60,9 +56,6 @@ public class AnalyseEmotionnelleController {
     @FXML private ProgressBar calmeProgress;
     @FXML private ProgressBar sosProgress;
     @FXML private ProgressBar colereProgress;
-    @FXML private VBox psyAlertBox;
-    @FXML private Label psyAlertSummaryLabel;
-    @FXML private VBox psyAlertListBox;
 
     private final AnalyseEmotionnelleService analyseService = new AnalyseEmotionnelleService();
     private final ObservableList<JournalAnalyseRow> allRows = FXCollections.observableArrayList();
@@ -99,10 +92,6 @@ public class AnalyseEmotionnelleController {
         if (navJournauxBtn != null) {
             navJournauxBtn.setVisible(false);
             navJournauxBtn.setManaged(false);
-        }
-        if (psyAlertBox != null) {
-            psyAlertBox.setVisible(true);
-            psyAlertBox.setManaged(true);
         }
         if (patientCombo == null) {
             return;
@@ -252,7 +241,6 @@ public class AnalyseEmotionnelleController {
             analysedCountLabel.setText(String.valueOf(analysed));
             pendingCountLabel.setText(String.valueOf(Math.max(allRows.size() - analysed, 0)));
             updateProfessionalStats(analysed);
-            updatePsychologistAlerts();
             errorLabel.setText("");
         } catch (SQLException e) {
             showError("Chargement impossible: " + e.getMessage());
@@ -280,9 +268,7 @@ public class AnalyseEmotionnelleController {
                 || containsIgnoreCase(row.getContenuResume(), keyword)
                 || containsIgnoreCase(row.getEtatEmotionnel(), keyword)
                 || containsIgnoreCase(row.getNiveau(), keyword)
-                || containsIgnoreCase(row.getStatut(), keyword)
-                || containsIgnoreCase(row.getRisqueLabel(), keyword)
-                || containsIgnoreCase(row.getRisqueDetails(), keyword);
+                || containsIgnoreCase(row.getStatut(), keyword);
     }
 
     private boolean containsIgnoreCase(String value, String keyword) {
@@ -363,57 +349,6 @@ public class AnalyseEmotionnelleController {
         }
         int percent = (int) Math.round((value * 100.0) / total);
         label.setText(percent + "% (" + value + ")");
-    }
-
-    private void updatePsychologistAlerts() {
-        if (psyAlertBox == null || !psyAlertBox.isManaged()) {
-            return;
-        }
-
-        List<JournalAnalyseRow> alerts = allRows.stream()
-                .filter(row -> row.getRisqueScore() > 0)
-                .sorted(Comparator.comparingInt(JournalAnalyseRow::getRisqueScore).reversed())
-                .toList();
-
-        psyAlertListBox.getChildren().clear();
-        if (alerts.isEmpty()) {
-            psyAlertSummaryLabel.setText("Aucune alerte critique detectee pour ce patient.");
-            return;
-        }
-
-        long criticalCount = alerts.stream().filter(row -> row.getRisqueScore() >= 10).count();
-        psyAlertSummaryLabel.setText(
-                alerts.size() + " journal(x) signale(s), dont " + criticalCount + " critique(s)."
-        );
-
-        alerts.stream()
-                .limit(5)
-                .forEach(row -> psyAlertListBox.getChildren().add(buildAlertCard(row)));
-    }
-
-    private VBox buildAlertCard(JournalAnalyseRow row) {
-        VBox card = new VBox(4);
-        String borderColor = row.getRisqueScore() >= 10 ? "#d84343" : "#f39c45";
-        String backgroundColor = row.getRisqueScore() >= 10 ? "#fff0f0" : "#fff7ec";
-        card.setStyle("-fx-background-color: " + backgroundColor + "; -fx-background-radius: 12; -fx-padding: 12; -fx-border-color: " + borderColor + "; -fx-border-radius: 12;");
-
-        Label title = new Label(row.getDateJournal() + " | " + safe(row.getRisqueLabel()) + " | " + safe(row.getHumeur()));
-        title.setStyle("-fx-font-weight: bold; -fx-text-fill: #7a2e2e;");
-
-        Label content = new Label(safe(row.getContenuResume()));
-        content.setWrapText(true);
-        content.setStyle("-fx-text-fill: #4f5050;");
-
-        Label details = new Label(safe(row.getRisqueDetails()));
-        details.setWrapText(true);
-        details.setStyle("-fx-text-fill: #7a5b5b;");
-
-        card.getChildren().addAll(title, content, details);
-        return card;
-    }
-
-    private String safe(String value) {
-        return value == null ? "" : value;
     }
 
     private void loadView(String fxmlPath) {
