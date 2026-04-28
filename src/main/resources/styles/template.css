@@ -229,3 +229,69 @@
     -fx-padding: 12 20;
     -fx-cursor: hand;
 }
+
+/* Analyse emotionnelle — assistance IA Gemini */
+.ai-side-glow {
+    -fx-background-color: linear-gradient(to bottom, #ffffff 0%, #f0fdf9 50%, #eef2ff 100%);
+    -fx-background-radius: 20;
+    -fx-padding: 16;
+    -fx-border-color: #818cf8;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 20;
+    -fx-effect: dropshadow(gaussian, rgba(99, 102, 241, 0.22), 24, 0, 0, 5);
+}
+
+.ai-panel-badge {
+    -fx-font-size: 11px;
+    -fx-text-fill: #6366f1;
+    -fx-font-weight: bold;
+    -fx-padding: 4 10;
+    -fx-background-color: rgba(99, 102, 241, 0.12);
+    -fx-background-radius: 20;
+}
+
+.ai-neural-btn {
+    -fx-background-color: linear-gradient(to right, #0d9488, #0891b2, #6366f1);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-background-radius: 22;
+    -fx-padding: 10 18;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(13, 148, 136, 0.45), 12, 0, 0, 3);
+}
+
+.ai-neural-btn:hover {
+    -fx-opacity: 0.92;
+}
+
+.ai-conseil-btn {
+    -fx-background-color: linear-gradient(to right, #7c3aed, #c026d3, #db2777);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-background-radius: 22;
+    -fx-padding: 10 18;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(192, 38, 211, 0.4), 12, 0, 0, 3);
+}
+
+.ai-conseil-btn:hover {
+    -fx-opacity: 0.92;
+}
+
+.ai-output-title {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #134e4a;
+}
+
+.ai-text-area {
+    -fx-background-color: rgba(255, 255, 255, 0.92);
+    -fx-background-radius: 14;
+    -fx-border-color: #ccfbf1;
+    -fx-border-radius: 14;
+    -fx-padding: 10;
+    -fx-font-size: 13px;
+    -fx-text-fill: #1e293b;
+}

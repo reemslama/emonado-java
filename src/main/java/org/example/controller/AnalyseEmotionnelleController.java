@@ -1,9 +1,11 @@
 package org.example.controller;
 
+import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.concurrent.Task;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -14,8 +16,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.HBox;
@@ -24,7 +28,9 @@ import javafx.util.Duration;
 import javafx.util.StringConverter;
 import org.example.entities.JournalAnalyseRow;
 import org.example.entities.User;
+import org.example.entities.AnalyseEmotionnelle;
 import org.example.service.AnalyseEmotionnelleService;
+import org.example.service.ClinicalLlmService;
 import org.example.service.UserService;
 import org.example.utils.UserSession;
 
@@ -60,16 +66,26 @@ public class AnalyseEmotionnelleController {
     @FXML private ProgressBar calmeProgress;
     @FXML private ProgressBar sosProgress;
     @FXML private ProgressBar colereProgress;
+    @FXML private HBox psyAlertsToolbar;
+    @FXML private Button psyAlertsToggleBtn;
+    @FXML private Label psyAlertsBadgeLabel;
     @FXML private VBox psyAlertBox;
     @FXML private Label psyAlertSummaryLabel;
     @FXML private VBox psyAlertListBox;
+    @FXML private Button aiAnalyseBtn;
+    @FXML private Button aiConseilBtn;
+    @FXML private ProgressIndicator aiProgress;
+    @FXML private TextArea aiAnalyseArea;
+    @FXML private TextArea aiConseilArea;
 
     private final AnalyseEmotionnelleService analyseService = new AnalyseEmotionnelleService();
+    private final ClinicalLlmService clinicalLlmService = new ClinicalLlmService();
     private final ObservableList<JournalAnalyseRow> allRows = FXCollections.observableArrayList();
     private final ObservableList<JournalAnalyseRow> visibleRows = FXCollections.observableArrayList();
     private User currentUser;
     private User viewerUser;
     private JournalAnalyseRow selectedRow;
+    private boolean psyAlertsPanelExpanded;
 
     @FXML
     public void initialize() {
@@ -100,10 +116,11 @@ public class AnalyseEmotionnelleController {
             navJournauxBtn.setVisible(false);
             navJournauxBtn.setManaged(false);
         }
-        if (psyAlertBox != null) {
-            psyAlertBox.setVisible(true);
-            psyAlertBox.setManaged(true);
+        if (psyAlertsToolbar != null) {
+            psyAlertsToolbar.setVisible(true);
+            psyAlertsToolbar.setManaged(true);
         }
+        collapsePsyAlertsPanel();
         if (patientCombo == null) {
             return;
         }
@@ -366,7 +383,7 @@ public class AnalyseEmotionnelleController {
     }
 
     private void updatePsychologistAlerts() {
-        if (psyAlertBox == null || !psyAlertBox.isManaged()) {
+        if (psyAlertBox == null || psyAlertsToolbar == null || !psyAlertsToolbar.isManaged()) {
             return;
         }
 
@@ -374,6 +391,15 @@ public class AnalyseEmotionnelleController {
                 .filter(row -> row.getRisqueScore() > 0)
                 .sorted(Comparator.comparingInt(JournalAnalyseRow::getRisqueScore).reversed())
                 .toList();
+
+        if (psyAlertsBadgeLabel != null) {
+            if (alerts.isEmpty()) {
+                psyAlertsBadgeLabel.setText("Aucun signal de risque pour ce patient.");
+            } else {
+                long criticalCount = alerts.stream().filter(row -> row.getRisqueScore() >= 10).count();
+                psyAlertsBadgeLabel.setText(alerts.size() + " signalement(s), dont " + criticalCount + " critique(s).");
+            }
+        }
 
         psyAlertListBox.getChildren().clear();
         if (alerts.isEmpty()) {
@@ -389,6 +415,36 @@ public class AnalyseEmotionnelleController {
         alerts.stream()
                 .limit(5)
                 .forEach(row -> psyAlertListBox.getChildren().add(buildAlertCard(row)));
+    }
+
+    @FXML
+    private void togglePsyAlertsPanel() {
+        setPsyAlertsPanelExpanded(!psyAlertsPanelExpanded);
+    }
+
+    private void collapsePsyAlertsPanel() {
+        psyAlertsPanelExpanded = false;
+        if (psyAlertBox != null) {
+            psyAlertBox.setVisible(false);
+            psyAlertBox.setManaged(false);
+        }
+        syncPsyAlertsToggleLabel();
+    }
+
+    private void setPsyAlertsPanelExpanded(boolean expanded) {
+        psyAlertsPanelExpanded = expanded;
+        if (psyAlertBox != null) {
+            psyAlertBox.setVisible(expanded);
+            psyAlertBox.setManaged(expanded);
+        }
+        syncPsyAlertsToggleLabel();
+    }
+
+    private void syncPsyAlertsToggleLabel() {
+        if (psyAlertsToggleBtn == null) {
+            return;
+        }
+        psyAlertsToggleBtn.setText(psyAlertsPanelExpanded ? "Masquer les alertes patient" : "Afficher les alertes patient");
     }
 
     private VBox buildAlertCard(JournalAnalyseRow row) {
@@ -457,5 +513,174 @@ public class AnalyseEmotionnelleController {
 
     private void showInfo(String message) {
         new Alert(Alert.AlertType.INFORMATION, message, ButtonType.OK).showAndWait();
+    }
+
+    @FXML
+    private void handleAiAnalyse() {
+        if (!ensureJournalSelectedForAi()) {
+            return;
+        }
+        String prompt = buildClinicalAnalysisPrompt(selectedRow);
+        runGeminiTask("Synthese clinique", prompt, aiAnalyseArea);
+    }
+
+    @FXML
+    private void handleAiConseil() {
+        if (!ensureJournalSelectedForAi()) {
+            return;
+        }
+        String prompt = buildCompassionConseilPrompt(selectedRow);
+        runGeminiTask("Conseils personnalises", prompt, aiConseilArea);
+    }
+
+    private boolean ensureJournalSelectedForAi() {
+        if (currentUser == null) {
+            showError("Aucun patient charge.");
+            return false;
+        }
+        if (selectedRow == null) {
+            showError("Selectionnez une ligne du tableau (un journal).");
+            return false;
+        }
+        String text = selectedRow.getContenuComplet();
+        if (text == null || text.isBlank()) {
+            showError("Ce journal ne contient pas de texte exploitable.");
+            return false;
+        }
+        return true;
+    }
+
+    private String buildClinicalAnalysisPrompt(JournalAnalyseRow row) {
+        String patient = patientLabel();
+        String contenu = row.getContenuComplet() == null ? "" : row.getContenuComplet().trim();
+        String etat = row.getEtatEmotionnel();
+        String niveau = row.getNiveau();
+        String risque = row.getRisqueLabel() + (row.getRisqueDetails() != null ? " — " + row.getRisqueDetails() : "");
+        AnalyseEmotionnelle a = row.getAnalyseEmotionnelle();
+        String existant = a == null
+                ? "Aucune analyse structuree en base pour cette entree."
+                : ("Etat emotionnel note : " + safe(a.getEtatEmotionnel()) + ", niveau : " + safe(a.getNiveau())
+                + ", declencheur : " + safe(a.getDeclencheur()) + ", conseil existant : " + safe(a.getConseil()));
+
+        return """
+                Tu es un psychologue superviseur clinique qui aide un collegue a preparer son prochain echange.
+                Tu reponds UNIQUEMENT en francais. Pas de diagnostic DSM ni de prescription medicamenteuse.
+
+                Patient : %s
+                Date du journal : %s
+                Humeur declaree dans l'app : %s
+                Evaluation automatique des risques (outil interne, indicatif) : %s
+
+                Texte brut du journal :
+                ---
+                %s
+                ---
+
+                Analyse deja saisie en base (peut etre incomplete) :
+                %s
+
+                Produit une SYNTHESE STRUCTUREE avec exactement ces parties (titres en ligne, puis contenu) :
+                1) COHERENCE — alignement entre l'humeur choisie et le ton du texte
+                2) NUANCES — emotions implicites, sous-texte, besoins non dits
+                3) VIGILANCE — signaux a surveiller sans dramatiser (rappel : tu n'es pas medecin)
+                4) PISTES POUR LE THERAPEUTE — 3 a 5 observations utiles pour la seance
+
+                Style : professionnel, chaleureux, concis (environ 350 a 600 mots).
+                """.formatted(patient, safe(row.getDateJournal()), safe(row.getHumeur()), safe(risque), contenu, existant);
+    }
+
+    private String buildCompassionConseilPrompt(JournalAnalyseRow row) {
+        String patient = patientLabel();
+        String contenu = row.getContenuComplet() == null ? "" : row.getContenuComplet().trim();
+        return """
+                Tu es un psychologue bienveillant dans l'application EmoNado (accompagnement emotionnel, pas de remplacement d'un suivi medical).
+                Tu ecris en francais, ton doux et concret. Pas de medicaments, pas de diagnostic medical.
+
+                Destinataire implicite du message : %s (tu peux utiliser le prenom si tu le deduis du contexte, sans inventer d'informations personnelles).
+
+                Contexte : journal du %s, humeur declaree : %s.
+
+                Texte du journal :
+                ---
+                %s
+                ---
+
+                Propose une reponse en 4 a 6 courts paragraphes :
+                - une validation empathique du vecu ;
+                - deux micro-exercices concrets (ancrage, respiration courte, ou restructuration cognitive tres legere) ;
+                - une phrase d'encouragement pour les prochains jours ;
+                - si le texte evoque une detresse grave ou des idees de mort, termine par un rappel clair d'aller vers les urgences (15 / 112) ou un proche de confiance.
+
+                Evite le jargon. Pas de liste a puces trop technique.
+                """.formatted(patient, safe(row.getDateJournal()), safe(row.getHumeur()), contenu);
+    }
+
+    private String patientLabel() {
+        if (currentUser == null) {
+            return "Patient";
+        }
+        String p = currentUser.getPrenom() != null ? currentUser.getPrenom() : "";
+        String n = currentUser.getNom() != null ? currentUser.getNom() : "";
+        String label = (p + " " + n).trim();
+        return label.isEmpty() ? "Patient" : label;
+    }
+
+    private void runGeminiTask(String phaseLabel, String prompt, TextArea targetArea) {
+        if (aiProgress != null) {
+            aiProgress.setVisible(true);
+            aiProgress.setManaged(true);
+        }
+        setAiButtonsDisabled(true);
+        errorLabel.setText(phaseLabel + " — connexion a Gemini...");
+
+        Task<String> task = new Task<>() {
+            @Override
+            protected String call() {
+                return clinicalLlmService.completeClinical(prompt);
+            }
+        };
+        task.setOnSucceeded(e -> {
+            targetArea.setText(task.getValue());
+            errorLabel.setText("");
+            fadeInArea(targetArea);
+            finishAiTaskUi();
+        });
+        task.setOnFailed(e -> {
+            Throwable t = task.getException();
+            String msg = t != null && t.getMessage() != null && !t.getMessage().isBlank()
+                    ? t.getMessage()
+                    : "Erreur lors de l'appel a l'IA.";
+            showError(msg);
+            finishAiTaskUi();
+        });
+        new Thread(task, "emonado-gemini-journal").start();
+    }
+
+    private void finishAiTaskUi() {
+        if (aiProgress != null) {
+            aiProgress.setVisible(false);
+            aiProgress.setManaged(false);
+        }
+        setAiButtonsDisabled(false);
+    }
+
+    private void setAiButtonsDisabled(boolean disabled) {
+        if (aiAnalyseBtn != null) {
+            aiAnalyseBtn.setDisable(disabled);
+        }
+        if (aiConseilBtn != null) {
+            aiConseilBtn.setDisable(disabled);
+        }
+    }
+
+    private void fadeInArea(TextArea area) {
+        if (area == null) {
+            return;
+        }
+        area.setOpacity(0);
+        FadeTransition ft = new FadeTransition(Duration.millis(520), area);
+        ft.setFromValue(0);
+        ft.setToValue(1);
+        ft.play();
     }
 }

@@ -4,8 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 
-<BorderPane fx:id="mainContainer"
-            fx:controller="org.example.controller.MainController"
+<BorderPane fx:controller="org.example.controller.MainController"
             xmlns:fx="http://javafx.com/fxml"
             xmlns="http://javafx.com/javafx/8"
             style="-fx-background-color: #f4f7f6;">
@@ -52,6 +51,7 @@
 
     <!-- ===== CONTENT ===== -->
     <center>
+        <StackPane fx:id="mainContent">
         <ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED"
                     style="-fx-background-color: transparent;">
             <content>
@@ -202,6 +202,7 @@
                 </VBox>
             </content>
         </ScrollPane>
+        </StackPane>
     </center>
 
 </BorderPane>

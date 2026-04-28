@@ -13,7 +13,8 @@ import java.util.regex.Pattern;
 
 public class GeminiChatService {
     private static final String ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent";
-    private static final String DEFAULT_API_KEY = "AIzaSyAoKs15PnIEaJi7mBRklFQ50fN69L1wbCA";
+    /** Cle par defaut vide : definir GEMINI_API_KEY ou utiliser {@link ClinicalLlmService} avec GROQ_API_KEY. */
+    private static final String DEFAULT_API_KEY = "";
     private static final Pattern TEXT_PATTERN = Pattern.compile("\"text\"\\s*:\\s*\"((?:\\\\.|[^\\\\\"])*)\"");
 
     private static final List<String> GREETINGS = List.of(
@@ -63,6 +64,10 @@ public class GeminiChatService {
         }
 
         String apiKey = readApiKey();
+        if (apiKey == null || apiKey.isBlank()) {
+            return "Cle API non configuree. Demandez a l'administrateur d'ajouter GEMINI_API_KEY (Google AI Studio) "
+                    + "ou GROQ_API_KEY pour l'analyse clinique.";
+        }
         String prompt = buildPrompt(patientName, message);
         String payload = """
                 {
@@ -97,6 +102,58 @@ public class GeminiChatService {
             throw new RuntimeException("La requete vers Gemini a ete interrompue.", e);
         } catch (IOException e) {
             throw new RuntimeException("Impossible de contacter le chatbot Gemini : " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Appel Gemini pour le contexte clinique (journaux). Preferez {@link ClinicalLlmService#completeClinical(String)} (Groq en priorite).
+     */
+    public String generateClinicalViaGemini(String prompt) {
+        if (prompt == null || prompt.isBlank()) {
+            throw new IllegalArgumentException("Prompt vide.");
+        }
+        String body = prompt.length() > 48_000 ? prompt.substring(0, 48_000) + "\n\n[... texte tronque pour l'API ...]" : prompt;
+
+        String apiKey = readApiKey();
+        if (apiKey == null || apiKey.isBlank()) {
+            throw new RuntimeException(
+                    "Aucune cle Gemini. Creez une cle sur https://aistudio.google.com/apikey et definissez la variable "
+                            + "d'environnement GEMINI_API_KEY, ou utilisez GROQ_API_KEY (gratuit, https://console.groq.com/keys ).");
+        }
+        String payload = """
+                {
+                  "contents": [
+                    {
+                      "parts": [
+                        {
+                          "text": "%s"
+                        }
+                      ]
+                    }
+                  ]
+                }
+                """.formatted(escapeJson(body));
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(ENDPOINT))
+                .timeout(Duration.ofSeconds(45))
+                .header("Content-Type", "application/json")
+                .header("X-goog-api-key", apiKey)
+                .POST(HttpRequest.BodyPublishers.ofString(payload, StandardCharsets.UTF_8))
+                .build();
+
+        try {
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+            if (response.statusCode() >= 400) {
+                throw new RuntimeException("Gemini HTTP " + response.statusCode()
+                        + ". Essayez GROQ_API_KEY (console.groq.com) ou une autre cle GEMINI_API_KEY.");
+            }
+            return extractText(response.body());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Requete Gemini interrompue.", e);
+        } catch (IOException e) {
+            throw new RuntimeException("Impossible de contacter Gemini : " + e.getMessage(), e);
         }
     }
 

@@ -6,7 +6,7 @@ echo ========================================
 echo Lancement du projet EmoNado
 echo ========================================
 
-cd /d c:\Users\LENOVO\Downloads\ZooManagement3A38(3)\ZooManagement3A38\nourtravail
+cd /d "%~dp0"
 
 REM Vérifier Java
 java -version >nul 2>&1

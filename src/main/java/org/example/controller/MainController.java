@@ -4,24 +4,28 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import org.example.Main;
 
 import java.io.IOException;
-import java.util.Objects;
+import java.net.URL;
 
 public class MainController {
 
     @FXML
-    private BorderPane mainContainer;
+    private StackPane mainContent;
     // ✅ Acceuil
     @FXML
     private void goToHome(ActionEvent event) {
+        URL url = Main.class.getResource("/main.fxml");
+        if (url == null) {
+            System.err.println("Ressource introuvable : /main.fxml");
+            return;
+        }
         try {
-            Parent root = FXMLLoader.load(
-                    Objects.requireNonNull(getClass().getResource("/main.fxml"))
-            );
-            Stage stage = (Stage) mainContainer.getScene().getWindow();
+            Parent root = FXMLLoader.load(url);
+            Stage stage = (Stage) mainContent.getScene().getWindow();
             stage.getScene().setRoot(root);
         } catch (IOException e) {
             System.err.println("Erreur chargement main.fxml");
@@ -43,11 +47,14 @@ public class MainController {
 
     // 🔥 Méthode centralisée
     private void loadPage(String path) {
+        URL url = Main.class.getResource(path);
+        if (url == null) {
+            System.err.println("Ressource introuvable sur le classpath : " + path);
+            return;
+        }
         try {
-            Parent view = FXMLLoader.load(
-                    Objects.requireNonNull(getClass().getResource(path))
-            );
-            mainContainer.setCenter(view);
+            Parent view = FXMLLoader.load(url);
+            mainContent.getChildren().setAll(view);
         } catch (IOException e) {
             System.err.println("Erreur chargement page : " + path);
             e.printStackTrace();

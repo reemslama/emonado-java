@@ -55,6 +55,12 @@
                 <TextField fx:id="searchField" promptText="Recherche dynamique par date, humeur, statut ou analyse" HBox.hgrow="ALWAYS" />
             </HBox>
 
+            <HBox fx:id="psyAlertsToolbar" spacing="12" alignment="CENTER_LEFT" visible="false" managed="false">
+                <Button fx:id="psyAlertsToggleBtn" text="Afficher les alertes patient" onAction="#togglePsyAlertsPanel"
+                        style="-fx-background-color: #fff5f5; -fx-text-fill: #a93434; -fx-font-weight: bold; -fx-border-color: #ef9a9a; -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 8 18; -fx-cursor: hand;" />
+                <Label fx:id="psyAlertsBadgeLabel" text="" style="-fx-text-fill: #7a2e2e; -fx-font-size: 13px;" wrapText="true" />
+            </HBox>
+
             <VBox fx:id="psyAlertBox" spacing="10" visible="false" managed="false" style="-fx-background-color: #fff6f5; -fx-background-radius: 18; -fx-padding: 16; -fx-border-color: #ef9a9a; -fx-border-radius: 18;">
                 <Label text="Alertes psy detectees" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #a93434;" />
                 <Label fx:id="psyAlertSummaryLabel" text="Aucune alerte critique detectee." style="-fx-text-fill: #6a5a5a;" />
@@ -67,10 +73,13 @@
                         <HBox spacing="18" style="-fx-padding: 10 0 0 0;">
                             <VBox spacing="12" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS" styleClass="pro-card">
                                 <Label text="Journaux et analyses" styleClass="pro-title" />
-                                <HBox spacing="10">
+                                <HBox spacing="10" alignment="CENTER_LEFT">
                                     <Button text="Ajouter analyse" onAction="#handleAdd" styleClass="pro-action-btn" />
                                     <Button text="Modifier" onAction="#handleEdit" styleClass="pro-action-btn" />
                                     <Button text="Supprimer" onAction="#handleDelete" styleClass="pro-action-btn" />
+                                    <Region HBox.hgrow="ALWAYS" minWidth="8" />
+                                    <Button fx:id="aiAnalyseBtn" text="Analyse IA" onAction="#handleAiAnalyse" styleClass="ai-neural-btn" />
+                                    <Button fx:id="aiConseilBtn" text="Conseil IA" onAction="#handleAiConseil" styleClass="ai-conseil-btn" />
                                 </HBox>
                                 <TableView fx:id="analyseTable" VBox.vgrow="ALWAYS">
                                     <columns>
@@ -83,10 +92,17 @@
                                 </TableView>
                             </VBox>
 
-                            <VBox spacing="12" prefWidth="360.0" styleClass="pro-card">
-                                <Label text="Analyse emotionnelle" styleClass="pro-title" />
-                                <Label text="Selectionnez un journal dans la liste puis utilisez Ajouter analyse ou Modifier." wrapText="true" style="-fx-text-fill: #4d6472;" />
-                                <Label text="La modification s'ouvre maintenant dans un nouvel onglet, comme pour le journal." wrapText="true" style="-fx-text-fill: #4d6472;" />
+                            <VBox spacing="12" prefWidth="420.0" minWidth="360" styleClass="pro-card ai-side-glow">
+                                <HBox spacing="10" alignment="CENTER_LEFT">
+                                    <Label text="Assistance clinique" styleClass="pro-title" />
+                                    <Label text="Groq / Gemini" styleClass="ai-panel-badge" />
+                                </HBox>
+                                <Label text="Selectionnez un journal, puis lancez une synthese IA ou des conseils. Cle : variable GROQ_API_KEY (recommande, gratuit) ou GEMINI_API_KEY." wrapText="true" style="-fx-text-fill: #475569; -fx-font-size: 12px;" />
+                                <ProgressIndicator fx:id="aiProgress" maxWidth="36" maxHeight="36" visible="false" managed="false" />
+                                <Label text="Synthese clinique (IA)" styleClass="ai-output-title" />
+                                <TextArea fx:id="aiAnalyseArea" wrapText="true" editable="false" prefRowCount="9" styleClass="ai-text-area" promptText="Resume structure : coherence du texte avec l'humeur, nuances emotionnelles, vigilance therapeutique..." />
+                                <Label text="Conseils bienveillants (IA)" styleClass="ai-output-title" />
+                                <TextArea fx:id="aiConseilArea" wrapText="true" editable="false" prefRowCount="8" styleClass="ai-text-area" promptText="Micro-exercices, validation empathique et pistes douces generees pour le patient..." />
                                 <Label fx:id="errorLabel" textFill="#c62828" wrapText="true" />
                             </VBox>
                         </HBox>

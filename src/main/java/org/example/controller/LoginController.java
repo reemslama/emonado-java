@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -8,6 +9,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import org.example.Main;
 import org.example.service.AppNavigationService;
 import org.example.entities.User;
 import org.example.service.AuthService;
@@ -60,32 +62,72 @@ public class LoginController {
             selectedRole = rolePatient;
         }
 
-        User user = AuthService.authenticate(email, password);
+        final ToggleButton roleChoice = selectedRole;
+        errorLabel.setText("Connexion en cours...");
 
-        if (user == null) {
-            errorLabel.setText("Email ou mot de passe incorrect.");
-            return;
-        }
+        Task<User> authTask = new Task<>() {
+            @Override
+            protected User call() {
+                return AuthService.authenticate(email, password);
+            }
+        };
+        authTask.setOnSucceeded(e -> {
+            User user = authTask.getValue();
+            if (user == null) {
+                errorLabel.setText("Email ou mot de passe incorrect.");
+                return;
+            }
+            String roleAttendu = resolveExpectedRole(roleChoice);
+            String roleTrouve = normalizeRole(user.getRole());
+            if (!roleTrouve.equalsIgnoreCase(roleAttendu)) {
+                errorLabel.setText("Acces refuse : role du compte = " + displayRole(roleTrouve)
+                        + " (vous avez choisi " + displayRole(roleAttendu) + ").");
+                return;
+            }
+            openQrOrDashboard(user);
+        });
+        authTask.setOnFailed(e -> {
+            Throwable t = authTask.getException();
+            errorLabel.setText(friendlyError(t));
+            if (t != null) {
+                t.printStackTrace();
+            }
+        });
+        new Thread(authTask, "emonado-login-auth").start();
+    }
 
-        String roleAttendu = resolveExpectedRole(selectedRole);
-        String roleTrouve = normalizeRole(user.getRole());
-
-        if (!roleTrouve.equalsIgnoreCase(roleAttendu)) {
-            errorLabel.setText("Acces refuse : role du compte = " + displayRole(roleTrouve)
-                    + " (vous avez choisi " + displayRole(roleAttendu) + ").");
-            return;
-        }
-
+    /** Apres auth reussie : ecran QR ; si QR indisponible (reseau, serveur local, FXML), acces direct au dashboard. */
+    private void openQrOrDashboard(User user) {
         try {
             QrLoginService.QrChallenge challenge = QrLoginService.getInstance().createChallenge(user);
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/qr_login.fxml"));
+            var location = Main.class.getResource("/qr_login.fxml");
+            if (location == null) {
+                throw new IOException("Fichier qr_login.fxml introuvable.");
+            }
+            FXMLLoader loader = new FXMLLoader(location);
             Parent view = loader.load();
             QrLoginController controller = loader.getController();
             controller.setChallenge(challenge);
             emailField.getScene().setRoot(view);
-        } catch (RuntimeException | IOException e) {
-            errorLabel.setText(e.getMessage());
+        } catch (RuntimeException | IOException ex) {
+            ex.printStackTrace();
+            try {
+                AppNavigationService.goToDashboard(emailField.getScene(), user);
+            } catch (RuntimeException navEx) {
+                errorLabel.setText(friendlyError(navEx));
+            }
         }
+    }
+
+    private static String friendlyError(Throwable t) {
+        if (t == null) {
+            return "Une erreur est survenue.";
+        }
+        String m = t.getMessage();
+        if (m != null && !m.isBlank()) {
+            return m;
+        }
+        return "Connexion impossible. Verifiez que MySQL est demarre (port 3306, base emonado) et reessayez.";
     }
 
     @FXML
