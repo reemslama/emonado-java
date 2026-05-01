@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import org.example.entities.User;
+import org.example.service.PasswordHashService;
 import org.example.utils.DataSource;
 import org.example.utils.UserSession;
 import java.io.IOException;
@@ -67,7 +68,7 @@ public class ProfilPsyController {
             pstmt.setString(4, specialiteField.getText());
 
             if (updatePass) {
-                pstmt.setString(5, newPass);
+                pstmt.setString(5, PasswordHashService.hash(newPass));
                 pstmt.setInt(6, currentUser.getId());
             } else {
                 pstmt.setInt(5, currentUser.getId());

@@ -322,8 +322,8 @@ public class MedicalDataService {
         List<User> patients = new ArrayList<>();
         try (Connection conn = DataSource.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(
-                     "SELECT id, nom, prenom, email, telephone, sexe, specialite, role, dateNaissance "
-                             + "FROM user WHERE role = 'ROLE_PATIENT' ORDER BY nom, prenom")) {
+                     "SELECT id, nom, prenom, email, roles, telephone, sexe, specialite, has_child, avatar, face_id_image_path, date_naissance "
+                             + "FROM user WHERE UPPER(roles) LIKE '%\"ROLE_PATIENT\"%' ORDER BY nom, prenom")) {
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     patients.add(mapUser(rs));
@@ -407,15 +407,26 @@ public class MedicalDataService {
         user.setNom(rs.getString("nom"));
         user.setPrenom(rs.getString("prenom"));
         user.setEmail(rs.getString("email"));
+        user.setRoles(getOptionalString(rs, "roles"));
         user.setTelephone(rs.getString("telephone"));
         user.setSexe(rs.getString("sexe"));
         user.setSpecialite(rs.getString("specialite"));
-        user.setRole(rs.getString("role"));
-        Date birthDate = rs.getDate("dateNaissance");
+        user.setHasChild(rs.getBoolean("has_child"));
+        user.setAvatar(getOptionalString(rs, "avatar"));
+        user.setFaceIdImagePath(getOptionalString(rs, "face_id_image_path"));
+        Date birthDate = rs.getDate("date_naissance");
         if (birthDate != null) {
-            user.setDateNaissance(birthDate.toLocalDate());
+            user.setdate_naissance(birthDate.toLocalDate());
         }
         return user;
+    }
+
+    private String getOptionalString(ResultSet rs, String column) {
+        try {
+            return rs.getString(column);
+        } catch (SQLException e) {
+            return null;
+        }
     }
 
     private void execute(Connection conn, String sql) throws SQLException {

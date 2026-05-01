@@ -30,7 +30,7 @@ public final class MedicalValidationService {
         String email = normalize(user.getEmail());
         String telephone = normalize(user.getTelephone()).replaceAll("\\D", "");
         String sexe = normalize(user.getSexe());
-        LocalDate birthDate = user.getDateNaissance();
+        LocalDate birthDate = user.getdate_naissance();
 
         if (!NAME_PATTERN.matcher(nom).matches()) {
             return "Le nom doit contenir entre 2 et 50 caracteres alphabetiques.";

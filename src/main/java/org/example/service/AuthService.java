@@ -21,28 +21,32 @@ public class AuthService {
     }
 
     public static User addUser(User user) {
-        String query = "INSERT INTO user (nom, prenom, email, password, role, telephone, sexe, dateNaissance, specialite, hasChild) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO user (email, roles, password, nom, prenom, telephone, sexe, date_naissance, has_child, specialite, avatar, face_id_image_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 
         Connection conn = DataSource.getInstance().getConnection();
 
         try (PreparedStatement pstmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-            pstmt.setString(1, user.getNom());
-            pstmt.setString(2, user.getPrenom());
-            pstmt.setString(3, user.getEmail());
-            pstmt.setString(4, user.getPassword());
-            pstmt.setString(5, user.getRole());
+            String hashedPassword = PasswordHashService.hash(user.getPassword());
+            pstmt.setString(1, user.getEmail());
+            pstmt.setString(2, user.getRoles());
+            pstmt.setString(3, hashedPassword);
+            pstmt.setString(4, user.getNom());
+            pstmt.setString(5, user.getPrenom());
             pstmt.setString(6, user.getTelephone());
             pstmt.setString(7, user.getSexe());
-            pstmt.setDate(8, user.getDateNaissance() != null ? Date.valueOf(user.getDateNaissance()) : null);
-            pstmt.setString(9, user.getSpecialite());
-            pstmt.setBoolean(10, user.isHasChild());
+            pstmt.setDate(8, user.getdate_naissance() != null ? Date.valueOf(user.getdate_naissance()) : null);
+            pstmt.setBoolean(9, user.isHasChild());
+            pstmt.setString(10, user.getSpecialite());
+            pstmt.setString(11, user.getAvatar());
+            pstmt.setString(12, user.getFaceIdImagePath());
             pstmt.executeUpdate();
             try (ResultSet keys = pstmt.getGeneratedKeys()) {
                 if (keys.next()) {
                     user.setId(keys.getInt(1));
                 }
             }
+            user.setPassword(hashedPassword);
             return user;
 
         } catch (SQLException e) {
@@ -54,7 +58,7 @@ public class AuthService {
      * Authentification et recuperation de toutes les donnees de l'utilisateur
      */
     public static User authenticate(String email, String password) {
-        String query = "SELECT * FROM user WHERE email = ? AND password = ?";
+        String query = "SELECT * FROM user WHERE email = ?";
 
         Connection conn = DataSource.getInstance().getConnection();
 
@@ -66,11 +70,18 @@ public class AuthService {
 
         try (PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setString(1, email);
-            pstmt.setString(2, password);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    return mapUser(rs);
+                    User user = mapUser(rs);
+                    if (!PasswordHashService.matches(password, user.getPassword())) {
+                        return null;
+                    }
+                    if (PasswordHashService.needsRehash(user.getPassword())) {
+                        updatePasswordByEmail(email, password);
+                        user.setPassword(findByEmail(email).getPassword());
+                    }
+                    return user;
                 }
             }
         } catch (SQLException e) {
@@ -101,7 +112,7 @@ public class AuthService {
         Connection conn = DataSource.getInstance().getConnection();
 
         try (PreparedStatement pstmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-            pstmt.setString(1, newPassword);
+            pstmt.setString(1, PasswordHashService.hash(newPassword));
             pstmt.setString(2, email);
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -115,17 +126,18 @@ public class AuthService {
         user.setNom(rs.getString("nom"));
         user.setPrenom(rs.getString("prenom"));
         user.setEmail(rs.getString("email"));
-        user.setRole(rs.getString("role"));
+        user.setRoles(getOptionalString(rs, "roles"));
+        user.setPassword(getOptionalString(rs, "password"));
         user.setTelephone(rs.getString("telephone"));
         user.setSexe(rs.getString("sexe"));
         user.setSpecialite(rs.getString("specialite"));
-        user.setHasChild(rs.getBoolean("hasChild"));
+        user.setHasChild(rs.getBoolean("has_child"));
         user.setAvatar(getOptionalString(rs, "avatar"));
         user.setFaceIdImagePath(getOptionalString(rs, "face_id_image_path"));
 
-        Date birthDate = rs.getDate("dateNaissance");
+        Date birthDate = rs.getDate("date_naissance");
         if (birthDate != null) {
-            user.setDateNaissance(birthDate.toLocalDate());
+            user.setdate_naissance(birthDate.toLocalDate());
         }
         return user;
     }

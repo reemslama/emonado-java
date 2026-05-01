@@ -41,7 +41,7 @@ public class AdminTableController {
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
         colPhone.setCellValueFactory(new PropertyValueFactory<>("telephone"));
         colSexe.setCellValueFactory(new PropertyValueFactory<>("sexe"));
-        colDateNaissance.setCellValueFactory(new PropertyValueFactory<>("dateNaissance"));
+        colDateNaissance.setCellValueFactory(new PropertyValueFactory<>("date_naissance"));
         colSpecialite.setCellValueFactory(new PropertyValueFactory<>("specialite"));
 
         addActionsToTable();

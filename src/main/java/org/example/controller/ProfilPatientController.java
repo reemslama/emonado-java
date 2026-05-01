@@ -15,6 +15,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 import org.example.entities.User;
 import org.example.service.FaceProfileService;
+import org.example.service.PasswordHashService;
 import org.example.utils.DataSource;
 import org.example.utils.UserSession;
 
@@ -66,7 +67,7 @@ public class ProfilPatientController {
 
         sexeCombo.getItems().setAll("Homme", "Femme");
         sexeCombo.setValue(currentUser.getSexe());
-        datePicker.setValue(currentUser.getDateNaissance());
+        datePicker.setValue(currentUser.getdate_naissance());
         avatarInitialsLabel.setText(buildInitials(currentUser));
         applyAvatarAppearance(currentUser.getAvatar());
         updateFaceIdPreview(currentUser.getFaceIdImagePath());
@@ -82,8 +83,8 @@ public class ProfilPatientController {
         boolean updatePassword = newPassword != null && !newPassword.trim().isEmpty();
 
         String query = updatePassword
-                ? "UPDATE user SET nom=?, prenom=?, telephone=?, sexe=?, dateNaissance=?, password=? WHERE id=?"
-                : "UPDATE user SET nom=?, prenom=?, telephone=?, sexe=?, dateNaissance=? WHERE id=?";
+                ? "UPDATE user SET nom=?, prenom=?, telephone=?, sexe=?, date_naissance=?, password=? WHERE id=?"
+                : "UPDATE user SET nom=?, prenom=?, telephone=?, sexe=?, date_naissance=? WHERE id=?";
 
         try (Connection conn = DataSource.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -95,7 +96,7 @@ public class ProfilPatientController {
             pstmt.setDate(5, datePicker.getValue() != null ? Date.valueOf(datePicker.getValue()) : null);
 
             if (updatePassword) {
-                pstmt.setString(6, newPassword);
+                pstmt.setString(6, PasswordHashService.hash(newPassword));
                 pstmt.setInt(7, currentUser.getId());
             } else {
                 pstmt.setInt(6, currentUser.getId());
@@ -108,7 +109,7 @@ public class ProfilPatientController {
             currentUser.setPrenom(prenomField.getText());
             currentUser.setTelephone(phoneField.getText());
             currentUser.setSexe(sexeCombo.getValue());
-            currentUser.setDateNaissance(datePicker.getValue());
+            currentUser.setdate_naissance(datePicker.getValue());
             UserSession.setInstance(currentUser);
 
             new Alert(Alert.AlertType.INFORMATION, "Profil mis a jour avec succes !").show();

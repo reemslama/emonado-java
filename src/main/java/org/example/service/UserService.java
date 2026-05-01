@@ -17,10 +17,10 @@ import java.util.List;
 public class UserService {
     public static ObservableList<User> getByRole(String role) {
         ObservableList<User> users = FXCollections.observableArrayList();
-        String query = "SELECT * FROM user WHERE role = ?";
+        String query = "SELECT * FROM user WHERE UPPER(roles) LIKE ? ORDER BY prenom, nom";
         try (Connection conn = DataSource.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setString(1, role);
+            pstmt.setString(1, "%\"" + role.toUpperCase() + "\"%");
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 users.add(mapUser(rs));
@@ -32,7 +32,7 @@ public class UserService {
     }
 
     public static void updatePatientProfile(User user) throws SQLException {
-        String query = "UPDATE user SET nom = ?, prenom = ?, email = ?, telephone = ?, sexe = ?, dateNaissance = ? WHERE id = ?";
+        String query = "UPDATE user SET nom = ?, prenom = ?, email = ?, telephone = ?, sexe = ?, date_naissance = ? WHERE id = ?";
         try (Connection conn = DataSource.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setString(1, user.getNom());
@@ -40,7 +40,7 @@ public class UserService {
             pstmt.setString(3, user.getEmail());
             pstmt.setString(4, user.getTelephone());
             pstmt.setString(5, user.getSexe());
-            pstmt.setDate(6, user.getDateNaissance() != null ? Date.valueOf(user.getDateNaissance()) : null);
+            pstmt.setDate(6, user.getdate_naissance() != null ? Date.valueOf(user.getdate_naissance()) : null);
             pstmt.setInt(7, user.getId());
             pstmt.executeUpdate();
         }
@@ -75,13 +75,13 @@ public class UserService {
 
     private static List<User> getByRoles(String... roles) {
         List<User> users = new ArrayList<>();
-        String placeholders = String.join(", ", Collections.nCopies(roles.length, "?"));
-        String query = "SELECT * FROM user WHERE UPPER(role) IN (" + placeholders + ") ORDER BY prenom, nom";
+        String conditions = String.join(" OR ", Collections.nCopies(roles.length, "UPPER(roles) LIKE ?"));
+        String query = "SELECT * FROM user WHERE " + conditions + " ORDER BY prenom, nom";
 
         try (Connection conn = DataSource.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
             for (int i = 0; i < roles.length; i++) {
-                pstmt.setString(i + 1, roles[i].toUpperCase());
+                pstmt.setString(i + 1, "%\"" + roles[i].toUpperCase() + "\"%");
             }
 
             ResultSet rs = pstmt.executeQuery();
@@ -101,16 +101,17 @@ public class UserService {
         user.setNom(rs.getString("nom"));
         user.setPrenom(rs.getString("prenom"));
         user.setEmail(rs.getString("email"));
+        user.setRoles(getOptionalString(rs, "roles"));
+        user.setPassword(getOptionalString(rs, "password"));
         user.setTelephone(rs.getString("telephone"));
         user.setSexe(rs.getString("sexe"));
         user.setSpecialite(rs.getString("specialite"));
-        user.setRole(rs.getString("role"));
-        user.setHasChild(rs.getBoolean("hasChild"));
+        user.setHasChild(rs.getBoolean("has_child"));
         user.setAvatar(getOptionalString(rs, "avatar"));
         user.setFaceIdImagePath(getOptionalString(rs, "face_id_image_path"));
-        Date birthDate = rs.getDate("dateNaissance");
+        Date birthDate = rs.getDate("date_naissance");
         if (birthDate != null) {
-            user.setDateNaissance(birthDate.toLocalDate());
+            user.setdate_naissance(birthDate.toLocalDate());
         }
         return user;
     }

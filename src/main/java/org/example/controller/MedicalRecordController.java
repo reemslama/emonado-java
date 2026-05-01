@@ -186,7 +186,7 @@ public class MedicalRecordController {
         currentUser.setEmail(MedicalValidationService.normalize(emailField.getText()));
         currentUser.setTelephone(MedicalValidationService.normalize(phoneField.getText()).replaceAll("\\D", ""));
         currentUser.setSexe(MedicalValidationService.normalize(sexeField.getText()));
-        currentUser.setDateNaissance(birthDatePicker.getValue());
+        currentUser.setdate_naissance(birthDatePicker.getValue());
 
         String validationError = MedicalValidationService.validatePatientProfile(currentUser);
         if (validationError != null) {
@@ -257,7 +257,7 @@ public class MedicalRecordController {
         emailField.setText(currentUser.getEmail());
         phoneField.setText(currentUser.getTelephone());
         sexeField.setText(currentUser.getSexe() == null ? "" : currentUser.getSexe());
-        birthDatePicker.setValue(currentUser.getDateNaissance());
+        birthDatePicker.setValue(currentUser.getdate_naissance());
     }
 
     private void loadMedicalRecord() throws SQLException {

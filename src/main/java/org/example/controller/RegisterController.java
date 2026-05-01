@@ -116,7 +116,7 @@ public class RegisterController {
         nouveauPatient.setPassword(password);
         nouveauPatient.setTelephone(phone);
         nouveauPatient.setSexe(sexe);
-        nouveauPatient.setDateNaissance(dateNais);
+        nouveauPatient.setdate_naissance(dateNais);
         nouveauPatient.setHasChild(hasChild);
 
         User patientCree;

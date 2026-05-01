@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 public class GeminiChatService {
     private static final String ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent";
-    private static final String DEFAULT_API_KEY = "AIzaSyAoKs15PnIEaJi7mBRklFQ50fN69L1wbCA";
+    private static final String DEFAULT_API_KEY = "AIzaSyBfIFM7nQm6Aexow8gxBMBxeMbp5PGOvVo";
     private static final Pattern TEXT_PATTERN = Pattern.compile("\"text\"\\s*:\\s*\"((?:\\\\.|[^\\\\\"])*)\"");
 
     private static final List<String> GREETINGS = List.of(

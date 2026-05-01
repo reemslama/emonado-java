@@ -59,9 +59,9 @@ public class AdminAddUserController {
         String sexe = sexeCombo.getValue();
         String role = "Psychologue".equals(roleCombo.getValue()) ? "ROLE_PSYCHOLOGUE" : "ROLE_PATIENT";
         String specialite = specialiteField.getText().trim();
-        LocalDate dateNaissance = datePicker.getValue();
+        LocalDate date_naissance = datePicker.getValue();
 
-        if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || password.isEmpty() || phone.isEmpty() || sexe == null || dateNaissance == null) {
+        if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || password.isEmpty() || phone.isEmpty() || sexe == null || date_naissance == null) {
             errorLabel.setText("Tous les champs obligatoires doivent etre remplis.");
             return;
         }
@@ -89,7 +89,7 @@ public class AdminAddUserController {
         user.setPassword(password);
         user.setTelephone(phone);
         user.setSexe(sexe);
-        user.setDateNaissance(dateNaissance);
+        user.setdate_naissance(date_naissance);
         user.setRole(role);
         user.setSpecialite("ROLE_PSYCHOLOGUE".equals(role) ? specialite : null);
 
