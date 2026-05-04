@@ -12,11 +12,13 @@ import org.example.entities.User;
 import org.example.utils.UserSession;
 
 import java.io.IOException;
+import java.net.URL;
 
 public class PatientDashboardController {
 
     @FXML private Label welcomeLabel;
     @FXML private VBox espaceEnfantBtn;
+
     private User currentUser;
 
     @FXML
@@ -56,24 +58,24 @@ public class PatientDashboardController {
     @FXML
     private void goToTest() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/test/ChoixCategorie.fxml"));
+            URL url = getClass().getResource("/fxml/test/ChoixCategorie.fxml");
+            System.out.println("Chemin FXML = " + url);
+
+            if (url == null) {
+                System.err.println("ERREUR : FXML introuvable.");
+                return;
+            }
+
+            FXMLLoader loader = new FXMLLoader(url);
             Parent root = loader.load();
 
             Stage stage = (Stage) welcomeLabel.getScene().getWindow();
-            Scene scene = new Scene(root, stage.getWidth(), stage.getHeight());
-            stage.setScene(scene);
+            stage.setScene(new Scene(root));
             stage.setMaximized(true);
-            stage.setFullScreen(true);
-            stage.setFullScreenExitHint("");
         } catch (IOException e) {
             System.err.println("Erreur chargement test : " + e.getMessage());
             e.printStackTrace();
         }
-    }
-
-    @FXML
-    private void goToRendezVous() {
-        loadView("/AjouterRendezVous.fxml", "Rendez-vous");
     }
 
     @FXML
@@ -91,24 +93,39 @@ public class PatientDashboardController {
         loadView("/EspaceEnfant.fxml", "Espace Enfant");
     }
 
+    @FXML
+    private void openChat() {
+        loadView("/chat_dashboard.fxml", "Messagerie");
+    }
+
+    @FXML
+    private void openChatbot() {
+        loadView("/patient_chatbot.fxml", "Assistant psychologique");
+    }
+
     private void loadView(String fxmlPath, String viewName) {
         if (this.currentUser == null) {
-            System.err.println("Erreur: User est NULL.");
+            System.err.println("User est NULL.");
             return;
         }
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            URL url = getClass().getResource(fxmlPath);
+
+            if (url == null) {
+                System.err.println("Fichier FXML introuvable : " + fxmlPath);
+                return;
+            }
+
+            FXMLLoader loader = new FXMLLoader(url);
             Parent view = loader.load();
 
             Object controller = loader.getController();
             if (controller != null) {
                 try {
-                    controller.getClass()
-                            .getMethod("setUserData", User.class)
-                            .invoke(controller, this.currentUser);
+                    controller.getClass().getMethod("setUserData", User.class).invoke(controller, this.currentUser);
                 } catch (NoSuchMethodException e) {
-                    System.out.println("Note: " + viewName + " ne necessite pas setUserData.");
+                    System.out.println(viewName + " ne necessite pas setUserData.");
                 } catch (Exception e) {
                     System.err.println("Erreur injection user dans " + viewName + " : " + e.getMessage());
                 }
@@ -120,7 +137,6 @@ public class PatientDashboardController {
             } else {
                 welcomeLabel.getScene().setRoot(view);
             }
-
         } catch (IOException e) {
             System.err.println("Erreur chargement vue [" + viewName + "] : " + e.getMessage());
             e.printStackTrace();

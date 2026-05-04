@@ -119,18 +119,15 @@ public class RegisterController {
         nouveauPatient.setDateNaissance(dateNais);
         nouveauPatient.setHasChild(hasChild);
 
+        User patientCree;
         try {
-            AuthService.addPatient(nouveauPatient);
+            patientCree = AuthService.addPatient(nouveauPatient);
         } catch (RuntimeException e) {
             errorLabel.setText(extractErrorMessage(e));
             return;
         }
 
-        if (hasChild) {
-            showSuccessAndGoLogin("Compte parent cree avec succes. Connectez-vous en tant que parent pour ouvrir l'Espace Enfant.");
-        } else {
-            showSuccessAndGoLogin("Compte cree avec succes.");
-        }
+        openFaceAvatarSetup(patientCree);
     }
 
     private void showSuccessAndGoLogin(String message) {
@@ -140,6 +137,21 @@ public class RegisterController {
         alert.setContentText(message);
         alert.showAndWait();
         goToLogin();
+    }
+
+    private void openFaceAvatarSetup(User user) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/face_avatar_setup.fxml"));
+            Parent root = loader.load();
+            FaceAvatarSetupController controller = loader.getController();
+            controller.setRegisteredUser(user);
+            nomField.getScene().setRoot(root);
+        } catch (IOException e) {
+            String message = user != null && user.isHasChild()
+                    ? "Compte parent cree avec succes. Connectez-vous en tant que parent pour ouvrir l'Espace Enfant."
+                    : "Compte cree avec succes.";
+            showSuccessAndGoLogin(message);
+        }
     }
 
     private LocalDate parseBirthDate() {

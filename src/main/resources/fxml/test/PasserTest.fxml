@@ -5,7 +5,7 @@
 <?import javafx.scene.image.*?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.example.controllers.test.PasserTestController"
+            fx:controller="org.example.controller.PasserTestController"
             style="-fx-background-color: #eef6e0;">
 
     <!-- ══════════════════════ HEADER (TOP) ══════════════════════ -->

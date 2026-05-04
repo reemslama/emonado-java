@@ -5,6 +5,8 @@ import java.time.LocalDate;
 public class User {
     private int id;
     private String nom, prenom, email, password, role, telephone, sexe, specialite;
+    private String avatar;
+    private String faceIdImagePath;
     private LocalDate dateNaissance;
     private boolean hasChild;
 
@@ -79,6 +81,22 @@ public class User {
 
     public void setSpecialite(String specialite) {
         this.specialite = specialite;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public String getFaceIdImagePath() {
+        return faceIdImagePath;
+    }
+
+    public void setFaceIdImagePath(String faceIdImagePath) {
+        this.faceIdImagePath = faceIdImagePath;
     }
 
     public LocalDate getDateNaissance() {

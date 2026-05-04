@@ -15,18 +15,18 @@ public class AuthService {
     /**
      * Inscription d'un nouveau patient
      */
-    public static void addPatient(User user) {
+    public static User addPatient(User user) {
         user.setRole("ROLE_PATIENT");
-        addUser(user);
+        return addUser(user);
     }
 
-    public static void addUser(User user) {
+    public static User addUser(User user) {
         String query = "INSERT INTO user (nom, prenom, email, password, role, telephone, sexe, dateNaissance, specialite, hasChild) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 
         Connection conn = DataSource.getInstance().getConnection();
 
-        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+        try (PreparedStatement pstmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, user.getNom());
             pstmt.setString(2, user.getPrenom());
             pstmt.setString(3, user.getEmail());
@@ -38,6 +38,12 @@ public class AuthService {
             pstmt.setString(9, user.getSpecialite());
             pstmt.setBoolean(10, user.isHasChild());
             pstmt.executeUpdate();
+            try (ResultSet keys = pstmt.getGeneratedKeys()) {
+                if (keys.next()) {
+                    user.setId(keys.getInt(1));
+                }
+            }
+            return user;
 
         } catch (SQLException e) {
             throw new RuntimeException("Erreur SQL lors de l'inscription : " + e.getMessage(), e);
@@ -64,20 +70,7 @@ public class AuthService {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    User user = new User();
-                    user.setId(rs.getInt("id"));
-                    user.setNom(rs.getString("nom"));
-                    user.setPrenom(rs.getString("prenom"));
-                    user.setEmail(rs.getString("email"));
-                    user.setRole(rs.getString("role"));
-                    user.setTelephone(rs.getString("telephone"));
-                    user.setSexe(rs.getString("sexe"));
-                    user.setSpecialite(rs.getString("specialite"));
-                    user.setHasChild(rs.getBoolean("hasChild"));
-                    if (rs.getDate("dateNaissance") != null) {
-                        user.setDateNaissance(rs.getDate("dateNaissance").toLocalDate());
-                    }
-                    return user;
+                    return mapUser(rs);
                 }
             }
         } catch (SQLException e) {
@@ -94,20 +87,7 @@ public class AuthService {
             pstmt.setString(1, email);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    User user = new User();
-                    user.setId(rs.getInt("id"));
-                    user.setNom(rs.getString("nom"));
-                    user.setPrenom(rs.getString("prenom"));
-                    user.setEmail(rs.getString("email"));
-                    user.setRole(rs.getString("role"));
-                    user.setTelephone(rs.getString("telephone"));
-                    user.setSexe(rs.getString("sexe"));
-                    user.setSpecialite(rs.getString("specialite"));
-                    user.setHasChild(rs.getBoolean("hasChild"));
-                    if (rs.getDate("dateNaissance") != null) {
-                        user.setDateNaissance(rs.getDate("dateNaissance").toLocalDate());
-                    }
-                    return user;
+                    return mapUser(rs);
                 }
             }
         } catch (SQLException e) {
@@ -126,6 +106,35 @@ public class AuthService {
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new RuntimeException("Erreur SQL lors de la mise a jour du mot de passe : " + e.getMessage(), e);
+        }
+    }
+
+    private static User mapUser(ResultSet rs) throws SQLException {
+        User user = new User();
+        user.setId(rs.getInt("id"));
+        user.setNom(rs.getString("nom"));
+        user.setPrenom(rs.getString("prenom"));
+        user.setEmail(rs.getString("email"));
+        user.setRole(rs.getString("role"));
+        user.setTelephone(rs.getString("telephone"));
+        user.setSexe(rs.getString("sexe"));
+        user.setSpecialite(rs.getString("specialite"));
+        user.setHasChild(rs.getBoolean("hasChild"));
+        user.setAvatar(getOptionalString(rs, "avatar"));
+        user.setFaceIdImagePath(getOptionalString(rs, "face_id_image_path"));
+
+        Date birthDate = rs.getDate("dateNaissance");
+        if (birthDate != null) {
+            user.setDateNaissance(birthDate.toLocalDate());
+        }
+        return user;
+    }
+
+    private static String getOptionalString(ResultSet rs, String column) {
+        try {
+            return rs.getString(column);
+        } catch (SQLException e) {
+            return null;
         }
     }
 }

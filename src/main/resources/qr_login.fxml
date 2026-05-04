@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.example.controller.QrLoginController"
+      alignment="CENTER" spacing="20" styleClass="qr-shell">
+    <stylesheets>
+        <URL value="@/styles/template.css" />
+    </stylesheets>
+
+    <VBox alignment="CENTER" spacing="16" styleClass="qr-card">
+        <Label fx:id="titleLabel" text="Validation QR" styleClass="auth-title"/>
+        <Label fx:id="subtitleLabel" text="Scannez pour valider" styleClass="auth-subtitle" wrapText="true"/>
+        <ImageView fx:id="qrImageView" fitWidth="280" fitHeight="280" pickOnBounds="true" preserveRatio="true"/>
+        <Label fx:id="statusLabel" text="En attente de validation..." style="-fx-text-fill: #475569; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+        <Label fx:id="linkLabel" styleClass="qr-link" wrapText="true" maxWidth="420"/>
+        <HBox alignment="CENTER" spacing="12">
+            <Button text="Annuler" onAction="#cancel" styleClass="secondary-action"/>
+        </HBox>
+    </VBox>
+</VBox>

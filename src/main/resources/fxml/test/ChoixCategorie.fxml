@@ -6,7 +6,7 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:id="rootBox"
-      fx:controller="org.example.controllers.test.ChoixCategorieController"
+      fx:controller="org.example.controller.ChoixCategorieController"
       alignment="CENTER"
       spacing="30"
       maxWidth="Infinity"

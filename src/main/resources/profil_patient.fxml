@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
 <ScrollPane fitToWidth="true" xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.example.controller.ProfilPatientController"
@@ -11,253 +18,152 @@
                    -fx-background-color: linear-gradient(to bottom right, #ecfdf5, #d1fae5, #e0f2fe);
                    -fx-border-color: transparent;">
     <content>
-        <VBox spacing="0" alignment="TOP_CENTER" maxWidth="680"
-              style="-fx-padding: 0;">
+        <StackPane alignment="TOP_CENTER" style="-fx-padding: 28;">
+        <VBox spacing="24" alignment="TOP_CENTER" maxWidth="700" prefWidth="700" style="-fx-padding: 0;">
 
-            <!-- ===== NAVBAR ===== -->
             <HBox alignment="CENTER_LEFT" spacing="12"
-                  style="-fx-background-color: rgba(255,255,255,0.92);
+                  style="-fx-background-color: rgba(255,255,255,0.94);
                          -fx-padding: 16 24;
+                         -fx-background-radius: 20;
                          -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 12, 0, 0, 2);">
-                <Label text="🌿" style="-fx-font-size: 22px;"/>
                 <Label text="Emonado"
-                       style="-fx-font-size: 18px; -fx-font-weight: bold;
-                              -fx-text-fill: #166534; -fx-font-family: 'Segoe UI';"/>
+                       style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #166534; -fx-font-family: 'Segoe UI';"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Label text="🔒" style="-fx-font-size: 14px;"/>
-                <Label text="Données sécurisées"
+                <Label text="Donnees securisees"
                        style="-fx-font-size: 12px; -fx-text-fill: #6b7280; -fx-font-family: 'Segoe UI';"/>
             </HBox>
 
-            <VBox spacing="24" style="-fx-padding: 32 28;">
+            <HBox alignment="CENTER_LEFT">
+                <Button text="Retour au dashboard" onAction="#returnToDashboard"
+                        style="-fx-background-color: transparent;
+                               -fx-text-fill: #6b7280;
+                               -fx-font-size: 13px;
+                               -fx-font-weight: 600;
+                               -fx-cursor: hand;
+                               -fx-font-family: 'Segoe UI';"/>
+            </HBox>
 
-                <!-- ===== BACK BUTTON ===== -->
-                <HBox alignment="CENTER_LEFT">
-                    <Button text="← Retour au dashboard" onAction="#returnToDashboard"
-                            style="-fx-background-color: transparent;
-                                   -fx-text-fill: #6b7280;
-                                   -fx-font-size: 13px;
-                                   -fx-font-weight: 600;
-                                   -fx-cursor: hand;
-                                   -fx-font-family: 'Segoe UI';"/>
-                </HBox>
+            <VBox alignment="CENTER" spacing="18"
+                  style="-fx-background-color: white;
+                         -fx-background-radius: 24;
+                         -fx-padding: 28;
+                         -fx-effect: dropshadow(gaussian, rgba(16,185,129,0.15), 25, 0, 0, 8);">
 
-                <!-- ===== PROFILE HEADER CARD ===== -->
-                <VBox alignment="CENTER" spacing="0"
-                      style="-fx-background-color: white;
-                             -fx-background-radius: 24;
-                             -fx-effect: dropshadow(gaussian, rgba(16,185,129,0.15), 25, 0, 0, 8);">
+                <StackPane prefWidth="110" prefHeight="110">
+                    <Region fx:id="avatarCircle"
+                            style="-fx-background-color: linear-gradient(to bottom right, #6ee7b7, #14b8a6);
+                                   -fx-background-radius: 55;
+                                   -fx-min-width: 110; -fx-min-height: 110;
+                                   -fx-border-color: white; -fx-border-width: 4; -fx-border-radius: 55;"/>
+                    <Label fx:id="avatarInitialsLabel" text="PT"
+                           style="-fx-font-size: 34px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                </StackPane>
 
-                    <!-- Banner Gradient -->
-                    <Region prefHeight="120" maxWidth="Infinity"
-                            style="-fx-background-color: linear-gradient(to right, #4ade80, #34d399, #2dd4bf);
-                                   -fx-background-radius: 24 24 0 0;"/>
+                <Label fx:id="titleLabel" text="Mon Profil"
+                       style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1f2937; -fx-font-family: 'Segoe UI';"/>
+                <Label text="Gerez vos informations personnelles"
+                       style="-fx-font-size: 13px; -fx-text-fill: #9ca3af; -fx-font-family: 'Segoe UI';"/>
 
-                    <!-- Avatar + Info -->
-                    <VBox alignment="CENTER" spacing="6"
-                          style="-fx-padding: 0 20 24 20; -fx-translate-y: -50;">
-
-                        <!-- Avatar Circle -->
-                        <StackPane prefWidth="110" prefHeight="110">
-                            <Region style="-fx-background-color: linear-gradient(to bottom right, #4ade80, #059669);
-                                           -fx-background-radius: 55;
-                                           -fx-min-width: 110; -fx-min-height: 110;
-                                           -fx-effect: dropshadow(gaussian, rgba(16,185,129,0.4), 20, 0, 0, 4);
-                                           -fx-border-color: white; -fx-border-width: 4; -fx-border-radius: 55;"/>
-                            <Label text="👤" style="-fx-font-size: 48px;"/>
-                        </StackPane>
-
-                        <Label fx:id="titleLabel" text="Mon Profil"
-                               style="-fx-font-size: 24px; -fx-font-weight: bold;
-                                      -fx-text-fill: #1f2937; -fx-font-family: 'Segoe UI';"/>
-                        <Label text="Gérez vos informations personnelles"
-                               style="-fx-font-size: 13px; -fx-text-fill: #9ca3af; -fx-font-family: 'Segoe UI';"/>
-                    </VBox>
+                <VBox alignment="CENTER" spacing="8"
+                      style="-fx-background-color: #f8fafc; -fx-background-radius: 18; -fx-padding: 14; -fx-max-width: 220;">
+                    <ImageView fx:id="faceIdImageView" fitWidth="88" fitHeight="88" preserveRatio="true"/>
+                    <Label fx:id="faceIdStatusLabel" text="Face ID non configure"
+                           style="-fx-font-size: 12px; -fx-text-fill: #64748b; -fx-font-family: 'Segoe UI';"/>
                 </VBox>
-
-                <!-- ===== FORM CARD ===== -->
-                <VBox spacing="20"
-                      style="-fx-background-color: white;
-                             -fx-background-radius: 24;
-                             -fx-padding: 28;
-                             -fx-effect: dropshadow(gaussian, rgba(16,185,129,0.12), 20, 0, 0, 6);">
-
-                    <!-- Section Title -->
-                    <HBox alignment="CENTER_LEFT" spacing="10">
-                        <Region prefWidth="4" prefHeight="26"
-                                style="-fx-background-color: linear-gradient(to bottom, #4ade80, #16a34a);
-                                       -fx-background-radius: 2;"/>
-                        <Label text="Informations personnelles"
-                               style="-fx-font-size: 16px; -fx-font-weight: bold;
-                                      -fx-text-fill: #1f2937; -fx-font-family: 'Segoe UI';"/>
-                    </HBox>
-
-                    <!-- Nom -->
-                    <VBox spacing="6">
-                        <Label text="NOM"
-                               style="-fx-font-size: 11px; -fx-font-weight: bold;
-                                      -fx-text-fill: #9ca3af; -fx-font-family: 'Segoe UI';"/>
-                        <HBox alignment="CENTER_LEFT" spacing="10"
-                              style="-fx-background-color: rgba(240,253,244,0.6);
-                                     -fx-border-color: #d1fae5; -fx-border-radius: 16;
-                                     -fx-background-radius: 16; -fx-padding: 4 14;">
-                            <Label text="👤" style="-fx-font-size: 16px;"/>
-                            <TextField fx:id="nomField" promptText="Votre nom"
-                                       style="-fx-background-color: transparent;
-                                              -fx-font-size: 14px; -fx-font-weight: 500;
-                                              -fx-font-family: 'Segoe UI'; -fx-padding: 10 0;"
-                                       HBox.hgrow="ALWAYS"/>
-                        </HBox>
-                    </VBox>
-
-                    <!-- Prénom -->
-                    <VBox spacing="6">
-                        <Label text="PRÉNOM"
-                               style="-fx-font-size: 11px; -fx-font-weight: bold;
-                                      -fx-text-fill: #9ca3af; -fx-font-family: 'Segoe UI';"/>
-                        <HBox alignment="CENTER_LEFT" spacing="10"
-                              style="-fx-background-color: rgba(240,253,244,0.6);
-                                     -fx-border-color: #d1fae5; -fx-border-radius: 16;
-                                     -fx-background-radius: 16; -fx-padding: 4 14;">
-                            <Label text="👤" style="-fx-font-size: 16px;"/>
-                            <TextField fx:id="prenomField" promptText="Votre prénom"
-                                       style="-fx-background-color: transparent;
-                                              -fx-font-size: 14px; -fx-font-weight: 500;
-                                              -fx-font-family: 'Segoe UI'; -fx-padding: 10 0;"
-                                       HBox.hgrow="ALWAYS"/>
-                        </HBox>
-                    </VBox>
-
-                    <!-- Email (Disabled) -->
-                    <VBox spacing="6">
-                        <Label text="EMAIL"
-                               style="-fx-font-size: 11px; -fx-font-weight: bold;
-                                      -fx-text-fill: #9ca3af; -fx-font-family: 'Segoe UI';"/>
-                        <HBox alignment="CENTER_LEFT" spacing="10"
-                              style="-fx-background-color: rgba(243,244,246,0.5);
-                                     -fx-border-color: #e5e7eb; -fx-border-radius: 16;
-                                     -fx-background-radius: 16; -fx-padding: 4 14;">
-                            <Label text="✉️" style="-fx-font-size: 16px; -fx-opacity: 0.5;"/>
-                            <TextField fx:id="emailField" disable="true"
-                                       style="-fx-background-color: transparent;
-                                              -fx-font-size: 14px; -fx-text-fill: #9ca3af;
-                                              -fx-font-family: 'Segoe UI'; -fx-padding: 10 0;"
-                                       HBox.hgrow="ALWAYS"/>
-                            <Label text="🔒" style="-fx-font-size: 12px; -fx-opacity: 0.4;"/>
-                        </HBox>
-                    </VBox>
-
-                    <!-- Téléphone -->
-                    <VBox spacing="6">
-                        <Label text="TÉLÉPHONE"
-                               style="-fx-font-size: 11px; -fx-font-weight: bold;
-                                      -fx-text-fill: #9ca3af; -fx-font-family: 'Segoe UI';"/>
-                        <HBox alignment="CENTER_LEFT" spacing="10"
-                              style="-fx-background-color: rgba(240,253,244,0.6);
-                                     -fx-border-color: #d1fae5; -fx-border-radius: 16;
-                                     -fx-background-radius: 16; -fx-padding: 4 14;">
-                            <Label text="📞" style="-fx-font-size: 16px;"/>
-                            <TextField fx:id="phoneField" promptText="Votre téléphone"
-                                       style="-fx-background-color: transparent;
-                                              -fx-font-size: 14px; -fx-font-weight: 500;
-                                              -fx-font-family: 'Segoe UI'; -fx-padding: 10 0;"
-                                       HBox.hgrow="ALWAYS"/>
-                        </HBox>
-                    </VBox>
-
-                    <!-- Sexe & Date side by side -->
-                    <HBox spacing="16">
-                        <!-- Sexe -->
-                        <VBox spacing="6" HBox.hgrow="ALWAYS">
-                            <Label text="SEXE"
-                                   style="-fx-font-size: 11px; -fx-font-weight: bold;
-                                          -fx-text-fill: #9ca3af; -fx-font-family: 'Segoe UI';"/>
-                            <ComboBox fx:id="sexeCombo" prefWidth="Infinity" maxWidth="Infinity"
-                                      style="-fx-background-color: rgba(240,253,244,0.6);
-                                             -fx-border-color: #d1fae5; -fx-border-radius: 16;
-                                             -fx-background-radius: 16; -fx-padding: 6 10;
-                                             -fx-font-size: 14px; -fx-font-family: 'Segoe UI';
-                                             -fx-cursor: hand;"/>
-                        </VBox>
-                        <!-- Date de naissance -->
-                        <VBox spacing="6" HBox.hgrow="ALWAYS">
-                            <Label text="DATE DE NAISSANCE"
-                                   style="-fx-font-size: 11px; -fx-font-weight: bold;
-                                          -fx-text-fill: #9ca3af; -fx-font-family: 'Segoe UI';"/>
-                            <DatePicker fx:id="datePicker" prefWidth="Infinity" maxWidth="Infinity"
-                                        style="-fx-background-color: rgba(240,253,244,0.6);
-                                               -fx-border-color: #d1fae5; -fx-border-radius: 16;
-                                               -fx-background-radius: 16; -fx-padding: 6 10;
-                                               -fx-font-size: 14px; -fx-font-family: 'Segoe UI';"/>
-                        </VBox>
-                    </HBox>
-
-                    <!-- Mot de passe -->
-                    <VBox spacing="6">
-                        <Label text="NOUVEAU MOT DE PASSE"
-                               style="-fx-font-size: 11px; -fx-font-weight: bold;
-                                      -fx-text-fill: #9ca3af; -fx-font-family: 'Segoe UI';"/>
-                        <HBox alignment="CENTER_LEFT" spacing="10"
-                              style="-fx-background-color: rgba(240,253,244,0.6);
-                                     -fx-border-color: #d1fae5; -fx-border-radius: 16;
-                                     -fx-background-radius: 16; -fx-padding: 4 14;">
-                            <Label text="🔑" style="-fx-font-size: 16px;"/>
-                            <PasswordField fx:id="passwordField" promptText="Laisser vide si inchangé"
-                                           style="-fx-background-color: transparent;
-                                                  -fx-font-size: 14px; -fx-font-weight: 500;
-                                                  -fx-font-family: 'Segoe UI'; -fx-padding: 10 0;"
-                                           HBox.hgrow="ALWAYS"/>
-                        </HBox>
-                    </VBox>
-                </VBox>
-
-                <!-- ===== ACTION BUTTONS ===== -->
-                <HBox spacing="12" alignment="CENTER">
-
-                    <!-- Mettre à jour -->
-                    <Button text="✅  Mettre à jour" onAction="#handleUpdate"
-                            HBox.hgrow="ALWAYS" maxWidth="Infinity"
-                            style="-fx-background-color: linear-gradient(to right, #22c55e, #10b981);
-                                   -fx-text-fill: white;
-                                   -fx-font-size: 14px; -fx-font-weight: bold;
-                                   -fx-font-family: 'Segoe UI';
-                                   -fx-background-radius: 16;
-                                   -fx-padding: 14 24;
-                                   -fx-cursor: hand;
-                                   -fx-effect: dropshadow(gaussian, rgba(34,197,94,0.35), 16, 0, 0, 4);"/>
-
-                    <!-- Déconnexion -->
-                    <Button text="🚪  Déconnexion" onAction="#handleLogout"
-                            style="-fx-background-color: white;
-                                   -fx-text-fill: #6b7280;
-                                   -fx-font-size: 13px; -fx-font-weight: 600;
-                                   -fx-font-family: 'Segoe UI';
-                                   -fx-border-color: #e5e7eb; -fx-border-radius: 16;
-                                   -fx-background-radius: 16;
-                                   -fx-padding: 14 20;
-                                   -fx-cursor: hand;
-                                   -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 8, 0, 0, 2);"/>
-
-                    <!-- Supprimer -->
-                    <Button text="🗑️  Supprimer" onAction="#handleDelete"
-                            style="-fx-background-color: white;
-                                   -fx-text-fill: #6b7280;
-                                   -fx-font-size: 13px; -fx-font-weight: 600;
-                                   -fx-font-family: 'Segoe UI';
-                                   -fx-border-color: #e5e7eb; -fx-border-radius: 16;
-                                   -fx-background-radius: 16;
-                                   -fx-padding: 14 20;
-                                   -fx-cursor: hand;
-                                   -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 8, 0, 0, 2);"/>
-                </HBox>
-
-                <!-- Footer -->
-                <Label text="© 2025 Emonado — Votre bien-être, notre priorité 🌿"
-                       style="-fx-font-size: 11px; -fx-text-fill: #9ca3af;
-                              -fx-font-family: 'Segoe UI'; -fx-padding: 20 0 10 0;"
-                       alignment="CENTER" maxWidth="Infinity"/>
-
             </VBox>
+
+            <VBox spacing="20"
+                  style="-fx-background-color: white;
+                         -fx-background-radius: 24;
+                         -fx-padding: 28;
+                         -fx-effect: dropshadow(gaussian, rgba(16,185,129,0.12), 20, 0, 0, 6);">
+
+                <Label text="Informations personnelles"
+                       style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1f2937; -fx-font-family: 'Segoe UI';"/>
+
+                <VBox spacing="6">
+                    <Label text="NOM"
+                           style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #9ca3af; -fx-font-family: 'Segoe UI';"/>
+                    <TextField fx:id="nomField" promptText="Votre nom"
+                               style="-fx-background-radius: 16; -fx-border-radius: 16; -fx-border-color: #d1fae5; -fx-padding: 10 14;"/>
+                </VBox>
+
+                <VBox spacing="6">
+                    <Label text="PRENOM"
+                           style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #9ca3af; -fx-font-family: 'Segoe UI';"/>
+                    <TextField fx:id="prenomField" promptText="Votre prenom"
+                               style="-fx-background-radius: 16; -fx-border-radius: 16; -fx-border-color: #d1fae5; -fx-padding: 10 14;"/>
+                </VBox>
+
+                <VBox spacing="6">
+                    <Label text="EMAIL"
+                           style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #9ca3af; -fx-font-family: 'Segoe UI';"/>
+                    <TextField fx:id="emailField" disable="true"
+                               style="-fx-background-radius: 16; -fx-border-radius: 16; -fx-border-color: #e5e7eb; -fx-padding: 10 14; -fx-text-fill: #9ca3af;"/>
+                </VBox>
+
+                <VBox spacing="6">
+                    <Label text="TELEPHONE"
+                           style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #9ca3af; -fx-font-family: 'Segoe UI';"/>
+                    <TextField fx:id="phoneField" promptText="Votre telephone"
+                               style="-fx-background-radius: 16; -fx-border-radius: 16; -fx-border-color: #d1fae5; -fx-padding: 10 14;"/>
+                </VBox>
+
+                <HBox spacing="16">
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="SEXE"
+                               style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #9ca3af; -fx-font-family: 'Segoe UI';"/>
+                        <ComboBox fx:id="sexeCombo" prefWidth="Infinity" maxWidth="Infinity"
+                                  style="-fx-background-radius: 16; -fx-border-radius: 16; -fx-border-color: #d1fae5; -fx-padding: 6 10;"/>
+                    </VBox>
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="DATE DE NAISSANCE"
+                               style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #9ca3af; -fx-font-family: 'Segoe UI';"/>
+                        <DatePicker fx:id="datePicker" prefWidth="Infinity" maxWidth="Infinity"
+                                    style="-fx-background-radius: 16; -fx-border-radius: 16; -fx-border-color: #d1fae5; -fx-padding: 6 10;"/>
+                    </VBox>
+                </HBox>
+
+                <VBox spacing="6">
+                    <Label text="NOUVEAU MOT DE PASSE"
+                           style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #9ca3af; -fx-font-family: 'Segoe UI';"/>
+                    <PasswordField fx:id="passwordField" promptText="Laisser vide si inchange"
+                                   style="-fx-background-radius: 16; -fx-border-radius: 16; -fx-border-color: #d1fae5; -fx-padding: 10 14;"/>
+                </VBox>
+            </VBox>
+
+            <HBox spacing="12" alignment="CENTER">
+                <Button text="Mettre a jour" onAction="#handleUpdate"
+                        HBox.hgrow="ALWAYS" maxWidth="Infinity"
+                        style="-fx-background-color: linear-gradient(to right, #22c55e, #10b981);
+                               -fx-text-fill: white;
+                               -fx-font-size: 14px; -fx-font-weight: bold;
+                               -fx-font-family: 'Segoe UI';
+                               -fx-background-radius: 16;
+                               -fx-padding: 14 24;
+                               -fx-cursor: hand;"/>
+
+                <Button text="Deconnexion" onAction="#handleLogout"
+                        style="-fx-background-color: white;
+                               -fx-text-fill: #6b7280;
+                               -fx-font-size: 13px; -fx-font-weight: 600;
+                               -fx-font-family: 'Segoe UI';
+                               -fx-border-color: #e5e7eb; -fx-border-radius: 16;
+                               -fx-background-radius: 16;
+                               -fx-padding: 14 20;
+                               -fx-cursor: hand;"/>
+
+                <Button text="Supprimer" onAction="#handleDelete"
+                        style="-fx-background-color: white;
+                               -fx-text-fill: #6b7280;
+                               -fx-font-size: 13px; -fx-font-weight: 600;
+                               -fx-font-family: 'Segoe UI';
+                               -fx-border-color: #e5e7eb; -fx-border-radius: 16;
+                               -fx-background-radius: 16;
+                               -fx-padding: 14 20;
+                               -fx-cursor: hand;"/>
+            </HBox>
         </VBox>
+        </StackPane>
     </content>
 </ScrollPane>

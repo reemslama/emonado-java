@@ -6,7 +6,8 @@ import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import org.example.entities.User;
-import org.example.utils.UserSession; // Import important
+import org.example.utils.UserSession;
+
 import java.io.IOException;
 
 public class PsyDashboardController {
@@ -16,7 +17,6 @@ public class PsyDashboardController {
 
     @FXML
     public void initialize() {
-        // RÉPARATION : Si l'utilisateur est null, on le récupère de la session
         if (this.currentUser == null) {
             this.currentUser = UserSession.getInstance();
         }
@@ -28,20 +28,19 @@ public class PsyDashboardController {
 
     public void setUserData(User user) {
         this.currentUser = user;
-        if (welcomeLabel != null) {
+        if (welcomeLabel != null && user != null) {
             welcomeLabel.setText("Bienvenue Dr. " + user.getNom());
         }
     }
 
     @FXML
     private void goToProfil() {
-        // Sécurité ultime avant de changer de vue
         if (this.currentUser == null) {
             this.currentUser = UserSession.getInstance();
         }
 
         if (this.currentUser == null) {
-            System.err.println("🚨 Impossible d'ouvrir le profil : Aucun utilisateur en session !");
+            System.err.println("Impossible d'ouvrir le profil : aucun utilisateur en session.");
             return;
         }
 
@@ -90,6 +89,7 @@ public class PsyDashboardController {
             e.printStackTrace();
         }
     }
+
     @FXML
     private void goToListeRendezVous() {
         loadView("/ListeRendezVousPsy.fxml", "Liste des Rendez-vous");
@@ -97,8 +97,9 @@ public class PsyDashboardController {
 
     @FXML
     private void goToDisponibilites() {
-        loadView("/AjouterDisponibilite.fxml", "Gestion des Disponibilités");
+        loadView("/AjouterDisponibilite.fxml", "Gestion des Disponibilites");
     }
+
     @FXML
     private void goToTypeRdv() {
         loadView("/AjouterType.fxml", "Types de Rendez-vous");
@@ -108,27 +109,26 @@ public class PsyDashboardController {
     private void goToMedicalManagement() {
         loadView("/medical_management.fxml", "Suivi medical");
     }
-    /**
-     * Méthode utilitaire pour changer le contenu central (si tu utilises un BorderPane)
-     */
+
+    @FXML
+    private void openChat() {
+        loadView("/chat_dashboard.fxml", "Messagerie");
+    }
+
     private void loadView(String fxmlPath, String title) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent view = loader.load();
 
-            // Si tu as un BorderPane nommé mainContainer dans ta fenêtre principale
             BorderPane mainContainer = (BorderPane) welcomeLabel.getScene().lookup("#mainContainer");
             if (mainContainer != null) {
                 mainContainer.setCenter(view);
             } else {
-                // Sinon, on remplace la racine (moins propre mais fonctionne)
                 welcomeLabel.getScene().setRoot(view);
             }
         } catch (IOException e) {
             System.err.println("Erreur chargement " + title + " : " + e.getMessage());
             e.printStackTrace();
         }
-
-
     }
 }
