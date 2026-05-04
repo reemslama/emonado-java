@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.controller.AdminPaymentsController"
+            style="-fx-background: transparent; -fx-background-color: transparent;">
+    <content>
+        <VBox spacing="20" style="-fx-padding: 8;">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label text="Suivi des paiements et formulaires" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="Actualiser" onAction="#refreshPayments"
+                        style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 12; -fx-padding: 10 18;"/>
+            </HBox>
+
+            <FlowPane hgap="14" vgap="14">
+                <VBox spacing="4" prefWidth="180" style="-fx-background-color: white; -fx-background-radius: 18; -fx-padding: 18;">
+                    <Label text="Paiements" style="-fx-text-fill: #64748b;"/>
+                    <Label fx:id="totalPaymentsLabel" text="0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                </VBox>
+                <VBox spacing="4" prefWidth="180" style="-fx-background-color: white; -fx-background-radius: 18; -fx-padding: 18;">
+                    <Label text="Payes" style="-fx-text-fill: #64748b;"/>
+                    <Label fx:id="paidPaymentsLabel" text="0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #166534;"/>
+                </VBox>
+                <VBox spacing="4" prefWidth="180" style="-fx-background-color: white; -fx-background-radius: 18; -fx-padding: 18;">
+                    <Label text="En attente" style="-fx-text-fill: #64748b;"/>
+                    <Label fx:id="pendingPaymentsLabel" text="0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #b45309;"/>
+                </VBox>
+                <VBox spacing="4" prefWidth="200" style="-fx-background-color: white; -fx-background-radius: 18; -fx-padding: 18;">
+                    <Label text="Formulaires recus" style="-fx-text-fill: #64748b;"/>
+                    <Label fx:id="questionnaireCountLabel" text="0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1d4ed8;"/>
+                </VBox>
+            </FlowPane>
+
+            <VBox fx:id="paymentsBox" spacing="12">
+                <padding>
+                    <Insets top="4" right="4" bottom="4" left="4"/>
+                </padding>
+            </VBox>
+        </VBox>
+    </content>
+</ScrollPane>

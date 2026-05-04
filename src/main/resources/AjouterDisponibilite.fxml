@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="24.0"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.controller.DisponibiliteController"
+      stylesheets="@/styles/style.css"
+      style="-fx-background-color: linear-gradient(to bottom right, #edf6f8, #dff1eb);">
+
+    <padding>
+        <Insets bottom="28.0" left="28.0" right="28.0" top="28.0"/>
+    </padding>
+
+    <HBox alignment="CENTER_LEFT" spacing="14.0">
+        <Button text="Retour"
+                onAction="#returnToDashboard"
+                style="-fx-background-color: white; -fx-text-fill: #1f4f59; -fx-background-radius: 14; -fx-padding: 10 18; -fx-font-weight: bold; -fx-border-color: #d5e7eb; -fx-border-radius: 14;"/>
+        <VBox spacing="4.0">
+            <Label text="Disponibilites du psychologue"
+                   style="-fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #16313b;"/>
+            <Label text="Ajoutez, ajustez et suivez vos creneaux de consultation depuis un seul ecran."
+                   wrapText="true"
+                   style="-fx-font-size: 14px; -fx-text-fill: #59717a;"/>
+        </VBox>
+    </HBox>
+
+    <HBox spacing="16.0">
+        <VBox spacing="8.0" HBox.hgrow="ALWAYS"
+              style="-fx-background-color: rgba(255,255,255,0.92); -fx-background-radius: 20; -fx-padding: 18; -fx-effect: dropshadow(gaussian, rgba(22,49,59,0.08), 20, 0.12, 0, 4);">
+            <Label text="Creneaux totaux" style="-fx-text-fill: #5c7680; -fx-font-size: 13px;"/>
+            <Label fx:id="totalSlotsLabel" text="0" style="-fx-text-fill: #16313b; -fx-font-size: 30px; -fx-font-weight: bold;"/>
+        </VBox>
+        <VBox spacing="8.0" HBox.hgrow="ALWAYS"
+              style="-fx-background-color: rgba(255,255,255,0.92); -fx-background-radius: 20; -fx-padding: 18; -fx-effect: dropshadow(gaussian, rgba(22,49,59,0.08), 20, 0.12, 0, 4);">
+            <Label text="Libres" style="-fx-text-fill: #5c7680; -fx-font-size: 13px;"/>
+            <Label fx:id="availableSlotsLabel" text="0" style="-fx-text-fill: #159a73; -fx-font-size: 30px; -fx-font-weight: bold;"/>
+        </VBox>
+        <VBox spacing="8.0" HBox.hgrow="ALWAYS"
+              style="-fx-background-color: rgba(255,255,255,0.92); -fx-background-radius: 20; -fx-padding: 18; -fx-effect: dropshadow(gaussian, rgba(22,49,59,0.08), 20, 0.12, 0, 4);">
+            <Label text="Reserves" style="-fx-text-fill: #5c7680; -fx-font-size: 13px;"/>
+            <Label fx:id="reservedSlotsLabel" text="0" style="-fx-text-fill: #d97706; -fx-font-size: 30px; -fx-font-weight: bold;"/>
+        </VBox>
+    </HBox>
+
+    <HBox spacing="20.0" VBox.vgrow="ALWAYS">
+        <VBox spacing="18.0" prefWidth="360.0"
+              style="-fx-background-color: rgba(255,255,255,0.96); -fx-background-radius: 24; -fx-padding: 24; -fx-effect: dropshadow(gaussian, rgba(22,49,59,0.1), 26, 0.14, 0, 6);">
+            <VBox spacing="6.0">
+                <Label fx:id="formTitleLabel" text="Ajouter un creneau"
+                       style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #17323c;"/>
+                <Label fx:id="selectedHintLabel"
+                       text="Definissez un nouveau creneau disponible pour vos patients."
+                       wrapText="true"
+                       style="-fx-text-fill: #6b828a; -fx-font-size: 13px;"/>
+            </VBox>
+
+            <VBox spacing="6.0">
+                <Label text="Date"
+                       style="-fx-text-fill: #35505a; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+                <DatePicker fx:id="datePicker" prefWidth="320.0" promptText="JJ/MM/AAAA"/>
+                <Label fx:id="errorDate" style="-fx-text-fill: #dc2626; -fx-font-size: 12px;"/>
+            </VBox>
+
+            <HBox spacing="14.0">
+                <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                    <Label text="Heure debut"
+                           style="-fx-text-fill: #35505a; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+                    <ComboBox fx:id="comboHeureDebut" prefWidth="150.0" promptText="HH:mm"/>
+                    <Label fx:id="errorHeureDebut" style="-fx-text-fill: #dc2626; -fx-font-size: 12px;"/>
+                </VBox>
+                <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                    <Label text="Heure fin"
+                           style="-fx-text-fill: #35505a; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+                    <ComboBox fx:id="comboHeureFin" prefWidth="150.0" promptText="HH:mm"/>
+                    <Label fx:id="errorHeureFin" style="-fx-text-fill: #dc2626; -fx-font-size: 12px;"/>
+                </VBox>
+            </HBox>
+
+            <VBox spacing="10.0"
+                  style="-fx-background-color: #f4fbf8; -fx-background-radius: 16; -fx-padding: 16; -fx-border-color: #d8ebe2; -fx-border-radius: 16;">
+                <Label text="Etat du creneau"
+                       style="-fx-text-fill: #35505a; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+                <CheckBox fx:id="checkLibre" text="Ce creneau est libre et reservable"
+                          style="-fx-text-fill: #17323c; -fx-font-size: 13px;"/>
+            </VBox>
+
+            <Label fx:id="msgSuccess"
+                   wrapText="true"
+                   style="-fx-background-color: #e9fbf4; -fx-text-fill: #13795b; -fx-background-radius: 12; -fx-padding: 12 14; -fx-font-weight: bold;"/>
+            <Label fx:id="errorGlobal"
+                   wrapText="true"
+                   style="-fx-background-color: #fff1f2; -fx-text-fill: #c62828; -fx-background-radius: 12; -fx-padding: 12 14; -fx-font-weight: bold;"/>
+
+            <HBox spacing="10.0">
+                <Button fx:id="btnEnregistrer" text="Ajouter"
+                        onAction="#enregistrer"
+                        HBox.hgrow="ALWAYS"
+                        maxWidth="1.7976931348623157E308"
+                        style="-fx-background-color: linear-gradient(to right, #1f7a8c, #2e9b78); -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 14; -fx-padding: 12 18;"/>
+                <Button fx:id="btnModifier" text="Modifier"
+                        onAction="#modifier"
+                        HBox.hgrow="ALWAYS"
+                        maxWidth="1.7976931348623157E308"
+                        style="-fx-background-color: white; -fx-text-fill: #1f4f59; -fx-font-weight: bold; -fx-background-radius: 14; -fx-padding: 12 18; -fx-border-color: #cfe0e5; -fx-border-radius: 14;"/>
+            </HBox>
+            <HBox spacing="10.0">
+                <Button fx:id="btnSupprimer" text="Supprimer"
+                        onAction="#supprimer"
+                        HBox.hgrow="ALWAYS"
+                        maxWidth="1.7976931348623157E308"
+                        style="-fx-background-color: #fff2f2; -fx-text-fill: #c43d3d; -fx-font-weight: bold; -fx-background-radius: 14; -fx-padding: 12 18; -fx-border-color: #f1cdcd; -fx-border-radius: 14;"/>
+                <Button text="Reinitialiser"
+                        onAction="#resetForm"
+                        HBox.hgrow="ALWAYS"
+                        maxWidth="1.7976931348623157E308"
+                        style="-fx-background-color: #eef5f7; -fx-text-fill: #35505a; -fx-font-weight: bold; -fx-background-radius: 14; -fx-padding: 12 18;"/>
+            </HBox>
+        </VBox>
+
+        <VBox spacing="16.0" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS"
+              style="-fx-background-color: rgba(255,255,255,0.96); -fx-background-radius: 24; -fx-padding: 22; -fx-effect: dropshadow(gaussian, rgba(22,49,59,0.1), 26, 0.14, 0, 6);">
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+                <VBox spacing="4.0">
+                    <Label text="Planning des disponibilites"
+                           style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #17323c;"/>
+                    <Label text="Selectionnez un creneau pour le modifier ou le supprimer."
+                           style="-fx-text-fill: #6b828a; -fx-font-size: 13px;"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="Les creneaux reserves sont verrouilles"
+                       style="-fx-background-color: #fff8ed; -fx-text-fill: #9a640e; -fx-background-radius: 999; -fx-padding: 8 14; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+            </HBox>
+
+            <TableView fx:id="tableDisponibilites"
+                       VBox.vgrow="ALWAYS"
+                       prefHeight="420.0"
+                       style="-fx-background-color: white; -fx-background-radius: 18; -fx-border-color: #e2edf0; -fx-border-radius: 18;">
+                <columns>
+                    <TableColumn fx:id="colDate" text="Date" prefWidth="170.0"/>
+                    <TableColumn fx:id="colDebut" text="Debut" prefWidth="140.0"/>
+                    <TableColumn fx:id="colFin" text="Fin" prefWidth="140.0"/>
+                    <TableColumn fx:id="colEtat" text="Etat du creneau" prefWidth="180.0"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </HBox>
+</VBox>

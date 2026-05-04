@@ -209,6 +209,41 @@ public class AnalyseEmotionnelleController {
     }
 
     @FXML
+    private void handleConseilAi() {
+        if (currentUser == null || selectedRow == null) {
+            showError("Selectionnez un journal pour generer un conseil AI.");
+            return;
+        }
+        openAiPage("/ai_conseil.fxml", "conseil");
+    }
+
+    @FXML
+    private void handleDetectionAi() {
+        if (currentUser == null || selectedRow == null) {
+            showError("Selectionnez un journal pour lancer la detection AI.");
+            return;
+        }
+        openAiPage("/ai_detection.fxml", "detection");
+    }
+
+    @FXML
+    private void handleAlertesAi() {
+        if (currentUser == null) {
+            showError("Selectionnez un patient pour afficher les alertes AI.");
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ai_alertes.fxml"));
+            Parent root = loader.load();
+            AiAlertesController controller = loader.getController();
+            controller.setData(viewerUser, currentUser, List.copyOf(allRows));
+            analyseTable.getScene().setRoot(root);
+        } catch (IOException e) {
+            showError("Ouverture de la page alertes AI impossible.");
+        }
+    }
+
+    @FXML
     private void goToDashboard() {
         if (viewerUser != null && "ROLE_PSYCHOLOGUE".equalsIgnoreCase(viewerUser.getRole())) {
             loadView("/psy_dashboard.fxml");
@@ -448,6 +483,22 @@ public class AnalyseEmotionnelleController {
             analyseTable.getScene().setRoot(root);
         } catch (IOException e) {
             showError("Ouverture de la page de modification impossible.");
+        }
+    }
+
+    private void openAiPage(String fxmlPath, String mode) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent root = loader.load();
+            Object controller = loader.getController();
+            if (controller instanceof AiConseilController conseilController) {
+                conseilController.setData(viewerUser, currentUser, selectedRow);
+            } else if (controller instanceof AiDetectionController detectionController) {
+                detectionController.setData(viewerUser, currentUser, selectedRow);
+            }
+            analyseTable.getScene().setRoot(root);
+        } catch (IOException e) {
+            showError("Ouverture de la page " + mode + " AI impossible.");
         }
     }
 

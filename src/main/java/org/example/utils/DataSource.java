@@ -18,12 +18,14 @@ public class DataSource {
     private final String url;
     private final String user;
     private final String password;
+    private final String host;
+    private final String port;
+    private final String database;
 
     private DataSource() {
-        String host = readConfig("DB_HOST", DEFAULT_HOST);
-        String port = readConfig("DB_PORT", DEFAULT_PORT);
-        String database = readConfig("DB_NAME", DEFAULT_DB);
-
+        this.host = readConfig("DB_HOST", DEFAULT_HOST);
+        this.port = readConfig("DB_PORT", DEFAULT_PORT);
+        this.database = readConfig("DB_NAME", DEFAULT_DB);
         this.user = readConfig("DB_USER", DEFAULT_USER);
         this.password = readConfig("DB_PASSWORD", DEFAULT_PASSWORD);
         this.url = "jdbc:mysql://" + host + ":" + port + "/" + database
@@ -49,6 +51,7 @@ public class DataSource {
     private void connect() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
+            ensureDatabaseExists();
             this.connection = DriverManager.getConnection(url, user, password);
             System.out.println("Connexion MySQL reussie : " + url);
         } catch (ClassNotFoundException e) {
@@ -59,6 +62,15 @@ public class DataSource {
             System.err.println("Configuration utilisee : url=" + url + ", user=" + user);
             System.err.println("Verifie que MySQL est demarre et que la base existe.");
             this.connection = null;
+        }
+    }
+
+    private void ensureDatabaseExists() throws SQLException {
+        String serverUrl = "jdbc:mysql://" + host + ":" + port
+                + "/?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
+        try (Connection serverConnection = DriverManager.getConnection(serverUrl, user, password)) {
+            serverConnection.createStatement()
+                    .executeUpdate("CREATE DATABASE IF NOT EXISTS `" + database + "` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
         }
     }
 

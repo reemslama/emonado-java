@@ -9,6 +9,8 @@ public class DossierMedical {
     private int patientId;
     private String reminderText;
     private String medicalHistory;
+    private String psychologueNote;
+    private Integer psychologueId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<AntecedentMedical> antecedentsMedicaux = new ArrayList<>();
@@ -43,6 +45,22 @@ public class DossierMedical {
 
     public void setMedicalHistory(String medicalHistory) {
         this.medicalHistory = medicalHistory;
+    }
+
+    public String getPsychologueNote() {
+        return psychologueNote;
+    }
+
+    public void setPsychologueNote(String psychologueNote) {
+        this.psychologueNote = psychologueNote;
+    }
+
+    public Integer getPsychologueId() {
+        return psychologueId;
+    }
+
+    public void setPsychologueId(Integer psychologueId) {
+        this.psychologueId = psychologueId;
     }
 
     public LocalDateTime getCreatedAt() {

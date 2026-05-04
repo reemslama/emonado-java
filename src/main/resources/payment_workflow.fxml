@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.web.WebView?>
+
+<ScrollPane fitToWidth="true"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.controller.PaymentWorkflowController"
+            style="-fx-background: #f6f8fc; -fx-background-color: #f6f8fc;">
+    <content>
+        <VBox spacing="22" style="-fx-padding: 28 32 36 32; -fx-background-color: linear-gradient(to bottom, #f8fbff, #eef5ff);">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Button text="Retour" onAction="#returnToDashboard"
+                        style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-background-radius: 12; -fx-padding: 10 18;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="paymentSummaryLabel" text="0 consultation(s)" style="-fx-text-fill: #334155; -fx-font-weight: bold;"/>
+                <Label fx:id="questionnaireSummaryLabel" text="0 formulaire(s)" style="-fx-text-fill: #64748b;"/>
+            </HBox>
+
+            <VBox spacing="10" style="-fx-background-color: linear-gradient(to right, #ffffff, #f8fbff); -fx-background-radius: 30; -fx-padding: 28; -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.10), 22, 0, 0, 8);">
+                <Label fx:id="summaryTitleLabel" text="Paiement de consultation et formulaire clinique"
+                       style="-fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                <Label fx:id="summarySubtitleLabel" text="Selectionnez une consultation acceptee pour continuer."
+                       wrapText="true" style="-fx-text-fill: #64748b; -fx-font-size: 14px;"/>
+                <Label text="Finalisez le paiement puis envoyez un formulaire clinique complet pour preparer votre psychologue avant la seance."
+                       wrapText="true" style="-fx-text-fill: #475569; -fx-font-size: 13px;"/>
+                <HBox spacing="10">
+                    <Button fx:id="payNowButton" text="Ouvrir le paiement Stripe" onAction="#openPaymentLink"
+                            style="-fx-background-color: #2563eb; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 12; -fx-padding: 12 18;"/>
+                    <Button fx:id="syncPaymentButton" text="Verifier le paiement" onAction="#synchronizePayment"
+                            style="-fx-background-color: #e2e8f0; -fx-text-fill: #0f172a; -fx-font-weight: bold; -fx-background-radius: 12; -fx-padding: 12 18;"/>
+                    <Button fx:id="localPayButton" text="Valider le paiement local" onAction="#markPaymentAsPaidLocally"
+                            visible="false" managed="false"
+                            style="-fx-background-color: #0f766e; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 12; -fx-padding: 12 18;"/>
+                </HBox>
+
+                <VBox fx:id="simulatedCardBox" spacing="14" visible="false" managed="false"
+                      style="-fx-background-color: linear-gradient(to bottom right, #0f172a, #1e293b, #0f766e); -fx-background-radius: 24; -fx-padding: 20;">
+                    <HBox alignment="CENTER_LEFT">
+                        <VBox spacing="3">
+                            <Label text="Carte simulee" style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"/>
+                            <Label text="Aucun vrai paiement: validation locale uniquement."
+                                   style="-fx-text-fill: rgba(255,255,255,0.72); -fx-font-size: 12px;"/>
+                        </VBox>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label text="VISA"
+                               style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold; -fx-letter-spacing: 1.5px;"/>
+                    </HBox>
+
+                    <Label text="Numero de carte"
+                           style="-fx-text-fill: rgba(255,255,255,0.84); -fx-font-size: 12px;"/>
+                    <TextField fx:id="cardNumberField" promptText="4242 4242 4242 4242"
+                               style="-fx-background-color: rgba(255,255,255,0.12); -fx-text-fill: white; -fx-prompt-text-fill: rgba(255,255,255,0.45); -fx-background-radius: 14; -fx-border-color: rgba(255,255,255,0.18); -fx-border-radius: 14; -fx-padding: 12 14; -fx-font-size: 16px; -fx-font-family: 'Consolas';"/>
+
+                    <HBox spacing="14">
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <Label text="Expiry"
+                                   style="-fx-text-fill: rgba(255,255,255,0.84); -fx-font-size: 12px;"/>
+                            <TextField fx:id="expiryField" promptText="MM/AA"
+                                       style="-fx-background-color: rgba(255,255,255,0.12); -fx-text-fill: white; -fx-prompt-text-fill: rgba(255,255,255,0.45); -fx-background-radius: 14; -fx-border-color: rgba(255,255,255,0.18); -fx-border-radius: 14; -fx-padding: 12 14; -fx-font-size: 15px; -fx-font-family: 'Consolas';"/>
+                        </VBox>
+                        <VBox spacing="6" prefWidth="140">
+                            <Label text="CVV"
+                                   style="-fx-text-fill: rgba(255,255,255,0.84); -fx-font-size: 12px;"/>
+                            <TextField fx:id="cvvField" promptText="123"
+                                       style="-fx-background-color: rgba(255,255,255,0.12); -fx-text-fill: white; -fx-prompt-text-fill: rgba(255,255,255,0.45); -fx-background-radius: 14; -fx-border-color: rgba(255,255,255,0.18); -fx-border-radius: 14; -fx-padding: 12 14; -fx-font-size: 15px; -fx-font-family: 'Consolas';"/>
+                        </VBox>
+                    </HBox>
+
+                    <Label fx:id="simulatedCardErrorLabel"
+                           text=""
+                           wrapText="true"
+                           style="-fx-text-fill: #fecaca; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+
+                    <Button fx:id="simulateCardPaymentButton" text="Payer avec la carte simulee"
+                            onAction="#submitSimulatedCardPayment"
+                            style="-fx-background-color: linear-gradient(to right, #14b8a6, #22c55e); -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 14; -fx-padding: 12 18;"/>
+                </VBox>
+            </VBox>
+
+            <HBox spacing="22" alignment="TOP_LEFT">
+                <VBox spacing="12" prefWidth="360" HBox.hgrow="NEVER"
+                      style="-fx-background-color: linear-gradient(to bottom, #ffffff, #f9fbff); -fx-background-radius: 26; -fx-padding: 22; -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.06), 16, 0, 0, 4);">
+                    <Label text="Consultations acceptees" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                    <HBox spacing="10">
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <Label text="Paiement" style="-fx-text-fill: #64748b; -fx-font-size: 12px;"/>
+                            <ComboBox fx:id="paymentStatusFilterCombo" promptText="Etat paiement" maxWidth="1.7976931348623157E308"/>
+                        </VBox>
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <Label text="Date" style="-fx-text-fill: #64748b; -fx-font-size: 12px;"/>
+                            <ComboBox fx:id="sortDateCombo" promptText="Trier par date" maxWidth="1.7976931348623157E308"/>
+                        </VBox>
+                    </HBox>
+                    <VBox fx:id="paymentsBox" spacing="10"/>
+                </VBox>
+
+                <VBox spacing="16" HBox.hgrow="ALWAYS"
+                      style="-fx-background-color: linear-gradient(to bottom, #ffffff, #f7fbff); -fx-background-radius: 26; -fx-padding: 24; -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.06), 16, 0, 0, 4);">
+                    <VBox spacing="6">
+                        <Label text="Formulaire pre-consultation" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                        <Label fx:id="formStateLabel" text="Le formulaire sera disponible ici apres un paiement Stripe valide."
+                               wrapText="true" style="-fx-text-fill: #64748b;"/>
+                        <Label fx:id="questionnaireValidationLabel" text="Le formulaire sera valide quand les champs obligatoires seront complets."
+                               wrapText="true" style="-fx-text-fill: #475569; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                    </VBox>
+
+                    <Separator/>
+
+                    <Label text="Motif principal *" style="-fx-font-weight: bold; -fx-text-fill: #334155;"/>
+                    <TextArea fx:id="chiefComplaintArea" prefRowCount="3" wrapText="true"
+                              style="-fx-background-radius: 16; -fx-border-radius: 16; -fx-border-color: #dbe4f0; -fx-padding: 8;"
+                              promptText="Decrivez pourquoi vous consultez aujourd'hui."/>
+
+                    <Label text="Symptomes observes *" style="-fx-font-weight: bold; -fx-text-fill: #334155;"/>
+                    <TextArea fx:id="symptomSummaryArea" prefRowCount="4" wrapText="true"
+                              style="-fx-background-radius: 16; -fx-border-radius: 16; -fx-border-color: #dbe4f0; -fx-padding: 8;"
+                              promptText="Decrivez les symptomes, leur frequence et leur evolution."/>
+
+                    <VBox spacing="10"
+                          style="-fx-background-color: linear-gradient(to right, #eff6ff, #f8fbff); -fx-background-radius: 18; -fx-padding: 16;">
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="Note vocale transcrite" style="-fx-font-weight: bold; -fx-text-fill: #1e3a8a;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button fx:id="startVoiceButton" text="Demarrer la dictee" onAction="#startVoiceCapture"
+                                    style="-fx-background-color: #1d4ed8; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 12; -fx-padding: 10 14;"/>
+                            <Button fx:id="stopVoiceButton" text="Arreter" onAction="#stopVoiceCapture"
+                                    style="-fx-background-color: #dbeafe; -fx-text-fill: #1e3a8a; -fx-font-weight: bold; -fx-background-radius: 12; -fx-padding: 10 14;"/>
+                        </HBox>
+                        <Label fx:id="voiceStatusLabel" text="Chargement de la dictee vocale..."
+                               wrapText="true" style="-fx-text-fill: #475569; -fx-font-size: 12px;"/>
+                        <TextArea fx:id="voiceTranscriptArea" prefRowCount="3" wrapText="true"
+                                  style="-fx-background-radius: 16; -fx-border-radius: 16; -fx-border-color: #bfdbfe; -fx-padding: 8;"
+                                  promptText="La transcription de votre parole apparaitra ici et sera visible par le psychologue."/>
+                        <WebView fx:id="speechBridgeView" visible="false" managed="false" prefHeight="1" maxHeight="1"/>
+                    </VBox>
+
+                    <FlowPane hgap="14" vgap="14" prefWrapLength="720">
+                        <VBox spacing="6">
+                            <Label text="Stress (0-10)"/>
+                            <ComboBox fx:id="stressCombo" prefWidth="120"/>
+                        </VBox>
+                        <VBox spacing="6">
+                            <Label text="Anxiete (0-10)"/>
+                            <ComboBox fx:id="anxietyCombo" prefWidth="120"/>
+                        </VBox>
+                        <VBox spacing="6">
+                            <Label text="Humeur (0-10)"/>
+                            <ComboBox fx:id="moodCombo" prefWidth="120"/>
+                        </VBox>
+                        <VBox spacing="6">
+                            <Label text="Sommeil (0-10)"/>
+                            <ComboBox fx:id="sleepCombo" prefWidth="120"/>
+                        </VBox>
+                        <VBox spacing="6">
+                            <Label text="Energie (0-10)"/>
+                            <ComboBox fx:id="energyCombo" prefWidth="120"/>
+                        </VBox>
+                        <VBox spacing="6">
+                            <Label text="Soutien (0-10)"/>
+                            <ComboBox fx:id="supportCombo" prefWidth="120"/>
+                        </VBox>
+                        <VBox spacing="6">
+                            <Label text="Urgence ressentie (0-10)"/>
+                            <ComboBox fx:id="urgencyCombo" prefWidth="140"/>
+                        </VBox>
+                        <VBox spacing="6">
+                            <Label text="Risque auto-agression"/>
+                            <ComboBox fx:id="selfHarmRiskCombo" prefWidth="160"/>
+                        </VBox>
+                    </FlowPane>
+
+                    <Label text="Contexte complementaire" style="-fx-font-weight: bold; -fx-text-fill: #334155;"/>
+                    <TextArea fx:id="additionalContextArea" prefRowCount="4" wrapText="true"
+                              style="-fx-background-radius: 16; -fx-border-radius: 16; -fx-border-color: #dbe4f0; -fx-padding: 8;"
+                              promptText="Ajoutez tout contexte utile: declencheur, travail, famille, traitement, etc."/>
+
+                    <Button fx:id="submitQuestionnaireButton" text="Enregistrer le formulaire"
+                            onAction="#submitQuestionnaire"
+                            style="-fx-background-color: linear-gradient(to right, #0f766e, #2563eb); -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 14; -fx-padding: 12 18;"/>
+                </VBox>
+            </HBox>
+        </VBox>
+    </content>
+</ScrollPane>

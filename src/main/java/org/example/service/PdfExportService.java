@@ -6,11 +6,18 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
+import org.example.entities.AnalyseEmotionnelle;
+import org.example.entities.AntecedentMedical;
+import org.example.entities.DossierMedical;
 import org.example.entities.ResultatTest;
+import org.example.entities.TestResultMedical;
+import org.example.entities.User;
 
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -24,6 +31,7 @@ import java.util.List;
  *   </dependency>
  */
 public class PdfExportService {
+    private static final DateTimeFormatter MEDICAL_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     private static final float PAGE_W  = PDRectangle.A4.getWidth();
     private static final float PAGE_H  = PDRectangle.A4.getHeight();
@@ -87,6 +95,144 @@ public class PdfExportService {
         if (Desktop.isDesktopSupported()) {
             Desktop.getDesktop().open(destFile);
         }
+    }
+
+    public void exportPatientMedicalRecord(Path outputFile,
+                                           User patient,
+                                           DossierMedical dossierMedical,
+                                           List<AntecedentMedical> antecedents,
+                                           List<TestResultMedical> testResults,
+                                           List<AnalyseEmotionnelle> analyses) throws IOException {
+        try (PDDocument doc = new PDDocument()) {
+            PDPage page = new PDPage(PDRectangle.A4);
+            doc.addPage(page);
+            try (PDPageContentStream cs = new PDPageContentStream(doc, page)) {
+                float y = PAGE_H - MARGIN;
+                y = drawMedicalTitle(cs, y, "Dossier medical patient", patient);
+                y = drawMedicalSection(cs, y, "Dossier", List.of(
+                        "Historique : " + safe(dossierMedical == null ? null : dossierMedical.getMedicalHistory()),
+                        "Rappel : " + safe(dossierMedical == null ? null : dossierMedical.getReminderText()),
+                        "Note psychologue : " + safe(dossierMedical == null ? null : dossierMedical.getPsychologueNote())
+                ));
+                y = drawAntecedents(cs, y, antecedents);
+                y = drawMedicalTests(cs, y, testResults);
+                drawAnalyses(cs, y, analyses);
+            }
+            doc.save(outputFile.toFile());
+        }
+    }
+
+    public void exportPsychologueMedicalRecord(Path outputFile,
+                                               User patient,
+                                               DossierMedical dossierMedical,
+                                               List<AntecedentMedical> antecedents,
+                                               List<TestResultMedical> testResults) throws IOException {
+        try (PDDocument doc = new PDDocument()) {
+            PDPage page = new PDPage(PDRectangle.A4);
+            doc.addPage(page);
+            try (PDPageContentStream cs = new PDPageContentStream(doc, page)) {
+                float y = PAGE_H - MARGIN;
+                y = drawMedicalTitle(cs, y, "Dossier medical patient - vue psychologue", patient);
+                y = drawMedicalSection(cs, y, "Dossier", List.of(
+                        "Historique : " + safe(dossierMedical == null ? null : dossierMedical.getMedicalHistory()),
+                        "Rappel : " + safe(dossierMedical == null ? null : dossierMedical.getReminderText()),
+                        "Note psychologue : " + safe(dossierMedical == null ? null : dossierMedical.getPsychologueNote())
+                ));
+                y = drawAntecedents(cs, y, antecedents);
+                drawMedicalTests(cs, y, testResults);
+            }
+            doc.save(outputFile.toFile());
+        }
+    }
+
+    private float drawMedicalTitle(PDPageContentStream cs, float y, String title, User patient) throws IOException {
+        drawRect(cs, MARGIN, y - 62, CONTENT_W, 68, COLOR_PRIMARY, true);
+        writeText(cs, title, MARGIN + 15, y - 28, 18, true, COLOR_WHITE);
+        writeText(cs, "Patient : " + safe(patient == null ? null : patient.getNom()) + " " + safe(patient == null ? null : patient.getPrenom()),
+                MARGIN + 15, y - 48, 11, false, COLOR_WHITE);
+        writeText(cs, "Export genere le " + MEDICAL_DATE_TIME_FORMATTER.format(LocalDateTime.now()),
+                MARGIN + 15, y - 63, 9, false, COLOR_WHITE);
+        return y - 90;
+    }
+
+    private float drawMedicalSection(PDPageContentStream cs, float y, String title, List<String> lines) throws IOException {
+        if (y < MARGIN + 100) {
+            return y;
+        }
+        writeText(cs, title, MARGIN, y, 13, true, COLOR_PRIMARY);
+        y -= 18;
+        for (String line : lines) {
+            for (String wrapped : wrapPlainText(line, 95)) {
+                writeText(cs, wrapped, MARGIN + 10, y, 9.5f, false, COLOR_PRIMARY);
+                y -= 14;
+            }
+        }
+        return y - 12;
+    }
+
+    private float drawAntecedents(PDPageContentStream cs, float y, List<AntecedentMedical> antecedents) throws IOException {
+        if (antecedents == null || antecedents.isEmpty()) {
+            return drawMedicalSection(cs, y, "Antecedents", List.of("Aucun antecedent renseigne."));
+        }
+        List<String> lines = antecedents.stream()
+                .map(a -> "- " + safe(a.getType()) + " : " + safe(a.getDescription())
+                        + " (" + (a.getDateDiagnostic() == null ? "-" : a.getDateDiagnostic()) + ")")
+                .toList();
+        return drawMedicalSection(cs, y, "Antecedents", lines);
+    }
+
+    private float drawMedicalTests(PDPageContentStream cs, float y, List<TestResultMedical> testResults) throws IOException {
+        if (testResults == null || testResults.isEmpty()) {
+            return drawMedicalSection(cs, y, "Tests", List.of("Aucun test medical renseigne."));
+        }
+        List<String> lines = testResults.stream()
+                .map(t -> "- " + safe(t.getCategorie()) + " : " + t.getScore() + "/" + t.getScoreMax()
+                        + " (" + (t.getCreatedAt() == null ? "-" : t.getCreatedAt().format(MEDICAL_DATE_TIME_FORMATTER)) + ")")
+                .toList();
+        return drawMedicalSection(cs, y, "Tests", lines);
+    }
+
+    private float drawAnalyses(PDPageContentStream cs, float y, List<AnalyseEmotionnelle> analyses) throws IOException {
+        if (analyses == null || analyses.isEmpty()) {
+            return drawMedicalSection(cs, y, "Analyses emotionnelles", List.of("Aucune analyse renseignee."));
+        }
+        List<String> lines = analyses.stream()
+                .map(a -> "- " + safe(a.getEtatEmotionnel()) + " / " + safe(a.getNiveau())
+                        + " : " + safe(a.getConseil()))
+                .toList();
+        return drawMedicalSection(cs, y, "Analyses emotionnelles", lines);
+    }
+
+    private void writeText(PDPageContentStream cs, String text, float x, float y, float size, boolean bold, Color color) throws IOException {
+        cs.beginText();
+        cs.setFont(new PDType1Font(bold ? Standard14Fonts.FontName.HELVETICA_BOLD : Standard14Fonts.FontName.HELVETICA), size);
+        cs.setNonStrokingColor(color);
+        cs.newLineAtOffset(x, y);
+        cs.showText(safePdf(text));
+        cs.endText();
+    }
+
+    private List<String> wrapPlainText(String text, int maxLength) {
+        String value = safe(text);
+        if (value.length() <= maxLength) {
+            return List.of(value);
+        }
+        java.util.ArrayList<String> lines = new java.util.ArrayList<>();
+        int start = 0;
+        while (start < value.length()) {
+            int end = Math.min(start + maxLength, value.length());
+            lines.add(value.substring(start, end));
+            start = end;
+        }
+        return lines;
+    }
+
+    private String safe(String value) {
+        return value == null || value.isBlank() ? "-" : value.replace("\n", " ").replace("\r", " ").trim();
+    }
+
+    private String safePdf(String value) {
+        return safe(value).replaceAll("[^\\p{Print}]", "?");
     }
 
     // -----------------------------------------------------------------------

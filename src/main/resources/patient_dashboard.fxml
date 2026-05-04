@@ -100,6 +100,22 @@
                                wrapText="true" textAlignment="CENTER"/>
                     </VBox>
 
+                    <VBox onMouseClicked="#goToRendezVous" spacing="12"
+                          prefWidth="210" prefHeight="200" alignment="CENTER"
+                          style="-fx-background-color: white; -fx-background-radius: 24; -fx-cursor: hand;
+                                 -fx-padding: 25 20;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 25, 0, 0, 8);">
+                        <StackPane prefWidth="60" prefHeight="60"
+                                   style="-fx-background-color: linear-gradient(to bottom right, #fce7f3, #fbcfe8); -fx-background-radius: 18;">
+                            <Label text="RDV" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                        </StackPane>
+                        <Label text="Rendez-vous"
+                               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b; -fx-font-family: 'Segoe UI';"/>
+                        <Label text="Planifier vos consultations"
+                               style="-fx-font-size: 12px; -fx-text-fill: #94a3b8; -fx-font-family: 'Segoe UI';"
+                               wrapText="true" textAlignment="CENTER"/>
+                    </VBox>
+
                     <VBox onMouseClicked="#goToMedicalRecord" spacing="12"
                           prefWidth="210" prefHeight="200" alignment="CENTER"
                           style="-fx-background-color: white; -fx-background-radius: 24; -fx-cursor: hand;
@@ -116,18 +132,19 @@
                                wrapText="true" textAlignment="CENTER"/>
                     </VBox>
 
-                    <VBox onMouseClicked="#goToConsultations" spacing="12"
+                    <VBox onMouseClicked="#goToPayments" spacing="12"
                           prefWidth="210" prefHeight="200" alignment="CENTER"
                           style="-fx-background-color: white; -fx-background-radius: 24; -fx-cursor: hand;
                                  -fx-padding: 25 20;
                                  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 25, 0, 0, 8);">
                         <StackPane prefWidth="60" prefHeight="60"
-                                   style="-fx-background-color: linear-gradient(to bottom right, #fed7aa, #fdba74); -fx-background-radius: 18;">
-                            <Label text="CONSULT" style="-fx-font-size: 12px; -fx-font-weight: bold;"/>
+                                   style="-fx-background-color: linear-gradient(to bottom right, #dbeafe, #bfdbfe); -fx-background-radius: 18;">
+                            <Label text="PAY" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
                         </StackPane>
-                        <Label text="Consultations"
-                               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b; -fx-font-family: 'Segoe UI';"/>
-                        <Label text="Historique des seances"
+                        <Label text="Paiement &amp; Formulaire"
+                               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b; -fx-font-family: 'Segoe UI';"
+                               wrapText="true" textAlignment="CENTER"/>
+                        <Label text="Payer apres acceptation et remplir le dossier clinique"
                                style="-fx-font-size: 12px; -fx-text-fill: #94a3b8; -fx-font-family: 'Segoe UI';"
                                wrapText="true" textAlignment="CENTER"/>
                     </VBox>

@@ -1,42 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.example.controller.MedicalRecordController"
-            styleClass="background">
+            style="-fx-background-color: linear-gradient(to bottom, #f4ead7, #edf6f0);">
 
     <top>
-        <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-background-color: #198754; -fx-padding: 16 28;">
-            <Label text="EmoNado" style="-fx-text-fill: white; -fx-font-size: 22px; -fx-font-weight: bold;"/>
+        <HBox alignment="CENTER_LEFT" spacing="14"
+              style="-fx-background-color: linear-gradient(to right, #1e4745, #2f7068); -fx-padding: 18 26;">
+            <Label text="EmoNado" style="-fx-text-fill: white; -fx-font-size: 24px; -fx-font-weight: bold;"/>
             <Region HBox.hgrow="ALWAYS"/>
             <Button text="Mon profil" onAction="#goToProfil"
-                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand;"/>
-            <Button text="Retour au tableau de bord" onAction="#returnToDashboard"
-                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand;"/>
+                    style="-fx-background-color: rgba(255,255,255,0.16); -fx-text-fill: white; -fx-font-size: 13px; -fx-background-radius: 18; -fx-padding: 10 18;"/>
+            <Button text="Tableau de bord" onAction="#returnToDashboard"
+                    style="-fx-background-color: rgba(255,255,255,0.16); -fx-text-fill: white; -fx-font-size: 13px; -fx-background-radius: 18; -fx-padding: 10 18;"/>
             <Button text="Deconnexion" onAction="#handleLogout"
-                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand;"/>
+                    style="-fx-background-color: #d95d39; -fx-text-fill: white; -fx-font-size: 13px; -fx-background-radius: 18; -fx-padding: 10 18;"/>
         </HBox>
     </top>
 
     <center>
-        <ScrollPane fitToWidth="true" style="-fx-background: #e9f7ff; -fx-padding: 15;">
-            <VBox spacing="14" style="-fx-padding: 20;">
-                <Label fx:id="titleLabel" text="Mon Dossier Medical"
-                       style="-fx-font-size: 34px; -fx-font-weight: bold; -fx-text-fill: #16324f;"/>
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+            <VBox spacing="20" style="-fx-padding: 24 28 28 28;">
+                <HBox alignment="CENTER_LEFT" spacing="20">
+                    <VBox spacing="6">
+                        <Label fx:id="titleLabel" text="Mon Dossier Medical"
+                               style="-fx-font-size: 34px; -fx-font-weight: bold; -fx-text-fill: #173a36;"/>
+                        <Label text="Suivez vos antecedents, vos resultats de test et les observations du psychologue."
+                               style="-fx-text-fill: #55736d; -fx-font-size: 14px;"/>
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="Exporter PDF" onAction="#handleExportPdf"
+                            style="-fx-background-color: #c46c1a; -fx-text-fill: white; -fx-font-size: 13px; -fx-background-radius: 18; -fx-padding: 10 18;"/>
+                    <VBox alignment="CENTER_RIGHT" spacing="4"
+                          style="-fx-background-color: rgba(255,255,255,0.88); -fx-background-radius: 18; -fx-padding: 14 18;">
+                        <Label text="Dossier cree le" style="-fx-text-fill: #6b7d78; -fx-font-size: 12px;"/>
+                        <Label fx:id="dossierCreationLabel" text="-"
+                               style="-fx-text-fill: #1d4d47; -fx-font-size: 18px; -fx-font-weight: bold;"/>
+                    </VBox>
+                </HBox>
 
-                <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15;">
-                    <Label text="Rappel et preparation de ma prochaine consultation"
-                           style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #0d6efd;"/>
-                    <TextArea fx:id="reminderArea" wrapText="true" prefRowCount="4"
-                              promptText="Notez les sujets ou questions a aborder lors de votre prochaine consultation..."/>
-                </VBox>
+                <HBox spacing="16">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS"
+                          style="-fx-background-color: rgba(255,255,255,0.94); -fx-background-radius: 20; -fx-padding: 18;">
+                        <Label text="Age patient" style="-fx-text-fill: #6b7d78; -fx-font-size: 12px;"/>
+                        <Label fx:id="ageSummaryLabel" text="-" style="-fx-text-fill: #173a36; -fx-font-size: 22px; -fx-font-weight: bold;"/>
+                    </VBox>
+                    <VBox spacing="4" HBox.hgrow="ALWAYS"
+                          style="-fx-background-color: rgba(255,255,255,0.94); -fx-background-radius: 20; -fx-padding: 18;">
+                        <Label text="Antecedents" style="-fx-text-fill: #6b7d78; -fx-font-size: 12px;"/>
+                        <Label fx:id="antecedentCountLabel" text="0" style="-fx-text-fill: #7c2235; -fx-font-size: 22px; -fx-font-weight: bold;"/>
+                    </VBox>
+                    <VBox spacing="4" HBox.hgrow="ALWAYS"
+                          style="-fx-background-color: rgba(255,255,255,0.94); -fx-background-radius: 20; -fx-padding: 18;">
+                        <Label text="Consultations" style="-fx-text-fill: #6b7d78; -fx-font-size: 12px;"/>
+                        <Label fx:id="consultationCountLabel" text="0" style="-fx-text-fill: #1f8b57; -fx-font-size: 22px; -fx-font-weight: bold;"/>
+                    </VBox>
+                    <VBox spacing="4" HBox.hgrow="ALWAYS"
+                          style="-fx-background-color: rgba(255,248,237,0.98); -fx-background-radius: 20; -fx-padding: 18;">
+                        <Label text="Alertes" style="-fx-text-fill: #8b6a47; -fx-font-size: 12px;"/>
+                        <Label fx:id="alertCountLabel" text="0" style="-fx-text-fill: #c2410c; -fx-font-size: 22px; -fx-font-weight: bold;"/>
+                    </VBox>
+                </HBox>
 
-                <HBox spacing="12">
-                    <VBox spacing="8" HBox.hgrow="ALWAYS"
-                          style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15;">
-                        <Label text="Mes Informations" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0d6efd;"/>
-                        <GridPane hgap="10" vgap="8">
+                <HBox spacing="18">
+                    <VBox spacing="12" HBox.hgrow="ALWAYS"
+                          style="-fx-background-color: rgba(255,255,255,0.95); -fx-background-radius: 24; -fx-padding: 22; -fx-effect: dropshadow(gaussian, rgba(23,58,54,0.12), 24, 0.15, 0, 8);">
+                        <Label text="Informations Personnelles"
+                               style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #1c4a45;"/>
+                        <GridPane hgap="14" vgap="12">
                             <columnConstraints>
                                 <ColumnConstraints percentWidth="20"/>
                                 <ColumnConstraints percentWidth="30"/>
@@ -44,75 +90,156 @@
                                 <ColumnConstraints percentWidth="30"/>
                             </columnConstraints>
                             <Label text="Nom" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                            <TextField fx:id="nomField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                            <TextField fx:id="nomField" GridPane.rowIndex="0" GridPane.columnIndex="1"
+                                       style="-fx-background-radius: 14; -fx-background-color: #f4f7f6;"/>
                             <Label text="Prenom" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
-                            <TextField fx:id="prenomField" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+                            <TextField fx:id="prenomField" GridPane.rowIndex="0" GridPane.columnIndex="3"
+                                       style="-fx-background-radius: 14; -fx-background-color: #f4f7f6;"/>
                             <Label text="Email" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                            <TextField fx:id="emailField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                            <TextField fx:id="emailField" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                                       style="-fx-background-radius: 14; -fx-background-color: #f4f7f6;"/>
                             <Label text="Telephone" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
-                            <TextField fx:id="phoneField" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+                            <TextField fx:id="phoneField" GridPane.rowIndex="1" GridPane.columnIndex="3"
+                                       style="-fx-background-radius: 14; -fx-background-color: #f4f7f6;"/>
                             <Label text="Sexe" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                            <TextField fx:id="sexeField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                            <TextField fx:id="sexeField" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                                       style="-fx-background-radius: 14; -fx-background-color: #f4f7f6;"/>
                             <Label text="Date de naissance" GridPane.rowIndex="2" GridPane.columnIndex="2"/>
-                            <DatePicker fx:id="birthDatePicker" GridPane.rowIndex="2" GridPane.columnIndex="3"/>
+                            <DatePicker fx:id="birthDatePicker" GridPane.rowIndex="2" GridPane.columnIndex="3"
+                                        style="-fx-background-radius: 14; -fx-background-color: #f4f7f6;"/>
                         </GridPane>
-                        <Button text="Modifier mes informations" onAction="#handleSavePersonalInfo"
-                                style="-fx-background-color: #198754; -fx-text-fill: white; -fx-background-radius: 6;"/>
+                        <Label text="Ces informations sont affichees en lecture seule depuis cet espace."
+                               wrapText="true"
+                               style="-fx-text-fill: #718680; -fx-font-size: 13px;"/>
                     </VBox>
 
-                    <VBox spacing="8" prefWidth="290"
-                          style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15;">
-                        <Label text="Statistiques" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0d6efd;"/>
-                        <Label text="Consultations"/>
-                        <Label fx:id="consultationCountLabel" text="0" style="-fx-font-size: 26px; -fx-font-weight: bold;"/>
-                        <Separator/>
-                        <Label text="Derniere consultation"/>
-                        <Label fx:id="lastConsultationLabel" text="-"/>
-                        <Separator/>
-                        <Label text="Dossier cree le"/>
-                        <Label fx:id="dossierCreationLabel" text="-"/>
+                    <VBox spacing="12" prefWidth="360"
+                          style="-fx-background-color: rgba(255,248,237,0.98); -fx-background-radius: 24; -fx-padding: 22; -fx-effect: dropshadow(gaussian, rgba(123,66,31,0.12), 24, 0.15, 0, 8);">
+                        <Label text="Note du Psychologue"
+                               style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #7a4b16;"/>
+                        <Label text="Cette observation est ajoutee depuis l'espace de suivi medical du psychologue."
+                               wrapText="true"
+                               style="-fx-text-fill: #8b6a47; -fx-font-size: 13px;"/>
+                        <TextArea fx:id="psychologueNoteArea" wrapText="true" editable="false" prefRowCount="10"
+                                  style="-fx-background-radius: 18; -fx-background-color: #fff8ed; -fx-border-color: #efcf95; -fx-border-radius: 18;"/>
+                        <Label fx:id="dossierUpdateLabel" text="Derniere mise a jour: -"
+                               wrapText="true" style="-fx-text-fill: #8b6a47; -fx-font-size: 12px;"/>
+                        <Label fx:id="clinicalStatusLabel" text="Statut clinique: -"
+                               wrapText="true" style="-fx-text-fill: #9a3412; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+                        <Label text="Rappel medical"
+                               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #7a4b16;"/>
+                        <TextArea fx:id="reminderArea" wrapText="true" editable="false" prefRowCount="3"
+                                  style="-fx-background-radius: 18; -fx-background-color: #fff8ed; -fx-border-color: #efcf95; -fx-border-radius: 18;"/>
+                        <Label text="Resume du dossier"
+                               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #7a4b16;"/>
+                        <TextArea fx:id="medicalHistoryArea" wrapText="true" editable="false" prefRowCount="4"
+                                  style="-fx-background-radius: 18; -fx-background-color: #fff8ed; -fx-border-color: #efcf95; -fx-border-radius: 18;"/>
                     </VBox>
                 </HBox>
 
-                <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15;">
-                    <Label text="Historique Medical" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #f0ad00;"/>
-                    <TextArea fx:id="medicalHistoryArea" wrapText="true" prefRowCount="4"
-                              promptText="Ajoutez vos allergies, traitements ou autres informations medicales..."/>
-                    <HBox spacing="10">
-                        <Button text="Enregistrer le dossier medical" onAction="#handleSaveMedicalRecord"
-                                style="-fx-background-color: #f0ad00; -fx-text-fill: #1b1b1b; -fx-background-radius: 6;"/>
-                        <Button fx:id="deleteMedicalRecordButton" text="Supprimer le dossier medical" onAction="#handleDeleteMedicalRecord"
-                                style="-fx-background-color: #dc3545; -fx-text-fill: white; -fx-background-radius: 6;"/>
+                <VBox spacing="14"
+                      style="-fx-background-color: rgba(255,255,255,0.96); -fx-background-radius: 24; -fx-padding: 22; -fx-effect: dropshadow(gaussian, rgba(131,38,55,0.10), 24, 0.12, 0, 8);">
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="Antecedents Medicaux"
+                               style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #7c2235;"/>
                     </HBox>
-                </VBox>
 
-                <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15;">
-                    <Label text="Antecedents Medicaux" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #dc3545;"/>
-                    <TextField fx:id="antecedentTypeField" promptText="Type d'antecedent (ex: Allergie, Operation, Diabete)"/>
-                    <TextArea fx:id="antecedentDescriptionArea" wrapText="true" prefRowCount="3"
-                              promptText="Description de l'antecedent medical..."/>
-                    <DatePicker fx:id="antecedentDatePicker"/>
+                    <GridPane hgap="12" vgap="12">
+                        <columnConstraints>
+                            <ColumnConstraints percentWidth="35"/>
+                            <ColumnConstraints percentWidth="65"/>
+                        </columnConstraints>
+                        <Label text="Type" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                        <ComboBox fx:id="antecedentTypeCombo" promptText="Choisir le type d'antecedent"
+                                  GridPane.rowIndex="0" GridPane.columnIndex="1"
+                                  style="-fx-background-radius: 14;"/>
+
+                        <Label text="Date" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                        <DatePicker fx:id="antecedentDatePicker"
+                                    GridPane.rowIndex="1" GridPane.columnIndex="1"
+                                    style="-fx-background-radius: 14;"/>
+
+                        <Label text="Description" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                        <TextArea fx:id="antecedentDescriptionArea" wrapText="true" prefRowCount="4"
+                                  promptText="Decrivez l'antecedent avec des informations claires et utiles..."
+                                  GridPane.rowIndex="2" GridPane.columnIndex="1"
+                                  style="-fx-background-radius: 18;"/>
+                    </GridPane>
+
+                    <Label text="La date de l'antecedent doit etre dans le passe."
+                           style="-fx-font-size: 13px; -fx-text-fill: #7a7a7a;"/>
+
                     <HBox spacing="10">
                         <Button fx:id="saveAntecedentButton" text="Ajouter l'antecedent medical" onAction="#handleSaveAntecedent"
-                                style="-fx-background-color: #dc3545; -fx-text-fill: white; -fx-background-radius: 6;"/>
+                                style="-fx-background-color: #8f2d44; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 18; -fx-padding: 11 18;"/>
                         <Button fx:id="cancelAntecedentButton" text="Annuler" onAction="#handleCancelAntecedentEdit"
                                 visible="false" managed="false"
-                                style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-background-radius: 6;"/>
+                                style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-background-radius: 18; -fx-padding: 11 18;"/>
                         <Button fx:id="deleteAntecedentButton" text="Supprimer l'antecedent" onAction="#handleDeleteSelectedAntecedent"
                                 visible="false" managed="false"
-                                style="-fx-background-color: #b91c1c; -fx-text-fill: white; -fx-background-radius: 6;"/>
+                                style="-fx-background-color: #c44536; -fx-text-fill: white; -fx-background-radius: 18; -fx-padding: 11 18;"/>
                     </HBox>
-                    <Label text="Liste des antecedents"/>
+
+                    <Separator style="-fx-opacity: 0.3;"/>
+
+                    <Label text="Liste des antecedents"
+                           style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #253b39;"/>
                     <VBox fx:id="antecedentsContainer" spacing="10"/>
                 </VBox>
 
-                <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15;">
-                    <Label text="Mes Consultations" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #198754;"/>
-                    <Label text="Accedez a l'interface dediee pour ajouter une consultation avec l'historique detaille et les filtres."
-                           wrapText="true"
-                           style="-fx-font-size: 14px; -fx-text-fill: #5f6c7b;"/>
-                    <Button text="Ouvrir l'espace consultations" onAction="#goToConsultations"
-                            style="-fx-background-color: #198754; -fx-text-fill: white; -fx-background-radius: 6;"/>
+                <HBox spacing="18">
+                    <VBox spacing="14" HBox.hgrow="ALWAYS"
+                          style="-fx-background-color: rgba(255,255,255,0.96); -fx-background-radius: 24; -fx-padding: 22; -fx-effect: dropshadow(gaussian, rgba(31,138,87,0.10), 24, 0.12, 0, 8);">
+                        <HBox alignment="CENTER_LEFT">
+                            <Label text="Resultats des Tests"
+                                   style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1f8b57;"/>
+                        </HBox>
+                        <Label text="Historique des tests completes"
+                               style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #253b39;"/>
+                        <VBox fx:id="testResultsContainer" spacing="10"/>
+                    </VBox>
+
+                    <VBox spacing="14" HBox.hgrow="ALWAYS"
+                          style="-fx-background-color: rgba(255,255,255,0.96); -fx-background-radius: 24; -fx-padding: 22; -fx-effect: dropshadow(gaussian, rgba(31,138,87,0.10), 24, 0.12, 0, 8);">
+                        <HBox alignment="CENTER_LEFT">
+                            <Label text="Analyses Emotionnelles"
+                                   style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1f8b57;"/>
+                        </HBox>
+
+                        <Label text="Liste des analyses emotionnelles"
+                               style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #253b39;"/>
+                        <VBox fx:id="analysesContainer" spacing="10"/>
+                    </VBox>
+                </HBox>
+
+                <HBox spacing="18">
+                    <VBox spacing="14" HBox.hgrow="ALWAYS"
+                          style="-fx-background-color: rgba(255,255,255,0.96); -fx-background-radius: 24; -fx-padding: 22; -fx-effect: dropshadow(gaussian, rgba(38,84,124,0.10), 24, 0.12, 0, 8);">
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <Label text="Consultations et suivi"
+                                   style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1f4f7a;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="Notes patient et psychologue"
+                                   style="-fx-text-fill: #6b7d78; -fx-font-size: 12px;"/>
+                        </HBox>
+                        <VBox fx:id="consultationsContainer" spacing="10"/>
+                    </VBox>
+                </HBox>
+
+                <VBox spacing="14"
+                      style="-fx-background-color: rgba(255,255,255,0.97); -fx-background-radius: 24; -fx-padding: 22; -fx-effect: dropshadow(gaussian, rgba(29,77,71,0.10), 24, 0.12, 0, 8);">
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <Label text="Chronologie medicale"
+                               style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #173a36;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="timelineSummaryLabel" text="0 element"
+                               style="-fx-text-fill: #55736d; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                    </HBox>
+                    <HBox spacing="12">
+                        <TextField fx:id="timelineSearchField" promptText="Rechercher dans les consultations, tests, analyses ou antecedents..." HBox.hgrow="ALWAYS"/>
+                        <ComboBox fx:id="timelineFilterCombo" promptText="Filtrer" prefWidth="220"/>
+                    </HBox>
+                    <VBox fx:id="timelineContainer" spacing="10"/>
                 </VBox>
             </VBox>
         </ScrollPane>

@@ -10,102 +10,85 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.controller.MedicalManagementController"
-      spacing="16" style="-fx-background-color: #f8fafc; -fx-padding: 20;">
+      spacing="18" style="-fx-background-color: linear-gradient(to bottom, #f6f1e8, #eef7f3); -fx-padding: 22;">
 
     <HBox alignment="CENTER_LEFT" spacing="12">
         <VBox spacing="4">
-            <Label fx:id="titleLabel" text="Gestion medicale" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
-            <Label fx:id="subtitleLabel" text="Gestion des dossiers patients" wrapText="true" style="-fx-text-fill: #64748b;"/>
+            <Label fx:id="titleLabel" text="Gestion medicale" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #173a36;"/>
+            <Label fx:id="subtitleLabel" text="Dossier du patient, antecedents et resultats de test." wrapText="true" style="-fx-text-fill: #5d746f;"/>
         </VBox>
         <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Exporter PDF" onAction="#handleExportPdf"
+                style="-fx-background-color: #c46c1a; -fx-text-fill: white; -fx-background-radius: 16; -fx-padding: 10 18;"/>
         <Button text="Retour" onAction="#handleBack"
-                style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-background-radius: 8;"/>
+                style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-background-radius: 16; -fx-padding: 10 18;"/>
     </HBox>
 
-    <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 14;">
-        <Label text="Patient" style="-fx-font-weight: bold;"/>
+    <HBox alignment="CENTER_LEFT" spacing="10"
+          style="-fx-background-color: rgba(255,255,255,0.95); -fx-background-radius: 18; -fx-padding: 16; -fx-effect: dropshadow(gaussian, rgba(23,58,54,0.10), 20, 0.12, 0, 8);">
+        <Label text="Patient" style="-fx-font-weight: bold; -fx-text-fill: #23433f;"/>
         <ComboBox fx:id="patientComboBox" prefWidth="360"/>
         <Button text="Rafraichir" onAction="#handleRefreshPatients"
-                style="-fx-background-color: #0d6efd; -fx-text-fill: white; -fx-background-radius: 8;"/>
+                style="-fx-background-color: #0d6efd; -fx-text-fill: white; -fx-background-radius: 14; -fx-padding: 9 16;"/>
         <Region HBox.hgrow="ALWAYS"/>
         <Label fx:id="emptyPatientLabel" text="Aucun patient disponible." visible="false" managed="false"
                style="-fx-text-fill: #dc3545; -fx-font-weight: bold;"/>
     </HBox>
 
-    <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+    <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent;">
         <tabs>
             <Tab text="Dossier medical">
-                <ScrollPane fitToWidth="true">
-                    <VBox spacing="12" style="-fx-background-color: transparent; -fx-padding: 16;">
-                        <VBox spacing="8" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 16;">
-                            <Label text="Rappel" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
-                            <TextArea fx:id="dossierReminderArea" wrapText="true" prefRowCount="4"/>
-                            <Label text="Historique medical" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
-                            <TextArea fx:id="dossierHistoryArea" wrapText="true" prefRowCount="6"/>
-                            <HBox spacing="10">
-                                <Button fx:id="saveDossierButton" text="Enregistrer le dossier" onAction="#handleSaveDossier"
-                                        style="-fx-background-color: #198754; -fx-text-fill: white;"/>
-                                <Button fx:id="deleteDossierButton" text="Supprimer le dossier" onAction="#handleDeleteDossier"
-                                        style="-fx-background-color: #dc3545; -fx-text-fill: white;"/>
-                            </HBox>
-                        </VBox>
-                    </VBox>
-                </ScrollPane>
-            </Tab>
+                <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+                    <VBox spacing="16" style="-fx-padding: 16;">
+                        <HBox spacing="16">
+                            <VBox fx:id="psychologueNoteBox" spacing="10" HBox.hgrow="ALWAYS"
+                                  style="-fx-background-color: rgba(255,248,237,0.98); -fx-background-radius: 22; -fx-padding: 18; -fx-effect: dropshadow(gaussian, rgba(123,66,31,0.10), 16, 0.10, 0, 6);">
+                                <Label text="Note du psychologue" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #8a4b12;"/>
+                                <Label text="Observation visible dans le dossier medical du patient."
+                                       wrapText="true" style="-fx-text-fill: #8b6a47;"/>
+                                <TextArea fx:id="dossierPsychologueNoteArea" wrapText="true" prefRowCount="7"
+                                          style="-fx-background-radius: 18; -fx-background-color: #fff8ed; -fx-border-color: #efcf95; -fx-border-radius: 18;"/>
+                                <Button fx:id="savePsychologueNoteButton" text="Enregistrer la note du dossier" onAction="#handleSavePsychologueDossierNote"
+                                        style="-fx-background-color: #c46c1a; -fx-text-fill: white; -fx-background-radius: 16; -fx-padding: 10 16;"/>
+                            </VBox>
+                        </HBox>
 
-            <Tab text="Antecedents">
-                <ScrollPane fitToWidth="true">
-                    <VBox spacing="12" style="-fx-background-color: transparent; -fx-padding: 16;">
-                        <VBox spacing="8" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 16;">
-                            <Label text="Formulaire antecedent" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
-                            <TextField fx:id="antecedentTypeField" promptText="Type d'antecedent"/>
-                            <TextArea fx:id="antecedentDescriptionArea" wrapText="true" prefRowCount="4" promptText="Description"/>
-                            <DatePicker fx:id="antecedentDatePicker"/>
+                        <VBox fx:id="antecedentEditorBox" spacing="10"
+                              style="-fx-background-color: rgba(255,255,255,0.97); -fx-background-radius: 20; -fx-padding: 18;">
+                            <Label text="Formulaire antecedent" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #7c2235;"/>
+                            <TextField fx:id="antecedentTypeField" promptText="Type d'antecedent"
+                                       style="-fx-background-radius: 14;"/>
+                            <TextArea fx:id="antecedentDescriptionArea" wrapText="true" prefRowCount="4" promptText="Description"
+                                      style="-fx-background-radius: 18;"/>
+                            <DatePicker fx:id="antecedentDatePicker" style="-fx-background-radius: 14;"/>
                             <HBox spacing="10">
                                 <Button fx:id="saveAntecedentButton" text="Enregistrer l'antecedent" onAction="#handleSaveAntecedent"
-                                        style="-fx-background-color: #198754; -fx-text-fill: white;"/>
+                                        style="-fx-background-color: #8f2d44; -fx-text-fill: white; -fx-background-radius: 16; -fx-padding: 10 16;"/>
                                 <Button fx:id="cancelAntecedentButton" text="Annuler" onAction="#handleCancelAntecedent"
                                         visible="false" managed="false"
-                                        style="-fx-background-color: #6c757d; -fx-text-fill: white;"/>
+                                        style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-background-radius: 16; -fx-padding: 10 16;"/>
                             </HBox>
                         </VBox>
 
-                        <Separator/>
+                        <Separator style="-fx-opacity: 0.2;"/>
 
-                        <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 16;">
-                            <Label text="Liste des antecedents" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                        <VBox spacing="10"
+                              style="-fx-background-color: rgba(255,255,255,0.97); -fx-background-radius: 20; -fx-padding: 18;">
+                            <Label text="Antecedents medicaux" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #253b39;"/>
                             <VBox fx:id="antecedentListContainer" spacing="10"/>
                         </VBox>
-                    </VBox>
-                </ScrollPane>
-            </Tab>
 
-            <Tab text="Consultations">
-                <ScrollPane fitToWidth="true">
-                    <VBox spacing="12" style="-fx-background-color: transparent; -fx-padding: 16;">
-                        <VBox spacing="8" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 16;">
-                            <Label text="Edition consultation selectionnee" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
-                            <DatePicker fx:id="consultationDatePicker"/>
-                            <TextArea fx:id="consultationPatientNotesArea" wrapText="true" prefRowCount="5" promptText="Compte rendu patient"/>
-                            <TextArea fx:id="consultationPsychologueNotesArea" wrapText="true" prefRowCount="4" promptText="Note psychologue"/>
-                            <HBox spacing="10">
-                                <Button fx:id="saveConsultationButton" text="Mettre a jour la consultation" onAction="#handleSaveConsultation"
-                                        style="-fx-background-color: #198754; -fx-text-fill: white;"/>
-                                <Button fx:id="cancelConsultationButton" text="Annuler" onAction="#handleCancelConsultation"
-                                        visible="false" managed="false"
-                                        style="-fx-background-color: #6c757d; -fx-text-fill: white;"/>
-                            </HBox>
-                        </VBox>
-
-                        <Separator/>
-
-                        <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 16;">
-                            <Label text="Historique des consultations" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
-                            <VBox fx:id="consultationListContainer" spacing="10"/>
+                        <VBox spacing="10"
+                              style="-fx-background-color: rgba(255,255,255,0.97); -fx-background-radius: 20; -fx-padding: 18;">
+                            <Label text="Resultats de test" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2b5f3f;"/>
+                            <Label text="Les derniers scores enregistres sont integres directement dans le dossier medical."
+                                   wrapText="true" style="-fx-text-fill: #5d746f;"/>
+                            <VBox fx:id="testResultsContainer" spacing="10"/>
                         </VBox>
                     </VBox>
                 </ScrollPane>

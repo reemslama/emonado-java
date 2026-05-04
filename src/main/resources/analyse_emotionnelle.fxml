@@ -71,6 +71,9 @@
                                     <Button text="Ajouter analyse" onAction="#handleAdd" styleClass="pro-action-btn" />
                                     <Button text="Modifier" onAction="#handleEdit" styleClass="pro-action-btn" />
                                     <Button text="Supprimer" onAction="#handleDelete" styleClass="pro-action-btn" />
+                                    <Button text="Conseil AI" onAction="#handleConseilAi" styleClass="pro-action-btn" />
+                                    <Button text="Detection AI" onAction="#handleDetectionAi" styleClass="pro-action-btn" />
+                                    <Button text="Alertes AI" onAction="#handleAlertesAi" styleClass="pro-action-btn" />
                                 </HBox>
                                 <TableView fx:id="analyseTable" VBox.vgrow="ALWAYS">
                                     <columns>

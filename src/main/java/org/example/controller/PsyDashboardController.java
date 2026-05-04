@@ -107,7 +107,28 @@ public class PsyDashboardController {
 
     @FXML
     private void goToMedicalManagement() {
-        loadView("/medical_management.fxml", "Suivi medical");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/medical_management.fxml"));
+            Parent view = loader.load();
+
+            MedicalManagementController controller = loader.getController();
+            controller.initForPsychologue(UserSession.getInstance());
+
+            BorderPane mainContainer = (BorderPane) welcomeLabel.getScene().lookup("#mainContainer");
+            if (mainContainer != null) {
+                mainContainer.setCenter(view);
+            } else {
+                welcomeLabel.getScene().setRoot(view);
+            }
+        } catch (IOException e) {
+            System.err.println("Erreur chargement Suivi medical : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void goToPreparationRendezVous() {
+        loadView("/preparation_rendez_vous.fxml", "Preparation pour rendez-vous");
     }
 
     @FXML
