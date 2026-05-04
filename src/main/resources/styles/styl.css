@@ -1,0 +1,35 @@
+/* Fond des cartes blanches avec ombre légère */
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);
+    -fx-padding: 20;
+}
+
+/* Style des boutons du bas */
+.button-footer {
+    -fx-background-color: white;
+    -fx-border-color: #D5D8DC;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-text-fill: #2C3E50;
+    -fx-cursor: hand;
+}
+
+.button-footer:hover {
+    -fx-background-color: #FBFCFC;
+    -fx-border-color: #ABB2B9;
+}
+
+/* ScrollPane transparent */
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Label de l'analyse IA */
+#lblAnalyseIA {
+    -fx-text-fill: #2C3E50;
+}

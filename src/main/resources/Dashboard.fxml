@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Region?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.example.controller.DashboardController"
+      spacing="16"
+      style="-fx-background-color: #F4F6F9; -fx-padding: 24;">
+
+    <!-- En-tête -->
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <Button text="← Retour" onAction="#retourAccueil"
+                style="-fx-background-color: transparent; -fx-text-fill: #3498db;
+                       -fx-font-size: 12; -fx-cursor: hand;"/>
+        <Label text="📊 Tableau de bord — Évolution"
+               style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #2C3E50;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="↺ Rafraîchir" onAction="#rafraichir"
+                style="-fx-background-color: #3498db; -fx-text-fill: white;
+                       -fx-background-radius: 8; -fx-padding: 6 14; -fx-cursor: hand;"/>
+    </HBox>
+
+    <!-- Cartes statistiques -->
+    <HBox spacing="12">
+
+        <!-- Tendance -->
+        <VBox style="-fx-background-color: white; -fx-background-radius: 12;
+                     -fx-padding: 16; -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.08),8,0,0,2);"
+              HBox.hgrow="ALWAYS" alignment="CENTER">
+            <Label text="TENDANCE" style="-fx-font-size: 10; -fx-text-fill: #95A5A6;"/>
+            <Label fx:id="lblTendance" text="—"
+                   style="-fx-font-size: 15; -fx-font-weight: bold;"/>
+        </VBox>
+
+        <!-- Meilleur score -->
+        <VBox style="-fx-background-color: white; -fx-background-radius: 12;
+                     -fx-padding: 16; -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.08),8,0,0,2);"
+              HBox.hgrow="ALWAYS" alignment="CENTER">
+            <Label text="MEILLEUR SCORE" style="-fx-font-size: 10; -fx-text-fill: #95A5A6;"/>
+            <Label fx:id="lblMeilleurScore" text="—"
+                   style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #2ecc71;"/>
+        </VBox>
+
+        <!-- Score le plus élevé -->
+        <VBox style="-fx-background-color: white; -fx-background-radius: 12;
+                     -fx-padding: 16; -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.08),8,0,0,2);"
+              HBox.hgrow="ALWAYS" alignment="CENTER">
+            <Label text="SCORE MAX" style="-fx-font-size: 10; -fx-text-fill: #95A5A6;"/>
+            <Label fx:id="lblPireScore" text="—"
+                   style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #e74c3c;"/>
+        </VBox>
+
+        <!-- Moyenne -->
+        <VBox style="-fx-background-color: white; -fx-background-radius: 12;
+                     -fx-padding: 16; -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.08),8,0,0,2);"
+              HBox.hgrow="ALWAYS" alignment="CENTER">
+            <Label text="MOYENNE" style="-fx-font-size: 10; -fx-text-fill: #95A5A6;"/>
+            <Label fx:id="lblMoyenne" text="—"
+                   style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #3498db;"/>
+        </VBox>
+
+        <!-- Total tests -->
+        <VBox style="-fx-background-color: white; -fx-background-radius: 12;
+                     -fx-padding: 16; -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.08),8,0,0,2);"
+              HBox.hgrow="ALWAYS" alignment="CENTER">
+            <Label text="TESTS" style="-fx-font-size: 10; -fx-text-fill: #95A5A6;"/>
+            <Label fx:id="lblTotalTests" text="—"
+                   style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #9b59b6;"/>
+        </VBox>
+    </HBox>
+
+    <!-- Graphiques -->
+    <HBox spacing="16">
+
+        <!-- Courbe d'évolution -->
+        <VBox style="-fx-background-color: white; -fx-background-radius: 12;
+                     -fx-padding: 16; -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.08),8,0,0,2);"
+              HBox.hgrow="ALWAYS">
+            <Label text="Évolution des 5 derniers tests"
+                   style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #2C3E50;
+                          -fx-padding: 0 0 10 0;"/>
+            <Canvas fx:id="canvasCourbe" width="420" height="200"/>
+        </VBox>
+
+        <!-- Spider chart -->
+        <VBox style="-fx-background-color: white; -fx-background-radius: 12;
+                     -fx-padding: 16; -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.08),8,0,0,2);"
+              prefWidth="240">
+            <Label text="Dimensions (dernier test)"
+                   style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #2C3E50;
+                          -fx-padding: 0 0 10 0;"/>
+            <Canvas fx:id="canvasRadar" width="200" height="200"/>
+        </VBox>
+    </HBox>
+
+    <!-- Historique -->
+    <VBox style="-fx-background-color: white; -fx-background-radius: 12;
+                 -fx-padding: 16; -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.08),8,0,0,2);">
+        <Label text="Historique des tests"
+               style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #2C3E50;
+                      -fx-padding: 0 0 10 0;"/>
+        <ScrollPane fitToWidth="true" prefHeight="200"
+                    style="-fx-background: transparent; -fx-background-color: transparent;">
+            <VBox fx:id="vboxHistorique" spacing="8"/>
+        </ScrollPane>
+    </VBox>
+
+</VBox>
