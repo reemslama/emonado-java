@@ -20,7 +20,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.example.entities.ResultatTest;
 import org.example.entities.TestAdaptatif;
-import org.example.service.GrokAIService;
+import org.example.service.GrokAiService;
 import org.example.service.PdfExportService;
 import org.example.service.ResultatTestService;
 
@@ -40,7 +40,7 @@ public class ResultatController implements Initializable {
     @FXML private Canvas canvasScore, canvasThermo, barEmo, barPhy, barCog;
     @FXML private VBox   cardAnalyseIA, vboxThemes;
 
-    private final GrokAIService       grokAIService       = new GrokAIService();
+    private final GrokAiService       grokAIService       = new GrokAiService();
     private final ResultatTestService resultatTestService = new ResultatTestService();
     private final PdfExportService    pdfExportService    = new PdfExportService();
 

@@ -10,6 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
@@ -28,6 +29,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class ConsultationController {
@@ -42,6 +44,8 @@ public class ConsultationController {
     @FXML private TextArea psychologueNotesArea;
     @FXML private VBox consultationHistoryBox;
     @FXML private MenuButton filterMenuButton;
+    @FXML private ComboBox<String> sortDateCombo;
+    @FXML private Label formValidationLabel;
     @FXML private ToggleButton writeModeButton;
     @FXML private ToggleButton speakModeButton;
     @FXML private Button saveConsultationButton;
@@ -51,6 +55,7 @@ public class ConsultationController {
 
     private User currentUser;
     private FilterMode currentFilter = FilterMode.ALL;
+    private SortMode currentSortMode = SortMode.DATE_DESC;
     private Consultation selectedConsultation;
 
     @FXML
@@ -61,6 +66,8 @@ public class ConsultationController {
         writeModeButton.setSelected(true);
         consultationDatePicker.setValue(LocalDate.now());
         psychologueNotesArea.setEditable(false);
+        configureSorting();
+        configureValidation();
 
         if (currentUser == null) {
             setUserData(UserSession.getInstance());
@@ -95,6 +102,7 @@ public class ConsultationController {
         consultation.setConsultationDate(consultationDatePicker.getValue());
         consultation.setNotesPatient(MedicalValidationService.normalize(consultationNotesArea.getText()));
 
+        refreshValidationState();
         String validationError = MedicalValidationService.validateConsultationPatientData(consultation);
         if (validationError != null) {
             showError(validationError);
@@ -152,6 +160,17 @@ public class ConsultationController {
     }
 
     @FXML
+    private void onSortChanged() {
+        String selected = sortDateCombo == null ? null : sortDateCombo.getValue();
+        if ("Date la plus ancienne".equalsIgnoreCase(selected)) {
+            currentSortMode = SortMode.DATE_ASC;
+        } else {
+            currentSortMode = SortMode.DATE_DESC;
+        }
+        loadConsultations();
+    }
+
+    @FXML
     private void returnToDashboard() {
         navigateTo("/patient_dashboard.fxml", PatientDashboardController.class);
     }
@@ -204,6 +223,7 @@ public class ConsultationController {
                     filteredItems.add(consultation);
                 }
             }
+            filteredItems.sort(resolveComparator());
 
             historyCountLabel.setText(String.valueOf(filteredItems.size()));
 
@@ -229,6 +249,11 @@ public class ConsultationController {
             case UPCOMING -> !consultation.getConsultationDate().isBefore(LocalDate.now());
             case PAST -> consultation.getConsultationDate().isBefore(LocalDate.now());
         };
+    }
+
+    private Comparator<Consultation> resolveComparator() {
+        Comparator<Consultation> comparator = Comparator.comparing(Consultation::getConsultationDate, Comparator.nullsLast(Comparator.naturalOrder()));
+        return currentSortMode == SortMode.DATE_ASC ? comparator : comparator.reversed();
     }
 
     private VBox buildConsultationCard(Consultation consultation) {
@@ -321,6 +346,41 @@ public class ConsultationController {
         saveConsultationButton.setText("Enregistrer la consultation");
         cancelEditButton.setVisible(false);
         cancelEditButton.setManaged(false);
+        refreshValidationState();
+    }
+
+    private void configureSorting() {
+        if (sortDateCombo != null) {
+            sortDateCombo.getItems().setAll("Date la plus recente", "Date la plus ancienne");
+            sortDateCombo.setValue("Date la plus recente");
+        }
+    }
+
+    private void configureValidation() {
+        if (consultationDatePicker != null) {
+            consultationDatePicker.valueProperty().addListener((obs, oldValue, newValue) -> refreshValidationState());
+        }
+        if (consultationNotesArea != null) {
+            consultationNotesArea.textProperty().addListener((obs, oldValue, newValue) -> refreshValidationState());
+        }
+        refreshValidationState();
+    }
+
+    private void refreshValidationState() {
+        Consultation draft = new Consultation();
+        draft.setConsultationDate(consultationDatePicker == null ? null : consultationDatePicker.getValue());
+        draft.setNotesPatient(MedicalValidationService.normalize(consultationNotesArea == null ? "" : consultationNotesArea.getText()));
+        String validationError = MedicalValidationService.validateConsultationPatientData(draft);
+        boolean valid = validationError == null;
+        if (formValidationLabel != null) {
+            formValidationLabel.setText(valid
+                    ? "Formulaire valide. Vous pouvez enregistrer la consultation."
+                    : validationError);
+            formValidationLabel.setStyle("-fx-text-fill: " + (valid ? "#166534" : "#b91c1c") + "; -fx-font-size: 12px; -fx-font-weight: bold;");
+        }
+        if (saveConsultationButton != null) {
+            saveConsultationButton.setDisable(!valid);
+        }
     }
 
     private void showInfo(String message) {
@@ -335,5 +395,10 @@ public class ConsultationController {
         ALL,
         UPCOMING,
         PAST
+    }
+
+    private enum SortMode {
+        DATE_DESC,
+        DATE_ASC
     }
 }

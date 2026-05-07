@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.controller.PreparationRendezVousController"
+            style="-fx-background: #eef7ff; -fx-background-color: #eef7ff;">
+    <content>
+        <VBox spacing="22" style="-fx-padding: 28 32 36 32; -fx-background-color: linear-gradient(to bottom, #f7fbff, #eef7ff);">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Button text="Retour" onAction="#returnToDashboard"
+                        style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 12; -fx-padding: 10 18;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="Actualiser" onAction="#refreshPreparations"
+                        style="-fx-background-color: #2563eb; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 12; -fx-padding: 10 18;"/>
+            </HBox>
+
+            <VBox spacing="8" style="-fx-background-color: white; -fx-background-radius: 24; -fx-padding: 24; -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.08), 18, 0, 0, 6);">
+                <Label text="Preparation pour rendez vous"
+                       style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                <Label text="Selectionnez un patient pour afficher les informations du formulaire et la prediction d'etat psychologique."
+                       wrapText="true" style="-fx-text-fill: #64748b; -fx-font-size: 14px;"/>
+            </VBox>
+
+            <FlowPane hgap="14" vgap="14">
+                <VBox spacing="4" prefWidth="190" style="-fx-background-color: white; -fx-background-radius: 18; -fx-padding: 18;">
+                    <Label text="Rendez-vous suivis" style="-fx-text-fill: #64748b;"/>
+                    <Label fx:id="totalPreparationsLabel" text="0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                </VBox>
+                <VBox spacing="4" prefWidth="190" style="-fx-background-color: white; -fx-background-radius: 18; -fx-padding: 18;">
+                    <Label text="Paiements valides" style="-fx-text-fill: #64748b;"/>
+                    <Label fx:id="paidPreparationsLabel" text="0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #166534;"/>
+                </VBox>
+                <VBox spacing="4" prefWidth="190" style="-fx-background-color: white; -fx-background-radius: 18; -fx-padding: 18;">
+                    <Label text="Formulaires recus" style="-fx-text-fill: #64748b;"/>
+                    <Label fx:id="questionnairesLabel" text="0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1d4ed8;"/>
+                </VBox>
+            </FlowPane>
+
+            <HBox spacing="22" alignment="TOP_LEFT">
+                <VBox spacing="14" prefWidth="360" HBox.hgrow="NEVER"
+                      style="-fx-background-color: white; -fx-background-radius: 24; -fx-padding: 22;">
+                    <Label text="Patients et rendez-vous" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                    <HBox spacing="10">
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <Label text="Patient" style="-fx-text-fill: #64748b; -fx-font-size: 12px;"/>
+                            <ComboBox fx:id="patientFilterCombo" promptText="Selectionner un patient" maxWidth="1.7976931348623157E308"/>
+                        </VBox>
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <Label text="Tri" style="-fx-text-fill: #64748b; -fx-font-size: 12px;"/>
+                            <ComboBox fx:id="sortModeCombo" promptText="Trier par" maxWidth="1.7976931348623157E308"/>
+                        </VBox>
+                    </HBox>
+                    <TextField fx:id="searchPatientField" promptText="Recherche dynamique par patient, type ou date"/>
+                    <Label fx:id="listSummaryLabel" text="Chargement de la liste..."
+                           wrapText="true" style="-fx-text-fill: #475569; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                    <VBox fx:id="patientListBox" spacing="10"/>
+                </VBox>
+
+                <VBox spacing="16" HBox.hgrow="ALWAYS"
+                      style="-fx-background-color: white; -fx-background-radius: 24; -fx-padding: 24;">
+                    <VBox spacing="6">
+                        <Label fx:id="selectedPatientLabel" text="Aucun patient selectionne"
+                               style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                        <Label fx:id="selectedRendezVousLabel" text="Rendez-vous: -"
+                               wrapText="true" style="-fx-text-fill: #475569;"/>
+                        <Label fx:id="paymentStateLabel" text="Paiement: -"
+                               style="-fx-text-fill: #1e293b; -fx-font-weight: bold;"/>
+                        <Label fx:id="formStateLabel" text="Selectionnez un patient pour voir sa preparation."
+                               wrapText="true" style="-fx-text-fill: #64748b;"/>
+                    </VBox>
+
+                    <Separator/>
+
+                    <VBox spacing="8"
+                          style="-fx-background-color: linear-gradient(to right, #dbeafe, #eff6ff); -fx-background-radius: 18; -fx-padding: 18;">
+                        <Label fx:id="predictionTitleLabel" text="Prediction d'etat psychologique"
+                               style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1e3a8a;"/>
+                        <Label fx:id="predictionSummaryLabel" text="Selectionnez un patient pour afficher la prediction."
+                               wrapText="true" style="-fx-text-fill: #1e293b; -fx-font-size: 15px;"/>
+                        <Label fx:id="scoreCliniqueLabel" text="Score clinique: -"
+                               style="-fx-text-fill: #1e40af; -fx-font-weight: bold;"/>
+                        <BarChart fx:id="predictionChart" animated="false" legendVisible="false" categoryGap="12" style="-fx-background-color: transparent;">
+                            <xAxis>
+                                <CategoryAxis />
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis lowerBound="0.0" upperBound="10.0" tickUnit="2.0" autoRanging="false" />
+                            </yAxis>
+                        </BarChart>
+                        <Label fx:id="gravityActionLabel" text="Aucune alerte de deplacement."
+                               wrapText="true" style="-fx-text-fill: #7c2d12; -fx-font-weight: bold;"/>
+                        <Button fx:id="openPatientMapButton" text="Ouvrir la carte du patient"
+                                onAction="#openPatientMap" visible="false" managed="false"
+                                style="-fx-background-color: #dc2626; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 12; -fx-padding: 10 16;"/>
+                    </VBox>
+
+                    <Label fx:id="submittedAtLabel" text="Formulaire envoye le: -" style="-fx-text-fill: #475569;"/>
+
+                    <VBox spacing="10">
+                        <Label fx:id="motifLabel" text="Motif principal: -" wrapText="true"
+                               style="-fx-background-color: #f8fafc; -fx-background-radius: 12; -fx-padding: 14; -fx-text-fill: #334155;"/>
+                        <Label fx:id="symptomesLabel" text="Symptomes: -" wrapText="true"
+                               style="-fx-background-color: #f8fafc; -fx-background-radius: 12; -fx-padding: 14; -fx-text-fill: #334155;"/>
+                        <Label fx:id="autoEvaluationLabel" text="Auto-evaluation: -" wrapText="true"
+                               style="-fx-background-color: #f8fafc; -fx-background-radius: 12; -fx-padding: 14; -fx-text-fill: #334155;"/>
+                        <Label fx:id="risqueLabel" text="Risque auto-agression: -" wrapText="true"
+                               style="-fx-background-color: #f8fafc; -fx-background-radius: 12; -fx-padding: 14; -fx-text-fill: #334155;"/>
+                        <Label fx:id="contexteLabel" text="Contexte complementaire: -" wrapText="true"
+                               style="-fx-background-color: #f8fafc; -fx-background-radius: 12; -fx-padding: 14; -fx-text-fill: #334155;"/>
+                        <Label fx:id="voiceTranscriptLabel" text="Note vocale transcrite: -" wrapText="true"
+                               style="-fx-background-color: #eff6ff; -fx-background-radius: 12; -fx-padding: 14; -fx-text-fill: #1e3a8a;"/>
+                    </VBox>
+                </VBox>
+            </HBox>
+        </VBox>
+    </content>
+</ScrollPane>

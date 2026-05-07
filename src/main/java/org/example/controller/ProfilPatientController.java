@@ -15,7 +15,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 import org.example.entities.User;
 import org.example.service.FaceProfileService;
-import org.example.service.PasswordHashService;
 import org.example.utils.DataSource;
 import org.example.utils.UserSession;
 
@@ -83,25 +82,26 @@ public class ProfilPatientController {
         boolean updatePassword = newPassword != null && !newPassword.trim().isEmpty();
 
         String query = updatePassword
-                ? "UPDATE user SET nom=?, prenom=?, telephone=?, sexe=?, date_naissance=?, password=? WHERE id=?"
-                : "UPDATE user SET nom=?, prenom=?, telephone=?, sexe=?, date_naissance=? WHERE id=?";
+                ? "UPDATE user SET nom=?, prenom=?, email=?, telephone=?, sexe=?, date_naissance=?, password=? WHERE id=?"
+                : "UPDATE user SET nom=?, prenom=?, email=?, telephone=?, sexe=?, date_naissance=? WHERE id=?";
 
         try (Connection conn = DataSource.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
 
             pstmt.setString(1, nomField.getText());
             pstmt.setString(2, prenomField.getText());
-            pstmt.setString(3, phoneField.getText());
-            pstmt.setString(4, sexeCombo.getValue());
-            pstmt.setDate(5, datePicker.getValue() != null ? Date.valueOf(datePicker.getValue()) : null);
-
+            pstmt.setString(3, emailField.getText());
+            pstmt.setString(4, phoneField.getText());
+            pstmt.setString(5, sexeCombo.getValue());
+            pstmt.setDate(6, datePicker.getValue() != null ? Date.valueOf(datePicker.getValue()) : null);
             if (updatePassword) {
-                pstmt.setString(6, PasswordHashService.hash(newPassword));
-                pstmt.setInt(7, currentUser.getId());
+                String hashedPassword = org.example.service.PasswordHashService.ensureHashed(newPassword);
+                pstmt.setString(7, hashedPassword);
+                pstmt.setInt(8, currentUser.getId());
+                currentUser.setPassword(hashedPassword);
             } else {
-                pstmt.setInt(6, currentUser.getId());
+                pstmt.setInt(7, currentUser.getId());
             }
-
             pstmt.executeUpdate();
 
             currentUser.setEmail(emailField.getText());

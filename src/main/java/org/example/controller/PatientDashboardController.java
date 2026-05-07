@@ -89,6 +89,16 @@ public class PatientDashboardController {
     }
 
     @FXML
+    private void goToRendezVous() {
+        loadView("/AjouterRendezVous.fxml", "Rendez-vous");
+    }
+
+    @FXML
+    private void goToPayments() {
+        loadView("/payment_workflow.fxml", "Paiement et formulaire");
+    }
+
+    @FXML
     private void openEspaceEnfant() {
         loadView("/EspaceEnfant.fxml", "Espace Enfant");
     }

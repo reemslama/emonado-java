@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>speech:status:ready</title>
+</head>
+<body>
+<script>
+    let recognition = null;
+    let transcript = "";
+
+    function emit(type, value) {
+        document.title = "speech:" + type + ":" + encodeURIComponent(value || "");
+    }
+
+    function ensureRecognition() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            emit("error", "navigateur non compatible avec la reconnaissance vocale");
+            return null;
+        }
+        if (recognition) {
+            return recognition;
+        }
+        recognition = new SpeechRecognition();
+        recognition.lang = "fr-FR";
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.onstart = () => emit("status", "listening");
+        recognition.onend = () => emit("status", "stopped");
+        recognition.onerror = event => emit("error", event.error || "erreur inconnue");
+        recognition.onresult = event => {
+            const chunks = [];
+            for (let i = 0; i < event.results.length; i++) {
+                chunks.push(event.results[i][0].transcript);
+            }
+            transcript = chunks.join(" ").trim();
+            emit("text", transcript);
+        };
+        return recognition;
+    }
+
+    function startRecognition() {
+        const instance = ensureRecognition();
+        if (!instance) {
+            return;
+        }
+        transcript = "";
+        try {
+            instance.start();
+        } catch (e) {
+            emit("error", e.message || "impossible de demarrer");
+        }
+    }
+
+    function stopRecognition() {
+        if (recognition) {
+            recognition.stop();
+        } else {
+            emit("status", "stopped");
+        }
+    }
+
+    emit("status", "ready");
+</script>
+</body>
+</html>

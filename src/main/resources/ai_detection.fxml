@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import java.net.URL?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.controller.AiDetectionController"
+            style="-fx-background-color: #f8fafc;">
+    <stylesheets>
+        <URL value="@/styles/template.css" />
+    </stylesheets>
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="14" style="-fx-background-color: #187d67; -fx-padding: 16 24;">
+            <Label text="EmoNado" styleClass="brand" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Button text="Retour analyse" onAction="#goBack" styleClass="nav-btn" />
+        </HBox>
+    </top>
+    <center>
+        <VBox spacing="18" style="-fx-padding: 28;">
+            <VBox spacing="6">
+                <Label fx:id="titleLabel" text="Detection AI" style="-fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #7f1d1d;" />
+                <Label fx:id="metaLabel" text="" wrapText="true" style="-fx-text-fill: #64748b; -fx-font-size: 13px;" />
+            </VBox>
+            <HBox spacing="18" VBox.vgrow="ALWAYS">
+                <VBox spacing="10" HBox.hgrow="ALWAYS" styleClass="pro-card">
+                    <Label text="Journal analyse" styleClass="pro-title" />
+                    <TextArea fx:id="journalTextArea" editable="false" wrapText="true" VBox.vgrow="ALWAYS" />
+                </VBox>
+                <VBox spacing="10" HBox.hgrow="ALWAYS" styleClass="pro-card">
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="Rapport de detection" styleClass="pro-title" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Button text="Relancer detection" onAction="#runDetection" styleClass="pro-action-btn" />
+                    </HBox>
+                    <Label fx:id="statusLabel" text="Pret" style="-fx-text-fill: #b91c1c; -fx-font-weight: bold;" />
+                    <TextArea fx:id="resultTextArea" editable="false" wrapText="true" VBox.vgrow="ALWAYS" />
+                </VBox>
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>

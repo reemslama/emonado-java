@@ -1,0 +1,16 @@
+google.calendar.default.calendarId=primary
+google.calendar.default.accessToken=
+google.calendar.default.refreshToken=
+google.calendar.default.clientId=
+google.calendar.default.clientSecret=
+google.calendar.default.redirectUri=http://localhost
+google.calendar.default.timeZone=Europe/Paris
+
+# Optional psychologue-specific override
+# google.calendar.psychologue.12.calendarId=primary
+# google.calendar.psychologue.12.accessToken=
+# google.calendar.psychologue.12.refreshToken=
+# google.calendar.psychologue.12.clientId=
+# google.calendar.psychologue.12.clientSecret=
+# google.calendar.psychologue.12.redirectUri=http://localhost
+# google.calendar.psychologue.12.timeZone=Europe/Paris

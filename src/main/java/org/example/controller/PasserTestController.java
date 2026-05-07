@@ -11,7 +11,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import org.example.entities.*;
-import org.example.service.GrokAIService;
+import org.example.service.GrokAiService;
 import org.example.service.QuestionService;
 import org.example.utils.UserSession;
 
@@ -98,7 +98,7 @@ public class PasserTestController {
     // =========================================================================
 
     private final QuestionService questionService = new QuestionService();
-    private final GrokAIService   grokAIService   = new GrokAIService();
+    private final GrokAiService   grokAIService   = new GrokAiService();
 
     // =========================================================================
     // INITIALISATION — MODE CLASSIQUE
@@ -111,6 +111,15 @@ public class PasserTestController {
         this.questions  = questionService.getQuestionsByCategorie(categorie);
         indexCourant    = 0;
         reponsesClassiques.clear();
+        if (questions.isEmpty()) {
+            lblProgression.setText("Question 0 / 0");
+            lblQuestion.setText("Aucune question disponible pour ce test.");
+            lblErreur.setText("Verifiez que les questions sont initialisees dans la base de donnees.");
+            vboxReponses.getChildren().clear();
+            btnSuivant.setDisable(true);
+            return;
+        }
+        btnSuivant.setDisable(false);
         afficherQuestion();
     }
 

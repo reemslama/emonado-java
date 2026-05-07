@@ -20,6 +20,7 @@ public final class MedicalValidationService {
     private static final int ANTECEDENT_DESCRIPTION_MAX_LENGTH = 1000;
     private static final int CONSULTATION_NOTES_MAX_LENGTH = 2000;
     private static final int PSY_NOTE_MAX_LENGTH = 2000;
+    private static final int PATIENT_RDV_NOTE_MAX_LENGTH = 1200;
 
     private MedicalValidationService() {
     }
@@ -157,6 +158,23 @@ public final class MedicalValidationService {
         }
         if (INVALID_TEXT_PATTERN.matcher(normalizedNote).matches()) {
             return "La note psychologue doit contenir du texte explicite.";
+        }
+        return null;
+    }
+
+    public static String validatePatientRendezVousNote(String patientNote) {
+        String normalizedNote = normalize(patientNote);
+        if (normalizedNote.isBlank()) {
+            return null;
+        }
+        if (normalizedNote.length() < 5) {
+            return "La note patient doit contenir au moins 5 caracteres.";
+        }
+        if (normalizedNote.length() > PATIENT_RDV_NOTE_MAX_LENGTH) {
+            return "La note patient ne doit pas depasser 1200 caracteres.";
+        }
+        if (INVALID_TEXT_PATTERN.matcher(normalizedNote).matches()) {
+            return "La note patient doit contenir du texte explicite.";
         }
         return null;
     }

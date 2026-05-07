@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 
 public class AuthService {
 
@@ -21,32 +22,41 @@ public class AuthService {
     }
 
     public static User addUser(User user) {
-        String query = "INSERT INTO user (email, roles, password, nom, prenom, telephone, sexe, date_naissance, has_child, specialite, avatar, face_id_image_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO user (nom, prenom, email, password, roles, telephone, sexe, date_naissance, specialite, avatar, face_id_image_path, has_child, reset_password_token, reset_password_token_expires_at, psychologue_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 
         Connection conn = DataSource.getInstance().getConnection();
 
         try (PreparedStatement pstmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-            String hashedPassword = PasswordHashService.hash(user.getPassword());
-            pstmt.setString(1, user.getEmail());
-            pstmt.setString(2, user.getRoles());
-            pstmt.setString(3, hashedPassword);
-            pstmt.setString(4, user.getNom());
-            pstmt.setString(5, user.getPrenom());
+            String hashedPassword = PasswordHashService.ensureHashed(user.getPassword());
+            user.setPassword(hashedPassword);
+            pstmt.setString(1, user.getNom());
+            pstmt.setString(2, user.getPrenom());
+            pstmt.setString(3, user.getEmail());
+            pstmt.setString(4, hashedPassword);
+            pstmt.setString(5, user.getRoles());
             pstmt.setString(6, user.getTelephone());
             pstmt.setString(7, user.getSexe());
             pstmt.setDate(8, user.getdate_naissance() != null ? Date.valueOf(user.getdate_naissance()) : null);
-            pstmt.setBoolean(9, user.isHasChild());
-            pstmt.setString(10, user.getSpecialite());
-            pstmt.setString(11, user.getAvatar());
-            pstmt.setString(12, user.getFaceIdImagePath());
+            pstmt.setString(9, user.getSpecialite());
+            pstmt.setString(10, user.getAvatar());
+            pstmt.setString(11, user.getFaceIdImagePath());
+            pstmt.setBoolean(12, user.isHasChild());
+            pstmt.setString(13, user.getResetPasswordToken());
+            pstmt.setTimestamp(14, user.getResetPasswordTokenExpiresAt() != null
+                    ? Timestamp.valueOf(user.getResetPasswordTokenExpiresAt())
+                    : null);
+            if (user.getPsychologueId() != null) {
+                pstmt.setInt(15, user.getPsychologueId());
+            } else {
+                pstmt.setNull(15, java.sql.Types.INTEGER);
+            }
             pstmt.executeUpdate();
             try (ResultSet keys = pstmt.getGeneratedKeys()) {
                 if (keys.next()) {
                     user.setId(keys.getInt(1));
                 }
             }
-            user.setPassword(hashedPassword);
             return user;
 
         } catch (SQLException e) {
@@ -73,15 +83,14 @@ public class AuthService {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    User user = mapUser(rs);
-                    if (!PasswordHashService.matches(password, user.getPassword())) {
-                        return null;
+                    String storedHash = getOptionalString(rs, "password");
+                    if (PasswordHashService.matches(password, storedHash)) {
+                        return mapUser(rs);
                     }
-                    if (PasswordHashService.needsRehash(user.getPassword())) {
+                    if (storedHash != null && storedHash.equals(password)) {
                         updatePasswordByEmail(email, password);
-                        user.setPassword(findByEmail(email).getPassword());
+                        return findByEmail(email);
                     }
-                    return user;
                 }
             }
         } catch (SQLException e) {
@@ -112,7 +121,7 @@ public class AuthService {
         Connection conn = DataSource.getInstance().getConnection();
 
         try (PreparedStatement pstmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-            pstmt.setString(1, PasswordHashService.hash(newPassword));
+            pstmt.setString(1, PasswordHashService.ensureHashed(newPassword));
             pstmt.setString(2, email);
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -134,6 +143,15 @@ public class AuthService {
         user.setHasChild(rs.getBoolean("has_child"));
         user.setAvatar(getOptionalString(rs, "avatar"));
         user.setFaceIdImagePath(getOptionalString(rs, "face_id_image_path"));
+        user.setResetPasswordToken(getOptionalString(rs, "reset_password_token"));
+        Timestamp resetExpiresAt = getOptionalTimestamp(rs, "reset_password_token_expires_at");
+        if (resetExpiresAt != null) {
+            user.setResetPasswordTokenExpiresAt(resetExpiresAt.toLocalDateTime());
+        }
+        Integer psychologueId = getOptionalInt(rs, "psychologue_id");
+        if (psychologueId != null) {
+            user.setPsychologueId(psychologueId);
+        }
 
         Date birthDate = rs.getDate("date_naissance");
         if (birthDate != null) {
@@ -145,6 +163,23 @@ public class AuthService {
     private static String getOptionalString(ResultSet rs, String column) {
         try {
             return rs.getString(column);
+        } catch (SQLException e) {
+            return null;
+        }
+    }
+
+    private static Timestamp getOptionalTimestamp(ResultSet rs, String column) {
+        try {
+            return rs.getTimestamp(column);
+        } catch (SQLException e) {
+            return null;
+        }
+    }
+
+    private static Integer getOptionalInt(ResultSet rs, String column) {
+        try {
+            int value = rs.getInt(column);
+            return rs.wasNull() ? null : value;
         } catch (SQLException e) {
             return null;
         }

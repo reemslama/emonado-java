@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class User {
 
@@ -23,9 +24,12 @@ public class User {
     private String avatar;
     private String faceIdImagePath;
 
-    public LocalDate date_naissance;
+    private LocalDate dateNaissance;
 
     private boolean hasChild;
+    private String resetPasswordToken;
+    private LocalDateTime resetPasswordTokenExpiresAt;
+    private Integer psychologueId;
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
@@ -76,11 +80,25 @@ public class User {
     public String getFaceIdImagePath() { return faceIdImagePath; }
     public void setFaceIdImagePath(String faceIdImagePath) { this.faceIdImagePath = faceIdImagePath; }
 
-    public LocalDate getdate_naissance() { return date_naissance; }
-    public void setdate_naissance(LocalDate date_naissance) { this.date_naissance = date_naissance; }
+    public LocalDate getDateNaissance() { return dateNaissance; }
+    public void setDateNaissance(LocalDate dateNaissance) { this.dateNaissance = dateNaissance; }
+
+    public LocalDate getdate_naissance() { return dateNaissance; }
+    public void setdate_naissance(LocalDate date_naissance) { this.dateNaissance = date_naissance; }
 
     public boolean isHasChild() { return hasChild; }
     public void setHasChild(boolean hasChild) { this.hasChild = hasChild; }
+
+    public String getResetPasswordToken() { return resetPasswordToken; }
+    public void setResetPasswordToken(String resetPasswordToken) { this.resetPasswordToken = resetPasswordToken; }
+
+    public LocalDateTime getResetPasswordTokenExpiresAt() { return resetPasswordTokenExpiresAt; }
+    public void setResetPasswordTokenExpiresAt(LocalDateTime resetPasswordTokenExpiresAt) {
+        this.resetPasswordTokenExpiresAt = resetPasswordTokenExpiresAt;
+    }
+
+    public Integer getPsychologueId() { return psychologueId; }
+    public void setPsychologueId(Integer psychologueId) { this.psychologueId = psychologueId; }
 
     private static String extractPrimaryRole(String rolesValue) {
         if (rolesValue == null || rolesValue.isBlank()) {

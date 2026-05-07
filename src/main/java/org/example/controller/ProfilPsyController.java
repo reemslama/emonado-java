@@ -3,18 +3,28 @@ package org.example.controller;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import org.example.entities.User;
 import org.example.service.PasswordHashService;
 import org.example.utils.DataSource;
 import org.example.utils.UserSession;
+
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class ProfilPsyController {
 
-    @FXML private TextField nomField, prenomField, emailField, phoneField, specialiteField;
+    @FXML private TextField nomField;
+    @FXML private TextField prenomField;
+    @FXML private TextField emailField;
+    @FXML private TextField phoneField;
+    @FXML private TextField specialiteField;
     @FXML private PasswordField passwordField;
     @FXML private Label titleLabel;
 
@@ -22,13 +32,12 @@ public class ProfilPsyController {
 
     @FXML
     public void initialize() {
-        // Tentative de récupération depuis la session globale
-        this.currentUser = UserSession.getInstance();
+        currentUser = UserSession.getInstance();
 
-        if (this.currentUser != null) {
+        if (currentUser != null) {
             displayUserData();
         } else {
-            System.err.println("🚨 Erreur : currentUser est null dans initialize. Vérifiez le Login.");
+            System.err.println("Erreur : currentUser est null dans initialize. Verifiez le login.");
         }
     }
 
@@ -45,43 +54,64 @@ public class ProfilPsyController {
     }
 
     public void setUserData(User user) {
-        this.currentUser = user;
-        if (nomField != null) displayUserData();
+        currentUser = user;
+        if (nomField != null) {
+            displayUserData();
+        }
     }
 
     @FXML
     private void handleUpdate() {
-        if (currentUser == null) return;
+        if (currentUser == null) {
+            return;
+        }
 
-        String newPass = passwordField.getText();
-        boolean updatePass = newPass != null && !newPass.trim().isEmpty();
+        String newPassword = passwordField.getText();
+        boolean updatePassword = newPassword != null && !newPassword.trim().isEmpty();
 
-        String query = "UPDATE user SET nom=?, prenom=?, telephone=?, specialite=?" +
-                (updatePass ? ", password=?" : "") + " WHERE id=?";
+        String query = "UPDATE user SET nom=?, prenom=?, email=?, telephone=?, specialite=?"
+                + (updatePassword ? ", password=?" : "")
+                + " WHERE id=?";
 
         try (Connection conn = DataSource.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
 
-            pstmt.setString(1, nomField.getText());
-            pstmt.setString(2, prenomField.getText());
-            pstmt.setString(3, phoneField.getText());
-            pstmt.setString(4, specialiteField.getText());
+            pstmt.setString(1, nomField.getText().trim());
+            pstmt.setString(2, prenomField.getText().trim());
+            pstmt.setString(3, emailField.getText().trim());
+            pstmt.setString(4, phoneField.getText().trim());
+            pstmt.setString(5, specialiteField.getText().trim());
 
-            if (updatePass) {
-                pstmt.setString(5, PasswordHashService.hash(newPass));
-                pstmt.setInt(6, currentUser.getId());
-            } else {
-                pstmt.setInt(5, currentUser.getId());
+            int parameterIndex = 6;
+            if (updatePassword) {
+                String hashedPassword = PasswordHashService.ensureHashed(newPassword);
+                pstmt.setString(parameterIndex++, hashedPassword);
+                currentUser.setPassword(hashedPassword);
+            }
+            pstmt.setInt(parameterIndex, currentUser.getId());
+
+            int updatedRows = pstmt.executeUpdate();
+            if (updatedRows == 0) {
+                new Alert(Alert.AlertType.WARNING, "Aucune modification en base.").show();
+                return;
             }
 
-            pstmt.executeUpdate();
+            currentUser.setNom(nomField.getText().trim());
+            currentUser.setPrenom(prenomField.getText().trim());
+            currentUser.setEmail(emailField.getText().trim());
+            currentUser.setTelephone(phoneField.getText().trim());
+            currentUser.setSpecialite(specialiteField.getText().trim());
+            UserSession.setInstance(currentUser);
+            passwordField.clear();
 
-            // Mise à jour de l'objet en session
-            currentUser.setNom(nomField.getText());
-            currentUser.setPrenom(prenomField.getText());
-
-            new Alert(Alert.AlertType.INFORMATION, "Profil mis à jour !").show();
-        } catch (SQLException e) { e.printStackTrace(); }
+            new Alert(Alert.AlertType.INFORMATION, "Profil mis a jour !").show();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            String message = e.getMessage() != null && e.getMessage().contains("Duplicate entry")
+                    ? "Cet email existe deja."
+                    : "Erreur lors de la mise a jour du profil.";
+            new Alert(Alert.AlertType.ERROR, message).show();
+        }
     }
 
     @FXML
@@ -96,7 +126,9 @@ public class ProfilPsyController {
 
             Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
             nomField.getScene().setRoot(root);
-        } catch (IOException e) { e.printStackTrace(); }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -105,7 +137,9 @@ public class ProfilPsyController {
             UserSession.setInstance(null);
             Parent root = FXMLLoader.load(getClass().getResource("/login.fxml"));
             nomField.getScene().setRoot(root);
-        } catch (IOException e) { e.printStackTrace(); }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -117,7 +151,9 @@ public class ProfilPsyController {
                 pstmt.setInt(1, currentUser.getId());
                 pstmt.executeUpdate();
                 handleLogout();
-            } catch (SQLException e) { e.printStackTrace(); }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

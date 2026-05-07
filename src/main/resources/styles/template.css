@@ -25,6 +25,7 @@
     -fx-font-size: 14px;
 }
 
+/* Hover effet */
 .nav-btn:hover {
     -fx-underline: true;
 }
@@ -41,6 +42,7 @@
     -fx-text-fill: white;
 }
 
+/* Style pour les boites d'icones Psy */
 .icon-box {
     -fx-background-color: white;
     -fx-min-width: 130;
@@ -56,6 +58,7 @@
     -fx-translate-y: -5;
 }
 
+/* Style pour les boites d'icones Patient */
 .icon-box-patient {
     -fx-background-color: white;
     -fx-min-width: 120;
@@ -71,6 +74,7 @@
     -fx-scale-y: 1.05;
 }
 
+/* Style de base des boutons de role */
 .option-btn {
     -fx-background-color: white;
     -fx-text-fill: #555555;
@@ -86,6 +90,7 @@
     -fx-faint-focus-color: transparent;
 }
 
+/* Style quand on survole avec la souris */
 .option-btn:hover {
     -fx-background-color: #f4f9d8;
     -fx-text-fill: #324b00;

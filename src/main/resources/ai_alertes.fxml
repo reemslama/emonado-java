@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import java.net.URL?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.controller.AiAlertesController"
+            style="-fx-background-color: #f8fafc;">
+    <stylesheets>
+        <URL value="@/styles/template.css" />
+    </stylesheets>
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="14" style="-fx-background-color: #187d67; -fx-padding: 16 24;">
+            <Label text="EmoNado" styleClass="brand" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Button text="Retour analyse" onAction="#goBack" styleClass="nav-btn" />
+        </HBox>
+    </top>
+    <center>
+        <VBox spacing="18" style="-fx-padding: 28;">
+            <VBox spacing="6">
+                <Label fx:id="titleLabel" text="Alertes AI" style="-fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #7f1d1d;" />
+                <Label fx:id="summaryLabel" text="" wrapText="true" style="-fx-text-fill: #64748b; -fx-font-size: 14px;" />
+            </VBox>
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background: transparent; -fx-background-color: transparent; -fx-border-color: transparent;">
+                <content>
+                    <VBox fx:id="alertsBox" spacing="12" style="-fx-padding: 4;" />
+                </content>
+            </ScrollPane>
+        </VBox>
+    </center>
+</BorderPane>

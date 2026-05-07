@@ -186,6 +186,23 @@
                     <Label text="Medical"
                            style="-fx-font-size: 12px; -fx-text-fill: #64748b;"/>
                 </VBox>
+
+                <VBox onMouseClicked="#goToPreparationRendezVous"
+                      prefWidth="190" prefHeight="180"
+                      alignment="CENTER" spacing="8"
+                      style="-fx-background-color: white; -fx-background-radius: 28; -fx-cursor: hand;">
+                    <StackPane>
+                        <Region style="-fx-background-color: #dbeafe;
+                                       -fx-background-radius: 20;
+                                       -fx-min-width: 64; -fx-min-height: 64;"/>
+                        <Label text="&#128203;" style="-fx-font-size: 32px;"/>
+                    </StackPane>
+                    <Label text="Preparation"
+                           style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                    <Label text="Rendez-vous"
+                           style="-fx-font-size: 12px; -fx-text-fill: #64748b;"/>
+                </VBox>
+
             </FlowPane>
 
             <Label text="© 2025 Emonado - Espace Psychologue"

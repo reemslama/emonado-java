@@ -11,16 +11,18 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import org.example.entities.AntecedentMedical;
-import org.example.entities.Consultation;
 import org.example.entities.DossierMedical;
+import org.example.entities.TestResultMedical;
 import org.example.entities.User;
 import org.example.service.MedicalDataService;
 import org.example.service.MedicalValidationService;
+import org.example.service.PdfExportService;
 import org.example.utils.UserSession;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
@@ -29,34 +31,30 @@ import java.util.List;
 public class MedicalManagementController {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     @FXML private Label titleLabel;
     @FXML private Label subtitleLabel;
     @FXML private ComboBox<User> patientComboBox;
-    @FXML private TextArea dossierReminderArea;
-    @FXML private TextArea dossierHistoryArea;
-    @FXML private Button saveDossierButton;
-    @FXML private Button deleteDossierButton;
+    @FXML private TextArea dossierPsychologueNoteArea;
+    @FXML private Button savePsychologueNoteButton;
+    @FXML private VBox psychologueNoteBox;
+    @FXML private VBox antecedentEditorBox;
     @FXML private TextField antecedentTypeField;
     @FXML private TextArea antecedentDescriptionArea;
     @FXML private DatePicker antecedentDatePicker;
     @FXML private Button saveAntecedentButton;
     @FXML private Button cancelAntecedentButton;
     @FXML private VBox antecedentListContainer;
-    @FXML private DatePicker consultationDatePicker;
-    @FXML private TextArea consultationPatientNotesArea;
-    @FXML private TextArea consultationPsychologueNotesArea;
-    @FXML private Button saveConsultationButton;
-    @FXML private Button cancelConsultationButton;
-    @FXML private VBox consultationListContainer;
+    @FXML private VBox testResultsContainer;
     @FXML private Label emptyPatientLabel;
 
     private final MedicalDataService medicalDataService = new MedicalDataService();
+    private final PdfExportService pdfExportService = new PdfExportService();
 
     private User currentUser;
     private Mode mode;
     private AntecedentMedical selectedAntecedent;
-    private Consultation selectedConsultation;
 
     @FXML
     public void initialize() {
@@ -94,49 +92,6 @@ public class MedicalManagementController {
     }
 
     @FXML
-    private void handleSaveDossier() {
-        User patient = patientComboBox.getValue();
-        if (!ensurePatientSelected(patient)) {
-            return;
-        }
-
-        DossierMedical dossierMedical = new DossierMedical();
-        dossierMedical.setPatientId(patient.getId());
-        dossierMedical.setReminderText(MedicalValidationService.normalize(dossierReminderArea.getText()));
-        dossierMedical.setMedicalHistory(MedicalValidationService.normalize(dossierHistoryArea.getText()));
-
-        String validationError = MedicalValidationService.validateDossier(dossierMedical);
-        if (validationError != null) {
-            showError(validationError);
-            return;
-        }
-
-        try {
-            medicalDataService.saveMedicalRecord(dossierMedical);
-            loadSelectedPatientData();
-            showInfo("Dossier medical enregistre.");
-        } catch (SQLException e) {
-            showError("Impossible d'enregistrer le dossier medical : " + e.getMessage());
-        }
-    }
-
-    @FXML
-    private void handleDeleteDossier() {
-        User patient = patientComboBox.getValue();
-        if (!ensurePatientSelected(patient)) {
-            return;
-        }
-
-        try {
-            medicalDataService.deleteMedicalRecord(patient.getId());
-            loadSelectedPatientData();
-            showInfo("Dossier medical supprime.");
-        } catch (SQLException e) {
-            showError("Impossible de supprimer le dossier medical : " + e.getMessage());
-        }
-    }
-
-    @FXML
     private void handleSaveAntecedent() {
         User patient = patientComboBox.getValue();
         if (!ensurePatientSelected(patient)) {
@@ -171,73 +126,33 @@ public class MedicalManagementController {
     }
 
     @FXML
-    private void handleSaveConsultation() {
+    private void handleSavePsychologueDossierNote() {
         User patient = patientComboBox.getValue();
         if (!ensurePatientSelected(patient)) {
             return;
         }
-
-        if (mode == Mode.PSYCHOLOGUE) {
-            if (selectedConsultation == null) {
-                showError("Selectionnez une consultation pour ajouter une note psychologue.");
-                return;
-            }
-
-            String validationError = MedicalValidationService.validatePsychologueNote(consultationPsychologueNotesArea.getText());
-            if (validationError != null) {
-                showError(validationError);
-                return;
-            }
-
-            try {
-                medicalDataService.updatePsychologueNote(
-                        selectedConsultation.getId(),
-                        MedicalValidationService.normalize(consultationPsychologueNotesArea.getText()),
-                        currentUser == null ? null : currentUser.getId()
-                );
-                loadConsultations(patient.getId());
-                showInfo("Note psychologue enregistree.");
-            } catch (SQLException e) {
-                showError("Impossible d'enregistrer la note psychologue : " + e.getMessage());
-            }
+        if (mode != Mode.PSYCHOLOGUE) {
+            showError("Seul le psychologue peut modifier cette note.");
             return;
         }
 
-        if (selectedConsultation == null) {
-            showError("Selectionnez une consultation a modifier.");
-            return;
-        }
-
-        selectedConsultation.setConsultationDate(consultationDatePicker.getValue());
-        selectedConsultation.setNotesPatient(MedicalValidationService.normalize(consultationPatientNotesArea.getText()));
-        selectedConsultation.setNotesPsychologue(MedicalValidationService.normalize(consultationPsychologueNotesArea.getText()));
-
-        String validationError = MedicalValidationService.validateConsultationPatientData(selectedConsultation);
+        String validationError = MedicalValidationService.validatePsychologueNote(dossierPsychologueNoteArea.getText());
         if (validationError != null) {
             showError(validationError);
             return;
         }
 
-        if (!selectedConsultation.getNotesPsychologue().isBlank()) {
-            validationError = MedicalValidationService.validatePsychologueNote(selectedConsultation.getNotesPsychologue());
-            if (validationError != null) {
-                showError(validationError);
-                return;
-            }
-        }
-
         try {
-            medicalDataService.saveConsultation(selectedConsultation);
-            loadConsultations(patient.getId());
-            showInfo("Consultation modifiee.");
+            medicalDataService.updateMedicalRecordPsychologueNote(
+                    patient.getId(),
+                    MedicalValidationService.normalize(dossierPsychologueNoteArea.getText()),
+                    currentUser == null ? null : currentUser.getId()
+            );
+            loadSelectedPatientData();
+            showInfo("Note du dossier enregistree.");
         } catch (SQLException e) {
-            showError("Impossible de modifier la consultation : " + e.getMessage());
+            showError("Impossible d'enregistrer la note du dossier : " + e.getMessage());
         }
-    }
-
-    @FXML
-    private void handleCancelConsultation() {
-        resetConsultationForm();
     }
 
     @FXML
@@ -266,20 +181,39 @@ public class MedicalManagementController {
         }
     }
 
+    @FXML
+    private void handleExportPdf() {
+        User patient = patientComboBox.getValue();
+        if (!ensurePatientSelected(patient)) {
+            return;
+        }
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Exporter le dossier medical en PDF");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF", "*.pdf"));
+        fileChooser.setInitialFileName("dossier-medical-" + patient.getNom() + "-" + patient.getPrenom() + ".pdf");
+        File targetFile = fileChooser.showSaveDialog(titleLabel.getScene().getWindow());
+        if (targetFile == null) {
+            return;
+        }
+
+        try {
+            DossierMedical dossierMedical = medicalDataService.getMedicalRecordByPatient(patient.getId());
+            List<AntecedentMedical> antecedents = medicalDataService.getAntecedentsByPatient(patient.getId());
+            List<TestResultMedical> testResults = medicalDataService.getTestResultsByPatient(patient.getId());
+            pdfExportService.exportPsychologueMedicalRecord(targetFile.toPath(), patient, dossierMedical, antecedents, testResults);
+            showInfo("PDF exporte : " + targetFile.getAbsolutePath());
+        } catch (Exception e) {
+            showError("Impossible d'exporter le PDF : " + e.getMessage());
+        }
+    }
+
     private void configureMode() {
         boolean adminMode = mode == Mode.ADMIN;
         titleLabel.setText(adminMode ? "Gestion medicale admin" : "Suivi medical psychologue");
         subtitleLabel.setText(adminMode
-                ? "Consultation, modification et suppression des dossiers, antecedents et consultations."
-                : "Consultation des dossiers patients et ajout de notes psychologue sur les consultations.");
-
-        saveDossierButton.setVisible(adminMode);
-        saveDossierButton.setManaged(adminMode);
-        deleteDossierButton.setVisible(adminMode);
-        deleteDossierButton.setManaged(adminMode);
-
-        dossierReminderArea.setEditable(adminMode);
-        dossierHistoryArea.setEditable(adminMode);
+                ? "Antecedents et resultats de test centralises dans le dossier du patient."
+                : "Note du dossier, antecedents et resultats de test du patient.");
 
         saveAntecedentButton.setVisible(adminMode);
         saveAntecedentButton.setManaged(adminMode);
@@ -289,16 +223,26 @@ public class MedicalManagementController {
         antecedentDescriptionArea.setEditable(adminMode);
         antecedentDatePicker.setDisable(!adminMode);
 
-        consultationDatePicker.setDisable(!adminMode);
-        consultationPatientNotesArea.setEditable(adminMode);
-        consultationPsychologueNotesArea.setEditable(true);
-        saveConsultationButton.setText(adminMode ? "Mettre a jour la consultation" : "Enregistrer la note psychologue");
+        if (psychologueNoteBox != null) {
+            psychologueNoteBox.setVisible(true);
+            psychologueNoteBox.setManaged(true);
+        }
+        if (savePsychologueNoteButton != null) {
+            savePsychologueNoteButton.setVisible(!adminMode);
+            savePsychologueNoteButton.setManaged(!adminMode);
+        }
+        if (antecedentEditorBox != null) {
+            antecedentEditorBox.setVisible(adminMode);
+            antecedentEditorBox.setManaged(adminMode);
+        }
     }
 
     private void loadPatients() {
         try {
             medicalDataService.ensureSchema();
-            List<User> patients = medicalDataService.getAllPatients();
+            List<User> patients = mode == Mode.PSYCHOLOGUE && currentUser != null
+                    ? medicalDataService.getPatientsForPsychologue(currentUser.getId())
+                    : medicalDataService.getAllPatients();
             patientComboBox.setItems(FXCollections.observableArrayList(patients));
             if (!patients.isEmpty()) {
                 patientComboBox.getSelectionModel().selectFirst();
@@ -323,12 +267,17 @@ public class MedicalManagementController {
 
         try {
             DossierMedical dossierMedical = medicalDataService.getMedicalRecordByPatient(patient.getId());
-            dossierReminderArea.setText(dossierMedical == null ? "" : MedicalValidationService.normalize(dossierMedical.getReminderText()));
-            dossierHistoryArea.setText(dossierMedical == null ? "" : MedicalValidationService.normalize(dossierMedical.getMedicalHistory()));
+            if (dossierPsychologueNoteArea != null) {
+                String note = dossierMedical == null ? "" : MedicalValidationService.normalize(dossierMedical.getPsychologueNote());
+                dossierPsychologueNoteArea.setText(note);
+                dossierPsychologueNoteArea.setPromptText(mode == Mode.PSYCHOLOGUE
+                        ? "Ajoutez une note clinique visible dans le dossier du patient..."
+                        : "");
+                dossierPsychologueNoteArea.setEditable(mode == Mode.PSYCHOLOGUE);
+            }
             loadAntecedents(patient.getId());
-            loadConsultations(patient.getId());
+            loadTestResults(patient.getId());
             resetAntecedentForm();
-            resetConsultationForm();
         } catch (SQLException e) {
             showError("Impossible de charger les donnees du patient : " + e.getMessage());
         }
@@ -346,6 +295,21 @@ public class MedicalManagementController {
 
         for (AntecedentMedical antecedent : antecedents) {
             antecedentListContainer.getChildren().add(buildAntecedentItem(antecedent));
+        }
+    }
+
+    private void loadTestResults(int patientId) throws SQLException {
+        testResultsContainer.getChildren().clear();
+        List<TestResultMedical> testResults = medicalDataService.getTestResultsByPatient(patientId);
+        if (testResults.isEmpty()) {
+            Label empty = new Label("Aucun resultat de test disponible.");
+            empty.setStyle("-fx-text-fill: #64748b;");
+            testResultsContainer.getChildren().add(empty);
+            return;
+        }
+
+        for (TestResultMedical testResult : testResults) {
+            testResultsContainer.getChildren().add(buildTestResultCard(testResult));
         }
     }
 
@@ -388,102 +352,35 @@ public class MedicalManagementController {
         }
     }
 
-    private void loadConsultations(int patientId) throws SQLException {
-        consultationListContainer.getChildren().clear();
-        List<Consultation> consultations = medicalDataService.getConsultationsByPatient(patientId);
-        if (consultations.isEmpty()) {
-            Label empty = new Label("Aucune consultation.");
-            empty.setStyle("-fx-text-fill: #64748b;");
-            consultationListContainer.getChildren().add(empty);
-            return;
-        }
-
-        for (Consultation consultation : consultations) {
-            consultationListContainer.getChildren().add(buildConsultationItem(consultation));
-        }
-    }
-
-    private VBox buildConsultationItem(Consultation consultation) {
-        VBox card = new VBox(8);
-        card.setStyle("-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 12; "
-                + "-fx-border-color: #cbd5e1; -fx-border-radius: 10;");
-
-        Label date = new Label("Consultation du " + consultation.getConsultationDate().format(DATE_FORMATTER));
-        date.setStyle("-fx-font-weight: bold;");
-
-        Label patientNotes = new Label("Compte rendu patient : " + consultation.getNotesPatient());
-        patientNotes.setWrapText(true);
-
-        String psyNoteText = MedicalValidationService.normalize(consultation.getNotesPsychologue()).isBlank()
-                ? "Aucune note psychologue."
-                : consultation.getNotesPsychologue();
-        Label psyNote = new Label("Note psychologue : " + psyNoteText);
-        psyNote.setWrapText(true);
-
-        Button selectButton = new Button(mode == Mode.ADMIN ? "Modifier" : "Ajouter / modifier note");
-        selectButton.setStyle("-fx-background-color: #0d6efd; -fx-text-fill: white;");
-        selectButton.setOnAction(event -> startConsultationEdit(consultation));
-
-        card.getChildren().addAll(date, patientNotes, psyNote, selectButton);
-
-        if (mode == Mode.ADMIN) {
-            Button deleteButton = new Button("Supprimer");
-            deleteButton.setStyle("-fx-background-color: #dc3545; -fx-text-fill: white;");
-            deleteButton.setOnAction(event -> deleteConsultation(consultation));
-            card.getChildren().add(deleteButton);
-        }
-
-        return card;
-    }
-
-    private void startConsultationEdit(Consultation consultation) {
-        selectedConsultation = consultation;
-        consultationDatePicker.setValue(consultation.getConsultationDate());
-        consultationPatientNotesArea.setText(consultation.getNotesPatient());
-        consultationPsychologueNotesArea.setText(MedicalValidationService.normalize(consultation.getNotesPsychologue()));
-        cancelConsultationButton.setVisible(true);
-        cancelConsultationButton.setManaged(true);
-    }
-
-    private void deleteConsultation(Consultation consultation) {
-        try {
-            medicalDataService.deleteConsultation(consultation.getId());
-            loadConsultations(patientComboBox.getValue().getId());
-            resetConsultationForm();
-            showInfo("Consultation supprimee.");
-        } catch (SQLException e) {
-            showError("Impossible de supprimer la consultation : " + e.getMessage());
-        }
-    }
-
     private void resetAntecedentForm() {
         selectedAntecedent = null;
-        antecedentTypeField.clear();
-        antecedentDescriptionArea.clear();
-        antecedentDatePicker.setValue(null);
-        saveAntecedentButton.setText("Enregistrer l'antecedent");
-        cancelAntecedentButton.setVisible(mode == Mode.ADMIN && selectedAntecedent != null);
-        cancelAntecedentButton.setManaged(mode == Mode.ADMIN && selectedAntecedent != null);
-    }
-
-    private void resetConsultationForm() {
-        selectedConsultation = null;
-        consultationDatePicker.setValue(null);
-        consultationPatientNotesArea.clear();
-        consultationPsychologueNotesArea.clear();
-        cancelConsultationButton.setVisible(false);
-        cancelConsultationButton.setManaged(false);
+        if (antecedentTypeField != null) {
+            antecedentTypeField.clear();
+        }
+        if (antecedentDescriptionArea != null) {
+            antecedentDescriptionArea.clear();
+        }
+        if (antecedentDatePicker != null) {
+            antecedentDatePicker.setValue(null);
+        }
+        if (saveAntecedentButton != null) {
+            saveAntecedentButton.setText("Enregistrer l'antecedent");
+        }
+        if (cancelAntecedentButton != null) {
+            cancelAntecedentButton.setVisible(false);
+            cancelAntecedentButton.setManaged(false);
+        }
     }
 
     private void clearAllPatientData() {
         emptyPatientLabel.setVisible(true);
         emptyPatientLabel.setManaged(true);
-        dossierReminderArea.clear();
-        dossierHistoryArea.clear();
+        if (dossierPsychologueNoteArea != null) {
+            dossierPsychologueNoteArea.clear();
+        }
         antecedentListContainer.getChildren().clear();
-        consultationListContainer.getChildren().clear();
+        testResultsContainer.getChildren().clear();
         resetAntecedentForm();
-        resetConsultationForm();
     }
 
     private boolean ensurePatientSelected(User patient) {
@@ -492,6 +389,31 @@ public class MedicalManagementController {
         }
         showError("Veuillez selectionner un patient.");
         return false;
+    }
+
+    private VBox buildTestResultCard(TestResultMedical testResult) {
+        VBox card = new VBox(8);
+        card.setStyle("-fx-background-color: #fff8ed; -fx-background-radius: 16; -fx-padding: 14; "
+                + "-fx-border-color: #efcf95; -fx-border-radius: 16;");
+
+        Label category = new Label(testResult.getCategorie());
+        category.setStyle("-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #8a4b12;");
+
+        double ratio = testResult.getScoreMax() <= 0 ? 0 : (double) testResult.getScore() / testResult.getScoreMax();
+        String level = ratio >= 0.7 ? "niveau eleve" : ratio >= 0.4 ? "niveau modere" : "niveau faible";
+
+        Label score = new Label("Score : " + testResult.getScore() + " / " + testResult.getScoreMax());
+        score.setStyle("-fx-text-fill: #7c4a0d;");
+
+        Label interpretation = new Label("Interpretation : " + level);
+        interpretation.setStyle("-fx-text-fill: #7c4a0d;");
+
+        String date = testResult.getCreatedAt() == null ? "-" : testResult.getCreatedAt().format(DATE_TIME_FORMATTER);
+        Label createdAt = new Label("Passe le : " + date);
+        createdAt.setStyle("-fx-text-fill: #8c6b4e; -fx-font-size: 13px;");
+
+        card.getChildren().addAll(category, score, interpretation, createdAt);
+        return card;
     }
 
     private void showInfo(String message) {

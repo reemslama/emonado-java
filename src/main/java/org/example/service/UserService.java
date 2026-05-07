@@ -10,6 +10,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -109,6 +110,15 @@ public class UserService {
         user.setHasChild(rs.getBoolean("has_child"));
         user.setAvatar(getOptionalString(rs, "avatar"));
         user.setFaceIdImagePath(getOptionalString(rs, "face_id_image_path"));
+        user.setResetPasswordToken(getOptionalString(rs, "reset_password_token"));
+        Timestamp resetExpiresAt = getOptionalTimestamp(rs, "reset_password_token_expires_at");
+        if (resetExpiresAt != null) {
+            user.setResetPasswordTokenExpiresAt(resetExpiresAt.toLocalDateTime());
+        }
+        Integer psychologueId = getOptionalInt(rs, "psychologue_id");
+        if (psychologueId != null) {
+            user.setPsychologueId(psychologueId);
+        }
         Date birthDate = rs.getDate("date_naissance");
         if (birthDate != null) {
             user.setdate_naissance(birthDate.toLocalDate());
@@ -119,6 +129,23 @@ public class UserService {
     private static String getOptionalString(ResultSet rs, String column) {
         try {
             return rs.getString(column);
+        } catch (SQLException e) {
+            return null;
+        }
+    }
+
+    private static Timestamp getOptionalTimestamp(ResultSet rs, String column) {
+        try {
+            return rs.getTimestamp(column);
+        } catch (SQLException e) {
+            return null;
+        }
+    }
+
+    private static Integer getOptionalInt(ResultSet rs, String column) {
+        try {
+            int value = rs.getInt(column);
+            return rs.wasNull() ? null : value;
         } catch (SQLException e) {
             return null;
         }

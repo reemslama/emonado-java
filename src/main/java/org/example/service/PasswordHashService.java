@@ -1,56 +1,36 @@
 package org.example.service;
 
-import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public final class PasswordHashService {
-    private static final int BCRYPT_COST = 13;
+    private static final BCryptPasswordEncoder ENCODER =
+            new BCryptPasswordEncoder(BCryptPasswordEncoder.BCryptVersion.$2Y, 12);
 
     private PasswordHashService() {
     }
 
-    public static String hash(String plainPassword) {
-        if (plainPassword == null || plainPassword.isBlank()) {
-            throw new IllegalArgumentException("Le mot de passe est obligatoire.");
+    public static String hash(String rawPassword) {
+        if (rawPassword == null || rawPassword.isBlank()) {
+            throw new IllegalArgumentException("Le mot de passe est vide.");
         }
-
-        String bcryptHash = BCrypt.hashpw(plainPassword, BCrypt.gensalt(BCRYPT_COST));
-        return toSymfonyPrefix(bcryptHash);
+        return ENCODER.encode(rawPassword);
     }
 
-    public static boolean matches(String plainPassword, String storedPassword) {
-        if (plainPassword == null || storedPassword == null || storedPassword.isBlank()) {
+    public static boolean matches(String rawPassword, String encodedPassword) {
+        if (rawPassword == null || encodedPassword == null || encodedPassword.isBlank()) {
             return false;
         }
+        return ENCODER.matches(rawPassword, encodedPassword);
+    }
 
-        if (looksLikeBcryptHash(storedPassword)) {
-            return BCrypt.checkpw(plainPassword, toJavaPrefix(storedPassword));
+    public static boolean isHashed(String password) {
+        if (password == null) {
+            return false;
         }
-
-        return plainPassword.equals(storedPassword);
+        return password.matches("^\\$2[aby]\\$\\d\\d\\$[./A-Za-z0-9]{53}$");
     }
 
-    public static boolean needsRehash(String storedPassword) {
-        if (storedPassword == null || storedPassword.isBlank()) {
-            return true;
-        }
-
-        if (!looksLikeBcryptHash(storedPassword)) {
-            return true;
-        }
-
-        String normalized = toJavaPrefix(storedPassword);
-        return !normalized.startsWith("$2a$" + String.format("%02d", BCRYPT_COST) + "$");
-    }
-
-    private static boolean looksLikeBcryptHash(String value) {
-        return value.startsWith("$2y$") || value.startsWith("$2a$") || value.startsWith("$2b$");
-    }
-
-    private static String toSymfonyPrefix(String hash) {
-        return hash.startsWith("$2a$") ? "$2y$" + hash.substring(4) : hash;
-    }
-
-    private static String toJavaPrefix(String hash) {
-        return hash.startsWith("$2y$") ? "$2a$" + hash.substring(4) : hash;
+    public static String ensureHashed(String password) {
+        return isHashed(password) ? password : hash(password);
     }
 }

@@ -104,6 +104,20 @@ public class AdminDashboardController {
     }
 
     @FXML
+    private void showPayments() {
+        try {
+            headerTitle.setText("Paiements");
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/admin_payments.fxml"));
+            Parent view = loader.load();
+            AdminPaymentsController controller = loader.getController();
+            controller.setUserData(currentAdmin);
+            contentArea.getChildren().setAll(view);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
     private void handleLogout() {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/login.fxml"));

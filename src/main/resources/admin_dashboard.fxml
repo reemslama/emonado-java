@@ -39,6 +39,7 @@
             <Button text="👥  Patients" onAction="#showPatients" styleClass="side-button" maxWidth="Infinity" alignment="BASELINE_LEFT"/>
             <Button text="🧠  Psychologues" onAction="#showPsychologues" styleClass="side-button" maxWidth="Infinity" alignment="BASELINE_LEFT"/>
             <Button text="🏥  Gestion médicale" onAction="#showMedicalManagement" styleClass="side-button" maxWidth="Infinity" alignment="BASELINE_LEFT"/>
+            <Button text="💳  Paiements" onAction="#showPayments" styleClass="side-button" maxWidth="Infinity" alignment="BASELINE_LEFT"/>
             <Button text="❓  Questions/Réponses" onAction="#showQuestionsReponses" styleClass="side-button" maxWidth="Infinity" alignment="BASELINE_LEFT"/>
 
             <Region VBox.vgrow="ALWAYS"/>
