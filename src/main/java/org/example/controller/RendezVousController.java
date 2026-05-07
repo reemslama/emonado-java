@@ -107,6 +107,7 @@ public class RendezVousController {
     private Double selectedLatitude;
     private Double selectedLongitude;
     private Set<LocalDate> availableDates = Collections.emptySet();
+    private final MapBridge mapBridge = new MapBridge();
 
     @FXML
     public void initialize() {
@@ -736,12 +737,18 @@ public class RendezVousController {
             if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
                 mapReady = true;
                 JSObject window = (JSObject) mapEngine.executeScript("window");
-                window.setMember("javaConnector", new MapBridge());
+                window.setMember("javaConnector", mapBridge);
                 mapEngine.executeScript("if (typeof notifyUiReady === 'function') { notifyUiReady(); }");
                 syncLocationToMap();
             }
         });
-        String url = getClass().getResource("/map/location_picker.html").toExternalForm();
+        java.net.URL mapResource = getClass().getResource("/map/location_picker.html");
+        if (mapResource == null) {
+            updateLocationLabels();
+            showMessage("Carte introuvable dans les ressources du projet", "red");
+            return;
+        }
+        String url = mapResource.toExternalForm();
         mapEngine.load(url);
         updateLocationLabels();
     }

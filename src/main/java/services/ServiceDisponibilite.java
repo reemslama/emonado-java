@@ -249,7 +249,9 @@ public class ServiceDisponibilite {
     private void fillPsychologueIdIfMissing() throws SQLException {
         Connection cnx = getConnection();
         String fallbackSql =
-                "UPDATE disponibilite SET psychologue_id = (SELECT id FROM user WHERE UPPER(roles) LIKE '%\"ROLE_PSYCHOLOGUE\"%' ORDER BY id LIMIT 1) WHERE psychologue_id IS NULL";
+                "UPDATE disponibilite SET psychologue_id = "
+                        + "(SELECT id FROM user WHERE UPPER(roles) LIKE '%\"ROLE_PSYCHOLOGUE\"%' ORDER BY id LIMIT 1) "
+                        + "WHERE psychologue_id IS NULL";
         try (PreparedStatement ps = cnx.prepareStatement(fallbackSql)) {
             ps.executeUpdate();
         }

@@ -38,41 +38,23 @@ public final class DatabaseInitializer {
 
     private static void ensureUserTable(Connection connection) throws SQLException {
         execute(connection, """
-                CREATE TABLE IF NOT EXISTS user (
-                    id INT PRIMARY KEY AUTO_INCREMENT,
-                    nom VARCHAR(100) NOT NULL,
-                    prenom VARCHAR(100) NOT NULL,
-                    email VARCHAR(150) NOT NULL,
-                    password VARCHAR(255) NOT NULL,
-                    roles JSON NOT NULL,
-                    telephone VARCHAR(30),
-                    sexe VARCHAR(20),
-                    date_naissance DATE,
-                    specialite VARCHAR(150),
-                    avatar VARCHAR(255) NULL,
-                    face_id_image_path VARCHAR(255) NULL,
-                    has_child TINYINT(1) NOT NULL DEFAULT 0,
-                    reset_password_token VARCHAR(255) NULL,
-                    reset_password_token_expires_at TIMESTAMP NULL,
-                    psychologue_id INT NULL,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                    CONSTRAINT uq_user_email UNIQUE (email),
-                    CONSTRAINT fk_user_psychologue FOREIGN KEY (psychologue_id) REFERENCES user(id) ON DELETE SET NULL
-                )
-                """);
+            CREATE TABLE IF NOT EXISTS user (
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                nom VARCHAR(100) NOT NULL,
+                prenom VARCHAR(100) NOT NULL,
+                email VARCHAR(150) NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                telephone VARCHAR(30),
+                sexe VARCHAR(20),
+                specialite VARCHAR(150),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            )
+            """);
 
         addColumnIfMissing(connection, "user", "telephone", "VARCHAR(30) NULL");
         addColumnIfMissing(connection, "user", "sexe", "VARCHAR(20) NULL");
-        addColumnIfMissing(connection, "user", "roles", "JSON NULL");
-        addColumnIfMissing(connection, "user", "date_naissance", "DATE NULL");
         addColumnIfMissing(connection, "user", "specialite", "VARCHAR(150) NULL");
-        addColumnIfMissing(connection, "user", "avatar", "VARCHAR(255) NULL");
-        addColumnIfMissing(connection, "user", "face_id_image_path", "VARCHAR(255) NULL");
-        addColumnIfMissing(connection, "user", "has_child", "TINYINT(1) NOT NULL DEFAULT 0");
-        addColumnIfMissing(connection, "user", "reset_password_token", "VARCHAR(255) NULL");
-        addColumnIfMissing(connection, "user", "reset_password_token_expires_at", "TIMESTAMP NULL");
-        addColumnIfMissing(connection, "user", "psychologue_id", "INT NULL");
     }
 
     private static void ensureJournalTable(Connection connection) throws SQLException {
