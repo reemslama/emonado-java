@@ -21,7 +21,7 @@ public class JournalService {
 
     public List<Journal> findByUser(User user, String keyword, String sortOrder) throws SQLException {
         StringBuilder sql = new StringBuilder(
-                "SELECT j.id, j.contenu, j.humeur, j.date_creation, j.user_id, a.etat_emotionnel " +
+                "SELECT j.id, j.contenu, j.humeur, j.date_creation, j.user_id, COALESCE(a.etat_emotionnel, '') AS etat_analyse " +
                         "FROM journal j LEFT JOIN analyse_emotionnelle a ON a.journal_id = j.id WHERE j.user_id = ?"
         );
         List<Object> parameters = new ArrayList<>();
@@ -39,22 +39,18 @@ public class JournalService {
                 ? " ORDER BY j.date_creation ASC"
                 : " ORDER BY j.date_creation DESC");
 
-        List<Journal> journals = new ArrayList<>();
-        try (Connection connection = DataSource.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql.toString())) {
-
-            for (int i = 0; i < parameters.size(); i++) {
-                statement.setObject(i + 1, parameters.get(i));
+        try {
+            return executeFindByUserQuery(sql.toString(), parameters);
+        } catch (SQLException exception) {
+            if (!isUnknownAnalyseColumnError(exception)) {
+                throw exception;
             }
-
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    journals.add(mapRow(resultSet));
-                }
-            }
+            String fallbackSql = sql.toString()
+                    .replace("COALESCE(a.etat_emotionnel, '') AS etat_analyse",
+                            "'' AS etat_analyse")
+                    .replace("LEFT JOIN analyse_emotionnelle a ON a.journal_id = j.id", "");
+            return executeFindByUserQuery(fallbackSql, parameters);
         }
-
-        return journals;
     }
 
     public Map<String, Integer> countByMood(User user) throws SQLException {
@@ -143,7 +139,31 @@ public class JournalService {
             journal.setDateCreation(timestamp.toLocalDateTime());
         }
         journal.setUserId(resultSet.getInt("user_id"));
-        journal.setEtatAnalyse(resultSet.getString("etat_emotionnel"));
+        journal.setEtatAnalyse(resultSet.getString("etat_analyse"));
         return journal;
+    }
+
+    private List<Journal> executeFindByUserQuery(String sql, List<Object> parameters) throws SQLException {
+        List<Journal> journals = new ArrayList<>();
+        try (Connection connection = DataSource.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            for (int i = 0; i < parameters.size(); i++) {
+                statement.setObject(i + 1, parameters.get(i));
+            }
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    journals.add(mapRow(resultSet));
+                }
+            }
+        }
+        return journals;
+    }
+
+    private boolean isUnknownAnalyseColumnError(SQLException exception) {
+        return exception.getMessage() != null
+                && exception.getMessage().toLowerCase().contains("unknown column")
+                && exception.getMessage().toLowerCase().contains("etat_emotionnel");
     }
 }

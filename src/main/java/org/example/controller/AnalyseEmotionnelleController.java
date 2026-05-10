@@ -1,11 +1,7 @@
 package org.example.controller;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,10 +12,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.HBox;
-import javafx.util.Duration;
 import javafx.util.StringConverter;
 import org.example.entities.JournalAnalyseRow;
 import org.example.entities.User;
@@ -29,7 +22,6 @@ import org.example.utils.UserSession;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
 
 public class AnalyseEmotionnelleController {
     @FXML private Label welcomeLabel;
@@ -37,7 +29,6 @@ public class AnalyseEmotionnelleController {
     @FXML private Label analysedCountLabel;
     @FXML private Label pendingCountLabel;
     @FXML private Label errorLabel;
-    @FXML private TextField searchField;
     @FXML private TableView<JournalAnalyseRow> analyseTable;
     @FXML private TableColumn<JournalAnalyseRow, String> dateColumn;
     @FXML private TableColumn<JournalAnalyseRow, String> humeurColumn;
@@ -47,22 +38,11 @@ public class AnalyseEmotionnelleController {
     @FXML private ComboBox<User> patientCombo;
     @FXML private HBox patientSelectorBox;
     @FXML private Button navJournauxBtn;
-    @FXML private Label totalJournauxStatLabel;
-    @FXML private Label totalAnalysesStatLabel;
-    @FXML private Label totalPendingStatLabel;
-    @FXML private Label heureuxPercentLabel;
-    @FXML private Label calmePercentLabel;
-    @FXML private Label sosPercentLabel;
-    @FXML private Label colerePercentLabel;
-    @FXML private ProgressBar heureuxProgress;
-    @FXML private ProgressBar calmeProgress;
-    @FXML private ProgressBar sosProgress;
-    @FXML private ProgressBar colereProgress;
 
     private final AnalyseEmotionnelleService analyseService = new AnalyseEmotionnelleService();
-    private final ObservableList<JournalAnalyseRow> allRows = FXCollections.observableArrayList();
-    private final ObservableList<JournalAnalyseRow> visibleRows = FXCollections.observableArrayList();
+    /** Patient dont les journaux sont analyses (requetes SQL inchangées). */
     private User currentUser;
+    /** Compte connecte (psychologue) pour la navigation Accueil / profil. */
     private User viewerUser;
     private JournalAnalyseRow selectedRow;
 
@@ -74,17 +54,16 @@ public class AnalyseEmotionnelleController {
         etatColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(data.getValue().getEtatEmotionnel()));
         statutColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(data.getValue().getStatut()));
 
-        analyseTable.setItems(visibleRows);
         analyseTable.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             selectedRow = newValue;
             errorLabel.setText("");
         });
-
-        if (searchField != null) {
-            searchField.textProperty().addListener((obs, oldValue, newValue) -> applyFilters());
-        }
     }
 
+    /**
+     * A appeler depuis le tableau de bord psychologue : charge la liste des patients
+     * et affiche les journaux du patient selectionne (meme logique metier qu'avant).
+     */
     public void initForPsychologueView() {
         viewerUser = UserSession.getInstance();
         if (patientSelectorBox != null) {
@@ -98,49 +77,46 @@ public class AnalyseEmotionnelleController {
         if (patientCombo == null) {
             return;
         }
-
         patientCombo.setConverter(new StringConverter<>() {
             @Override
-            public String toString(User user) {
-                if (user == null) {
+            public String toString(User u) {
+                if (u == null) {
                     return "";
                 }
-                String prenom = user.getPrenom() != null ? user.getPrenom() : "";
-                String nom = user.getNom() != null ? user.getNom() : "";
-                return (prenom + " " + nom).trim();
+                String p = u.getPrenom() != null ? u.getPrenom() : "";
+                String n = u.getNom() != null ? u.getNom() : "";
+                return (p + " " + n).trim();
             }
 
             @Override
-            public User fromString(String string) {
+            public User fromString(String s) {
                 return null;
             }
         });
-
         var patients = UserService.getByRole("ROLE_PATIENT");
         patientCombo.setItems(patients);
-        patientCombo.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue != null) {
-                setUserData(newValue);
+        patientCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                setUserData(newVal);
             }
         });
-
         if (patients.isEmpty()) {
             showError("Aucun patient enregistre. Les analyses portent sur les journaux d'un patient.");
             return;
         }
-
         patientCombo.getSelectionModel().select(0);
     }
 
+    /** Apres retour depuis l'edition : reselectionner le meme patient dans la liste. */
     public void focusPatient(User patient) {
         if (patient == null) {
             return;
         }
         if (patientCombo != null && patientCombo.getItems() != null) {
-            for (User user : patientCombo.getItems()) {
-                if (user.getId() == patient.getId()) {
-                    patientCombo.getSelectionModel().select(user);
-                    setUserData(user);
+            for (User u : patientCombo.getItems()) {
+                if (u.getId() == patient.getId()) {
+                    patientCombo.getSelectionModel().select(u);
+                    setUserData(u);
                     return;
                 }
             }
@@ -200,38 +176,8 @@ public class AnalyseEmotionnelleController {
     }
 
     @FXML
-    private void handleConseilAi() {
-        if (currentUser == null || selectedRow == null) {
-            showError("Selectionnez un journal pour generer un conseil AI.");
-            return;
-        }
-        openAiPage("/ai_conseil.fxml", "conseil");
-    }
-
-    @FXML
-    private void handleDetectionAi() {
-        if (currentUser == null || selectedRow == null) {
-            showError("Selectionnez un journal pour lancer la detection AI.");
-            return;
-        }
-        openAiPage("/ai_detection.fxml", "detection");
-    }
-
-    @FXML
-    private void handleAlertesAi() {
-        if (currentUser == null) {
-            showError("Selectionnez un patient pour afficher les alertes AI.");
-            return;
-        }
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ai_alertes.fxml"));
-            Parent root = loader.load();
-            AiAlertesController controller = loader.getController();
-            controller.setData(viewerUser, currentUser, List.copyOf(allRows));
-            analyseTable.getScene().setRoot(root);
-        } catch (IOException e) {
-            showError("Ouverture de la page alertes AI impossible.");
-        }
+    private void handleReset() {
+        clearSelection();
     }
 
     @FXML
@@ -267,49 +213,18 @@ public class AnalyseEmotionnelleController {
         if (currentUser == null) {
             return;
         }
-
         try {
-            allRows.setAll(analyseService.findRowsByUser(currentUser));
-            applyFilters();
-
+            var rows = FXCollections.observableArrayList(analyseService.findRowsByUser(currentUser));
+            analyseTable.setItems(rows);
             int today = analyseService.countTodayJournals(currentUser);
             int analysed = analyseService.countAnalysed(currentUser);
             todayCountLabel.setText(String.valueOf(today));
             analysedCountLabel.setText(String.valueOf(analysed));
-            pendingCountLabel.setText(String.valueOf(Math.max(allRows.size() - analysed, 0)));
-            updateProfessionalStats(analysed);
+            pendingCountLabel.setText(String.valueOf(Math.max(rows.size() - analysed, 0)));
             errorLabel.setText("");
         } catch (SQLException e) {
             showError("Chargement impossible: " + e.getMessage());
         }
-    }
-
-    private void applyFilters() {
-        String keyword = searchField == null || searchField.getText() == null
-                ? ""
-                : searchField.getText().trim().toLowerCase();
-
-        visibleRows.setAll(
-                allRows.stream()
-                        .filter(row -> matchesKeyword(row, keyword))
-                        .toList()
-        );
-    }
-
-    private boolean matchesKeyword(JournalAnalyseRow row, String keyword) {
-        if (keyword.isBlank()) {
-            return true;
-        }
-        return containsIgnoreCase(row.getDateJournal(), keyword)
-                || containsIgnoreCase(row.getHumeur(), keyword)
-                || containsIgnoreCase(row.getContenuResume(), keyword)
-                || containsIgnoreCase(row.getEtatEmotionnel(), keyword)
-                || containsIgnoreCase(row.getNiveau(), keyword)
-                || containsIgnoreCase(row.getStatut(), keyword);
-    }
-
-    private boolean containsIgnoreCase(String value, String keyword) {
-        return value != null && value.toLowerCase().contains(keyword);
     }
 
     private void clearSelection() {
@@ -318,74 +233,6 @@ public class AnalyseEmotionnelleController {
             analyseTable.getSelectionModel().clearSelection();
         }
         errorLabel.setText("");
-    }
-
-    private void updateProfessionalStats(int analysedCount) {
-        int total = allRows.size();
-        int pending = Math.max(total - analysedCount, 0);
-
-        if (totalJournauxStatLabel != null) {
-            totalJournauxStatLabel.setText(String.valueOf(total));
-        }
-        if (totalAnalysesStatLabel != null) {
-            totalAnalysesStatLabel.setText(String.valueOf(analysedCount));
-        }
-        if (totalPendingStatLabel != null) {
-            totalPendingStatLabel.setText(String.valueOf(pending));
-        }
-
-        int heureux = 0;
-        int calme = 0;
-        int sos = 0;
-        int colere = 0;
-        for (JournalAnalyseRow row : allRows) {
-            String mood = row.getHumeur() == null ? "" : row.getHumeur().trim().toLowerCase();
-            switch (mood) {
-                case "heureux" -> heureux++;
-                case "calme" -> calme++;
-                case "sos" -> sos++;
-                case "en colere" -> colere++;
-                default -> {
-                }
-            }
-        }
-
-        animateProgress(heureuxProgress, toPercent(heureux, total));
-        animateProgress(calmeProgress, toPercent(calme, total));
-        animateProgress(sosProgress, toPercent(sos, total));
-        animateProgress(colereProgress, toPercent(colere, total));
-
-        setPercentLabel(heureuxPercentLabel, heureux, total);
-        setPercentLabel(calmePercentLabel, calme, total);
-        setPercentLabel(sosPercentLabel, sos, total);
-        setPercentLabel(colerePercentLabel, colere, total);
-    }
-
-    private double toPercent(int value, int total) {
-        return total <= 0 ? 0.0 : (double) value / total;
-    }
-
-    private void animateProgress(ProgressBar bar, double targetProgress) {
-        if (bar == null) {
-            return;
-        }
-        Timeline timeline = new Timeline(
-                new KeyFrame(Duration.ZERO, new KeyValue(bar.progressProperty(), bar.getProgress())),
-                new KeyFrame(Duration.millis(700), new KeyValue(bar.progressProperty(), targetProgress))
-        );
-        timeline.play();
-    }
-
-    private void setPercentLabel(Label label, int value, int total) {
-        if (label == null) {
-            return;
-        }
-        if (total <= 0) {
-            label.setText("0% (0)");
-            return;
-        }
-        int percent = (int) Math.round((value * 100.0) / total);
-        label.setText(percent + "% (" + value + ")");
     }
 
     private void loadView(String fxmlPath) {
@@ -420,22 +267,6 @@ public class AnalyseEmotionnelleController {
             analyseTable.getScene().setRoot(root);
         } catch (IOException e) {
             showError("Ouverture de la page de modification impossible.");
-        }
-    }
-
-    private void openAiPage(String fxmlPath, String mode) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Parent root = loader.load();
-            Object controller = loader.getController();
-            if (controller instanceof AiConseilController conseilController) {
-                conseilController.setData(viewerUser, currentUser, selectedRow);
-            } else if (controller instanceof AiDetectionController detectionController) {
-                detectionController.setData(viewerUser, currentUser, selectedRow);
-            }
-            analyseTable.getScene().setRoot(root);
-        } catch (IOException e) {
-            showError("Ouverture de la page " + mode + " AI impossible.");
         }
     }
 
