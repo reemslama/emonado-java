@@ -17,7 +17,7 @@ import java.time.Duration;
 import java.util.*;
 import java.util.logging.Logger;
 
-public class GrokAiService {
+public class GrokAIService {
 
     // =========================================================================
     // CONSTANTES
@@ -57,16 +57,16 @@ public class GrokAiService {
     // CONSTRUCTEURS
     // =========================================================================
 
-    public GrokAiService() {
+    public GrokAIService() {
         this(API_KEY);
     }
 
-    public GrokAiService(String groqApiKey) {
+    public GrokAIService(String groqApiKey) {
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
         this.mapper     = new ObjectMapper();
-        this.logger     = Logger.getLogger(GrokAiService.class.getName());
+        this.logger     = Logger.getLogger(GrokAIService.class.getName());
         this.groqApiKey = (groqApiKey != null && !groqApiKey.isBlank()) ? groqApiKey : API_KEY;
     }
 
