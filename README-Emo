@@ -1,0 +1,365 @@
+<!-- topics: java, javafx, mysql, artificial-intelligence, desktop-application, healthcare, psychological-tests, maven, pdf-export, authentication -->
+
+# 🧠 Smart Medical & Psychological Assessment Platform
+
+![Java](https://img.shields.io/badge/Java-17+-orange?style=for-the-badge\&logo=java)
+![JavaFX](https://img.shields.io/badge/JavaFX-Desktop%20UI-blue?style=for-the-badge)
+![Maven](https://img.shields.io/badge/Maven-Build%20Tool-red?style=for-the-badge\&logo=apachemaven)
+![MySQL](https://img.shields.io/badge/MySQL-Database-blue?style=for-the-badge\&logo=mysql)
+![AI](https://img.shields.io/badge/AI-OpenAI%20%7C%20Gemini%20%7C%20Grok-green?style=for-the-badge)
+
+---
+
+# 📌 Keywords
+
+javafx
+desktop-application
+healthcare
+psychology
+artificial-intelligence
+mysql
+authentication
+pdf-export
+medical-records
+psychological-tests
+maven
+java
+
+---
+
+# 📖 Description
+
+The *Smart Medical & Psychological Assessment Platform* is a JavaFX-based desktop application designed to assist healthcare professionals, psychologists, administrators, and patients in managing psychological assessments, medical records, appointments, and AI-powered insights.
+
+The platform combines modern desktop technologies with Artificial Intelligence services to provide an intelligent and interactive healthcare experience.
+
+## 🎯 Project Goals
+
+* Simplify psychological test management
+* Centralize patient medical information
+* Provide intelligent AI-generated psychological insights
+* Improve appointment scheduling and monitoring
+* Generate professional reports and analytics
+* Offer a modern and user-friendly desktop interface
+
+## 👥 Target Users
+
+* Administrators
+* Psychologists
+* Patients
+* Healthcare staff
+
+## ✨ Main Features
+
+### 🔐 Authentication & User Management
+
+* Secure login and registration
+* Password hashing and authentication
+* User role management
+* Profile management
+
+### 🧠 Psychological Testing
+
+* Interactive psychological tests
+* Dynamic result calculation
+* AI-assisted analysis of responses
+* Behavioral insight generation
+
+### 🏥 Medical Records
+
+* Patient medical history management
+* Data validation and organization
+* Medical record consultation
+
+### 📅 Appointment Management
+
+* Schedule appointments
+* Manage availability
+* Appointment tracking and organization
+
+### 📄 Reports & Analytics
+
+* PDF report generation
+* Parent reports
+* Session analysis
+* Statistical visualization
+
+### 🤖 Artificial Intelligence Integration
+
+* OpenAI integration
+* Gemini AI integration
+* Grok AI integration
+* Automated psychological insights
+
+---
+
+# 🛠️ Technologies Used
+
+| Category             | Technologies                     |
+| -------------------- | -------------------------------- |
+| Programming Language | Java 17+                         |
+| UI Framework         | JavaFX                           |
+| Build Tool           | Maven                            |
+| Database             | MySQL                            |
+| AI APIs              | OpenAI API, Gemini API, Grok API |
+| JSON Processing      | Gson                             |
+| PDF Generation       | PDFBox / iText                   |
+| Networking           | Java HTTP Client                 |
+| IDEs                 | IntelliJ IDEA                    |
+| Version Control      | Git & GitHub                     |
+
+---
+
+# ⚙️ Prerequisites
+
+Before running the project, make sure the following are installed:
+
+* Java JDK 17 or later
+* Maven
+* MySQL Server
+* Git
+* IntelliJ IDEA (recommended)
+
+## Recommended Tools
+
+* Scene Builder (for JavaFX FXML editing)
+* MySQL Workbench
+
+---
+
+# 🚀 Installation & Setup
+
+## 1️⃣ Clone the Repository
+
+git clone https://github.com/your-username/your-repository.git
+cd your-repository
+
+---
+
+## 2️⃣ Configure the Database
+
+Create a MySQL database:
+
+CREATE DATABASE smart_medical_platform;
+
+Update your database configuration inside the service classes:
+
+private static final String URL = "jdbc:mysql://localhost:3306/emonado";
+private static final String USER = "root";
+private static final String PASSWORD = "root";
+
+---
+
+## 3️⃣ Install Dependencies
+
+mvn clean install
+
+---
+
+## 4️⃣ Configure AI API Keys
+
+Add your API keys inside the corresponding service files:
+
+### OpenAI
+
+private static final String API_KEY = "YOUR_OPENAI_API_KEY";
+
+### Gemini
+
+private static final String API_KEY = "YOUR_GEMINI_API_KEY";
+
+### Grok
+
+private static final String API_KEY = "YOUR_GROK_API_KEY";
+
+⚠️ Never expose your API keys publicly.
+
+---
+
+## 5️⃣ Run the Application
+
+mvn javafx:run
+
+Or run the main JavaFX application directly from IntelliJ IDEA.
+
+---
+
+# ▶️ Usage
+
+## 🔑 User Authentication
+
+Users can:
+
+* Register a new account
+* Login securely
+* Access role-based dashboards
+
+---
+
+## 🧪 Psychological Test Workflow
+
+1. Login to the platform
+2. Access the test module
+3. Answer psychological questions
+4. Submit the test
+5. Receive AI-generated insights and analysis
+
+---
+
+## 📅 Appointment Workflow
+
+* Patients can request appointments
+* Psychologists manage availability
+* Administrators monitor schedules
+
+---
+
+## 📄 PDF Reports
+
+The application can generate:
+
+* Psychological reports
+* Session summaries
+* Parent reports
+* Statistical exports
+
+---
+
+# 📂 Project Structure
+
+src/
+├── main/
+│   ├── java/
+│   │   └── org/example/
+│   │       ├── controller/
+│   │       ├── entities/
+│   │       ├── service/
+│   │       ├── utils/
+│   │       └── config/
+│   │
+│   └── resources/
+│       ├── *.fxml
+│       ├── css/
+│       ├── images/
+│       └── assets/
+│
+├── pom.xml
+└── README.md
+
+---
+
+# 🧩 Important Modules
+
+## Controllers
+
+* AdminAddUserController
+* MedicalRecordController
+* PasserTestController
+* ResultatController
+* RendezVousController
+* RapportParentController
+
+## Services
+
+* AuthService
+* MedicalDataService
+* MedicalValidationService
+* PdfExportService
+* GeminiChatService
+* OpenAiInsightProvider
+* GrokAIService
+
+## Entities
+
+* User
+* ProfilPsychologique
+* RapportSessionJeu
+
+---
+
+# 📸 Screenshots
+
+Add screenshots of the application interface here.
+
+
+Suggested screenshots:
+
+* Login Screen
+* Dashboard
+* Psychological Test Interface
+* Medical Record Management
+* Appointment Management
+* AI Insights
+* PDF Reports
+
+---
+
+# 👨‍💻 Authors
+
+### Developers
+
+                * *Eya Gobji*
+                * *Rim slama*
+                 * *Yassine ben houria*
+                 * *Nour hajji*
+                 * *Narjes sai*
+
+### Contributors
+
+* Add contributors here
+
+---
+
+# 📄 License
+
+This project is licensed under the *MIT License*.
+
+text
+MIT License
+
+Copyright (c) 2026
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files...
+
+---
+
+# 🌟 Future Improvements
+
+* Cloud synchronization
+* Multi-language support
+* Advanced analytics dashboard
+* Real-time notifications
+* AI recommendation system
+* Mobile application integration
+
+---
+
+# 🤝 Contributing
+
+Contributions are welcome.
+
+To contribute:
+
+# Fork the repository
+# Create a feature branch
+git checkout -b feature/new-feature
+
+# Commit changes
+git commit -m "Add new feature"
+
+# Push branch
+git push origin feature/new-feature
+
+Then create a Pull Request.
+
+---
+
+# 📬 Support
+
+If you encounter any issues or have suggestions:
+
+* Open an issue on GitHub
+* Contact the development team
+
+---
