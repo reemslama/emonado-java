@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+
+<HBox spacing="20" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.example.controller.GameController">
+
+    <ImageView fx:id="choix1" fitWidth="150" fitHeight="150"/>
+    <ImageView fx:id="choix2" fitWidth="150" fitHeight="150"/>
+    <ImageView fx:id="choix3" fitWidth="150" fitHeight="150"/>
+
+</HBox>
